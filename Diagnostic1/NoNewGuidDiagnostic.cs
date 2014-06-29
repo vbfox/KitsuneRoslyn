@@ -10,14 +10,14 @@ namespace BlackFox.Roslyn.TestDiagnostics
 {
     [DiagnosticAnalyzer]
     [ExportDiagnosticAnalyzer(DiagnosticId, LanguageNames.CSharp)]
-    public class NoStringEmptyDiagnostic : ISyntaxNodeAnalyzer<SyntaxKind>
+    public class NoNewGuidDiagnostic : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        internal const string DiagnosticId = "BlackFox.NoStringEmpty";
+        internal const string DiagnosticId = "BlackFox.NoNewGuid";
 
         internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             DiagnosticId,
-            "Don't use String.Empty",
-            "String.Empty should be replaced by \"\"",
+            "Don't use new Guid()",
+            "Don't use new Guid() prefer Guid.Empty",
             "Readability",
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true);
@@ -28,22 +28,33 @@ namespace BlackFox.Roslyn.TestDiagnostics
         {
             get
             {
-                return ImmutableArray.Create(SyntaxKind.SimpleMemberAccessExpression);
+                return ImmutableArray.Create(SyntaxKind.ObjectCreationExpression);
             }
         }
 
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)
         {
-            var memberAccess = (MemberAccessExpressionSyntax)node;
+            var objectCreation = (ObjectCreationExpressionSyntax)node;
+            
+            var symbol = semanticModel.GetSymbolInfo(objectCreation).Symbol as IMethodSymbol;
 
-            var symbol = semanticModel.GetSymbolInfo(memberAccess).Symbol;
+            // Non-Static constructor without parameter
             if (symbol == null
-                || symbol.ContainingType.SpecialType != SpecialType.System_String
-                || !symbol.IsStatic
-                || symbol.Kind != SymbolKind.Field
-                || symbol.Name != "Empty"
-                )
+                || symbol.IsStatic
+                || symbol.MethodKind != MethodKind.Constructor
+                || symbol.Parameters.Length != 0)
+            {
+                return;
+            }
+
+            // For global::System.Guid
+            var type = symbol.ContainingType;
+            if (type.Name != "Guid"
+                || type.ContainingNamespace == null
+                || type.ContainingNamespace.Name != "System"
+                || type.ContainingNamespace.ContainingNamespace == null
+                || !type.ContainingNamespace.ContainingNamespace.IsGlobalNamespace)
             {
                 return;
             }
