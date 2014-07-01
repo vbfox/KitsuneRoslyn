@@ -5,20 +5,18 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Linq;
-using System.Diagnostics.Contracts;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 
 namespace BlackFox.Roslyn.TestDiagnostics
 {
     [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer(DIAGNOSTIC_ID, LanguageNames.CSharp)]
+    [ExportDiagnosticAnalyzer(DiagnosticId, LanguageNames.CSharp)]
     public class NoNewGuidDiagnostic : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        internal const string DIAGNOSTIC_ID = "BlackFox.NoNewGuid";
+        internal const string DiagnosticId = "BlackFox.NoNewGuid";
 
         static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DIAGNOSTIC_ID,
+            DiagnosticId,
             "Don't use new Guid()",
             "Don't use new Guid() prefer Guid.Empty",
             "Readability",
