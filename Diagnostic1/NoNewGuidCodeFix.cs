@@ -40,7 +40,8 @@ namespace BlackFox.Roslyn.TestDiagnostics
         private Solution ReplaceWithEmptyGuid(Document document, SyntaxNode root,
             ObjectCreationExpressionSyntax guidCreationExpression)
         {
-            var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(guidCreationExpression, guidEmptyExpression);
+            var finalExpression = guidEmptyExpression.WithSameTriviaAs(guidCreationExpression);
+            var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(guidCreationExpression, finalExpression);
             return document.WithSyntaxRoot(newRoot).Project.Solution;
         }
     }

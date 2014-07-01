@@ -38,8 +38,8 @@ namespace BlackFox.Roslyn.TestDiagnostics
         private Solution ReplaceWithEmptyStringLiteral(Document document, SyntaxNode root,
             MemberAccessExpressionSyntax stringEmptyExpression)
         {
-            var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(stringEmptyExpression,
-                emptyStringLiteralExpression);
+            var finalExpression = emptyStringLiteralExpression.WithSameTriviaAs(stringEmptyExpression);
+            var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(stringEmptyExpression, finalExpression);
             return document.WithSyntaxRoot(newRoot).Project.Solution;
         }
     }
