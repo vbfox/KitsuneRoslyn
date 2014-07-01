@@ -16,16 +16,18 @@ namespace BlackFox.Roslyn.TestDiagnostics
                 var name = IdentifierName(names[i]);
                 if (i == 0)
                 {
+                    // global::XXX
                     result = AliasQualifiedName((IdentifierNameSyntax)result, name);
                 }
                 else
                 {
+                    // XXX.YYY
                     result = MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, result, name);
                 }
             }
 
-            result = result.WithAdditionalAnnotations(Simplifier.Annotation);
-            return result;
+            // Simplify to remove global:: and namespace declarations when not necessary
+            return result.WithAdditionalAnnotations(Simplifier.Annotation);
         }
 
         public static LiteralExpressionSyntax StringLiteralExpression(string value)

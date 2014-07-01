@@ -17,7 +17,7 @@ namespace BlackFox.Roslyn.TestDiagnostics
     {
         public IEnumerable<string> GetFixableDiagnosticIds()
         {
-            return new[] { NoNewGuidDiagnostic.DiagnosticId };
+            return new[] { NoNewGuidDiagnostic.DIAGNOSTIC_ID };
         }
 
         ExpressionSyntax guidEmptyExpression = SimpleMemberAccessExpression("System", "Guid", "Empty");

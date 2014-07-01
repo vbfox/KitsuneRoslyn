@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiagnosticExtensions.cs" />
+    <Compile Include="NamedTypeSymbolExtensions.cs" />
     <Compile Include="NoNewGuidCodeFix.cs" />
     <Compile Include="NoStringEmptyCodeFix.cs" />
     <Compile Include="NoNewGuidDiagnostic.cs" />
