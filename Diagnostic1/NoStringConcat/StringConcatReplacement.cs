@@ -6,7 +6,7 @@ using System.Linq;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.TypeSymbolExtensions;
 
-namespace BlackFox.Roslyn.TestDiagnostics
+namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
 {
     static class StringConcatReplacement
     {

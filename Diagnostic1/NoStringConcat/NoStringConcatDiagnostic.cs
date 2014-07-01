@@ -6,9 +6,9 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
-using BlackFox.Roslyn.TestDiagnostics.StringConcatReplacement;
+using BlackFox.Roslyn.TestDiagnostics.NoStringConcat.StringConcatReplacement;
 
-namespace BlackFox.Roslyn.TestDiagnostics
+namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
 {
     [DiagnosticAnalyzer]
     [ExportDiagnosticAnalyzer("BlackFox.NoStringConcat", LanguageNames.CSharp)]

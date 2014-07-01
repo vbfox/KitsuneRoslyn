@@ -11,38 +11,36 @@ using Microsoft.CodeAnalysis.Text;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.SyntaxFactoryAdditions;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 
-namespace BlackFox.Roslyn.TestDiagnostics
+namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
 {
-    [ExportCodeFixProvider(NoNewGuidDiagnostic.DiagnosticId, LanguageNames.CSharp)]
-    internal class NoNewGuidCodeFix : ICodeFixProvider
+    [ExportCodeFixProvider(NoStringEmptyDiagnostic.DiagnosticId, LanguageNames.CSharp)]
+    internal class NoStringEmptyCodeFix : ICodeFixProvider
     {
         public IEnumerable<string> GetFixableDiagnosticIds()
         {
-            return new[] { NoNewGuidDiagnostic.DiagnosticId };
+            return new[] { NoStringEmptyDiagnostic.DiagnosticId };
         }
 
-        ExpressionSyntax guidEmptyExpression = SimpleMemberAccessExpression("System", "Guid", "Empty");
+        LiteralExpressionSyntax emptyStringLiteralExpression = StringLiteralExpression("");
 
         public async Task<IEnumerable<CodeAction>> GetFixesAsync(Document document, TextSpan span,
             IEnumerable<Diagnostic> diagnostics, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
-            var guidCreationExpression = diagnostics.First()
-                .GetAncestorSyntaxNode<ObjectCreationExpressionSyntax>(root);
+            var stringEmptyExpression = diagnostics.First().GetAncestorSyntaxNode<MemberAccessExpressionSyntax>(root);
 
             var action = CodeAction.Create(
-                "Replace with Guid.Empty",
-                ReplaceWithEmptyGuid(document, root, guidCreationExpression));
-
+                "Use \"\"",
+                ReplaceWithEmptyStringLiteral(document, root, stringEmptyExpression));
             return new[] { action };
         }
 
-        private Solution ReplaceWithEmptyGuid(Document document, SyntaxNode root,
-            ObjectCreationExpressionSyntax guidCreationExpression)
+        private Solution ReplaceWithEmptyStringLiteral(Document document, SyntaxNode root,
+            MemberAccessExpressionSyntax stringEmptyExpression)
         {
-            var finalExpression = guidEmptyExpression.WithSameTriviaAs(guidCreationExpression);
-            var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(guidCreationExpression, finalExpression);
+            var finalExpression = emptyStringLiteralExpression.WithSameTriviaAs(stringEmptyExpression);
+            var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(stringEmptyExpression, finalExpression);
             return document.WithSyntaxRoot(newRoot).Project.Solution;
         }
     }

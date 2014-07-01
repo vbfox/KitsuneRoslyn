@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 
-namespace BlackFox.Roslyn.TestDiagnostics
+namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
 {
     [DiagnosticAnalyzer]
     [ExportDiagnosticAnalyzer(DiagnosticId, LanguageNames.CSharp)]
