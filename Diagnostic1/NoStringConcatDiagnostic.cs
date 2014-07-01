@@ -48,7 +48,13 @@ namespace BlackFox.Roslyn.TestDiagnostics
             CancellationToken cancellationToken)
         {
             var invocation = (InvocationExpressionSyntax)node;
-           
+
+            if (!CouldBeStringConcatFast(invocation))
+            {
+                // In some cases without ever calling into the semantic model we know that we aren't interested
+                return;
+            }
+
             var methodSymbol = semanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol;
 
             if (!IsNonGenericStringConcat(methodSymbol) || !IsConcernedOverload(methodSymbol))
@@ -150,6 +156,14 @@ namespace BlackFox.Roslyn.TestDiagnostics
                 && symbol.IsStatic
                 && !symbol.IsGenericMethod // Ignore the overload taking IEnumerable<T>
                 && symbol.MethodKind == MethodKind.Ordinary;
+        }
+
+        static bool CouldBeStringConcatFast(InvocationExpressionSyntax invocation)
+        {
+            var memberAccessSyntax = invocation.Expression as MemberAccessExpressionSyntax;
+
+            return memberAccessSyntax != null
+                && memberAccessSyntax.Name.Identifier.Text == "Concat";
         }
     }
 }
