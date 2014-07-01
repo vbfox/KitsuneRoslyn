@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using System.Diagnostics.Contracts;
+using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 
 namespace BlackFox.Roslyn.TestDiagnostics
 {

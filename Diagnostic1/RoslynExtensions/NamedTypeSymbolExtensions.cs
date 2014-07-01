@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace BlackFox.Roslyn.TestDiagnostics
+namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
 {
     static class NamedTypeSymbolExtensions
     {

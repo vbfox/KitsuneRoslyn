@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Microsoft.CodeAnalysis.Simplification;
 
-namespace BlackFox.Roslyn.TestDiagnostics
+namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
 {
     static class SyntaxFactoryAdditions
     {

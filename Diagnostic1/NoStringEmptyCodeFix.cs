@@ -8,7 +8,8 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using BlackFox.Roslyn.TestDiagnostics.SyntaxFactoryAdditions;
+using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.SyntaxFactoryAdditions;
+using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 
 namespace BlackFox.Roslyn.TestDiagnostics
 {

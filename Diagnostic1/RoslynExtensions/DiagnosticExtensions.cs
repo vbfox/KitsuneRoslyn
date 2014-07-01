@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
 
-namespace BlackFox.Roslyn.TestDiagnostics
+namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
 {
     static class DiagnosticExtensions
     {
