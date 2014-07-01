@@ -9,15 +9,16 @@ namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
     {
         public static bool IsEqualTo(this ITypeSymbol type, params string[] names)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
             if (names == null)
             {
                 throw new ArgumentNullException("names");
             }
             Contract.EndContractBlock();
+
+            if (type == null)
+            {
+                return false;
+            }
 
             var expectedTypeName = names.Last();
             var expectedNamespaces = names.Reverse().Skip(1).ToArray();
@@ -51,6 +52,37 @@ namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
             }
 
             return expectedNamespaceIndex == expectedNamespaces.Length;
+        }
+
+        public static bool IsSystemString(this ITypeSymbol symbol)
+        {
+            return symbol != null && symbol.SpecialType == SpecialType.System_String;
+        }
+
+        public static bool IsSystemChar(this ITypeSymbol symbol)
+        {
+            return symbol != null && symbol.SpecialType == SpecialType.System_Char;
+        }
+
+        public static bool IsSystemObject(this ITypeSymbol symbol)
+        {
+            return symbol != null && symbol.SpecialType == SpecialType.System_Object;
+        }
+
+        public static bool IsArrayOfSystemString(this ITypeSymbol symbol)
+        {
+            var arraySymbol = symbol as IArrayTypeSymbol;
+
+            return arraySymbol != null
+                && arraySymbol.ElementType.SpecialType == SpecialType.System_String;
+        }
+
+        public static bool IsArrayOfSystemObject(this ITypeSymbol symbol)
+        {
+            var arraySymbol = symbol as IArrayTypeSymbol;
+
+            return arraySymbol != null
+                && arraySymbol.ElementType.SpecialType == SpecialType.System_Object;
         }
     }
 }

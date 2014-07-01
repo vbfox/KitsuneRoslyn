@@ -6,6 +6,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
+using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
+using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.TypeSymbolExtensions;
 
 namespace BlackFox.Roslyn.TestDiagnostics
 {
@@ -71,9 +73,9 @@ namespace BlackFox.Roslyn.TestDiagnostics
 
             return (literal != null) &&
                 (
-                IsSystemString(typeInfo.Type)
-                || IsSystemChar(typeInfo.Type)
-                ||literal.CSharpKind() == SyntaxKind.NullLiteralExpression
+                typeInfo.Type.IsSystemString()
+                || typeInfo.Type.IsSystemChar()
+                || literal.CSharpKind() == SyntaxKind.NullLiteralExpression
                 );
         }
 
@@ -108,37 +110,6 @@ namespace BlackFox.Roslyn.TestDiagnostics
                 && symbol.IsStatic
                 && !symbol.IsGenericMethod // Ignore the overload taking IEnumerable<T>
                 && symbol.MethodKind == MethodKind.Ordinary;
-        }
-
-        static bool IsSystemString(ITypeSymbol symbol)
-        {
-            return symbol != null && symbol.SpecialType == SpecialType.System_String;
-        }
-
-        static bool IsSystemChar(ITypeSymbol symbol)
-        {
-            return symbol != null && symbol.SpecialType == SpecialType.System_Char;
-        }
-
-        static bool IsSystemObject(ITypeSymbol symbol)
-        {
-            return symbol != null && symbol.SpecialType == SpecialType.System_Object;
-        }
-
-        static bool IsArrayOfSystemString(ITypeSymbol symbol)
-        {
-            var arraySymbol = symbol as IArrayTypeSymbol;
-
-            return arraySymbol != null
-                && arraySymbol.ElementType.SpecialType == SpecialType.System_String;
-        }
-
-        static bool IsArrayOfSystemObject(ITypeSymbol symbol)
-        {
-            var arraySymbol = symbol as IArrayTypeSymbol;
-
-            return arraySymbol != null
-                && arraySymbol.ElementType.SpecialType == SpecialType.System_Object;
         }
     }
 }
