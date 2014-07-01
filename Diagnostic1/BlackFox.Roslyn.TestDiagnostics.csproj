@@ -94,6 +94,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NoStringConcatDiagnostic.cs" />
     <Compile Include="RoslynExtensions\DiagnosticExtensions.cs" />
     <Compile Include="RoslynExtensions\NamedTypeSymbolExtensions.cs" />
     <Compile Include="NoNewGuidCodeFix.cs" />

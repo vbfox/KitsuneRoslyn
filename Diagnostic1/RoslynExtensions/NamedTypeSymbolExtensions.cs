@@ -7,7 +7,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
 {
     static class NamedTypeSymbolExtensions
     {
-        public static bool IsEqualTo(this INamedTypeSymbol type, params string[] names)
+        public static bool IsEqualTo(this ITypeSymbol type, params string[] names)
         {
             if (type == null)
             {
