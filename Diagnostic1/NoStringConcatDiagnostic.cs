@@ -79,27 +79,21 @@ namespace BlackFox.Roslyn.TestDiagnostics
                 );
         }
 
-        static ImmutableArray<ImmutableArray<Func<ITypeSymbol, bool>>> concernedOverloads = ImmutableArray.Create(
-            ImmutableArray.Create<Func<ITypeSymbol, bool>>(IsSystemObject),
-            ImmutableArray.Create<Func<ITypeSymbol, bool>>(IsArrayOfSystemObject),
-            ImmutableArray.Create<Func<ITypeSymbol, bool>>(IsArrayOfSystemString),
-            ImmutableArray.Create<Func<ITypeSymbol, bool>>(IsSystemObject, IsSystemObject),
-            ImmutableArray.Create<Func<ITypeSymbol, bool>>(IsSystemString, IsSystemString),
-            ImmutableArray.Create<Func<ITypeSymbol, bool>>(IsSystemObject, IsSystemObject, IsSystemObject),
-            ImmutableArray.Create<Func<ITypeSymbol, bool>>(IsSystemString, IsSystemString, IsSystemString),
-            ImmutableArray.Create<Func<ITypeSymbol, bool>>(IsSystemObject, IsSystemObject, IsSystemObject, IsSystemObject),
-            ImmutableArray.Create<Func<ITypeSymbol, bool>>(IsSystemString, IsSystemString, IsSystemString, IsSystemString)
+        static ImmutableArray<OverloadDefinition> concernedOverloads = ImmutableArray.Create(
+            new OverloadDefinition(IsSystemObject),
+            new OverloadDefinition(IsArrayOfSystemObject),
+            new OverloadDefinition(IsArrayOfSystemString),
+            new OverloadDefinition(IsSystemObject, IsSystemObject),
+            new OverloadDefinition(IsSystemString, IsSystemString),
+            new OverloadDefinition(IsSystemObject, IsSystemObject, IsSystemObject),
+            new OverloadDefinition(IsSystemString, IsSystemString, IsSystemString),
+            new OverloadDefinition(IsSystemObject, IsSystemObject, IsSystemObject, IsSystemObject),
+            new OverloadDefinition(IsSystemString, IsSystemString, IsSystemString, IsSystemString)
             );
 
         static bool IsConcernedOverload(IMethodSymbol symbol)
         {
-            return concernedOverloads.Any(checks => Matches(checks, symbol.Parameters));
-        }
-
-        static bool Matches(ImmutableArray<Func<ITypeSymbol, bool>> checks, ImmutableArray<IParameterSymbol> parameters)
-        {
-            return checks.Length == parameters.Length
-                && checks.Zip(parameters, (matcher, p) => matcher(p.Type)).All(b => b);
+            return concernedOverloads.Any(overload => overload.IsOverload(symbol));
         }
 
         static bool IsNonGenericStringConcat(IMethodSymbol symbol)
