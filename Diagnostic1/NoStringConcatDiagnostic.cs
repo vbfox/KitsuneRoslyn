@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.TypeSymbolExtensions;
+using System.Collections.Generic;
 
 namespace BlackFox.Roslyn.TestDiagnostics
 {
@@ -47,29 +48,71 @@ namespace BlackFox.Roslyn.TestDiagnostics
             CancellationToken cancellationToken)
         {
             var invocation = (InvocationExpressionSyntax)node;
+           
+            var methodSymbol = semanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol;
 
-            var symbol = semanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol;
-
-            if (!IsNonGenericStringConcat(symbol))
+            if (!IsNonGenericStringConcat(methodSymbol) || !IsConcernedOverload(methodSymbol))
             {
+                // Not String.Concat or Not one of the overload we know that we can transform successfuly
                 return;
             }
 
-            if (!IsConcernedOverload(symbol))
+            bool canBeTransformedToSingleString;
+            if (IsDirectArrayOverloadCall(semanticModel, invocation, methodSymbol))
             {
-                return;
+                // It is one of the single array overload, called via a non-params call
+
+                var arrayExpression = invocation.ArgumentList.Arguments[0].Expression;
+                var explicitCreation = arrayExpression as ArrayCreationExpressionSyntax;
+                var implicitCreation = arrayExpression as ImplicitArrayCreationExpressionSyntax;
+
+                if (explicitCreation == null && implicitCreation == null)
+                {
+                    return;
+                }
+
+                var initializer = explicitCreation != null ? explicitCreation.Initializer : implicitCreation.Initializer;
+                if (initializer != null)
+                {
+                    canBeTransformedToSingleString = CanBeTransformedToSingleString(semanticModel, initializer.Expressions);
+                }
+                else
+                {
+                    canBeTransformedToSingleString = true; // Empty string
+                }
+            }
+            else
+            {
+                canBeTransformedToSingleString = CanBeTransformedToSingleString(semanticModel,
+                    invocation.ArgumentList.Arguments.Select(a => a.Expression));
             }
 
-            var allConstants = invocation.ArgumentList.Arguments
-                .All(argument => ArgumentIsConstantStringOrSimilar(semanticModel, argument));
-
-            addDiagnostic(Diagnostic.Create(allConstants ? RuleSimple : RuleFormat, node.GetLocation()));
+            addDiagnostic(Diagnostic.Create(canBeTransformedToSingleString ? RuleSimple : RuleFormat, node.GetLocation()));
         }
 
-        static bool ArgumentIsConstantStringOrSimilar(SemanticModel semanticModel, ArgumentSyntax argument)
+        static bool IsDirectArrayOverloadCall(SemanticModel semanticModel, InvocationExpressionSyntax invocation,
+            IMethodSymbol symbol)
         {
-            var typeInfo = semanticModel.GetTypeInfo(argument.Expression);
-            var literal = argument.Expression as LiteralExpressionSyntax;
+            if (invocation.ArgumentList.Arguments.Count != 1)
+            {
+                return false;
+            }
+
+            var argumentType = semanticModel.GetTypeInfo(invocation.ArgumentList.Arguments[0].Expression);
+
+            return (argumentType.ConvertedType.IsArrayOfSystemObject() && objectArrayOverload.IsOverload(symbol))
+                || (argumentType.ConvertedType.IsArrayOfSystemString() && stringArrayOverload.IsOverload(symbol));
+        }
+
+        static bool CanBeTransformedToSingleString(SemanticModel semanticModel, IEnumerable<ExpressionSyntax> expressions)
+        {
+            return expressions.All(expression => IsLiteralStringOrSimilar(semanticModel, expression));
+        }
+
+        static bool IsLiteralStringOrSimilar(SemanticModel semanticModel, ExpressionSyntax expression)
+        {
+            var typeInfo = semanticModel.GetTypeInfo(expression);
+            var literal = expression as LiteralExpressionSyntax;
 
             return (literal != null) &&
                 (
@@ -79,10 +122,13 @@ namespace BlackFox.Roslyn.TestDiagnostics
                 );
         }
 
+        static OverloadDefinition stringArrayOverload = new OverloadDefinition(IsArrayOfSystemString);
+        static OverloadDefinition objectArrayOverload = new OverloadDefinition(IsArrayOfSystemObject);
+
         static ImmutableArray<OverloadDefinition> concernedOverloads = ImmutableArray.Create(
             new OverloadDefinition(IsSystemObject),
-            new OverloadDefinition(IsArrayOfSystemObject),
-            new OverloadDefinition(IsArrayOfSystemString),
+            stringArrayOverload,
+            objectArrayOverload,
             new OverloadDefinition(IsSystemObject, IsSystemObject),
             new OverloadDefinition(IsSystemString, IsSystemString),
             new OverloadDefinition(IsSystemObject, IsSystemObject, IsSystemObject),
