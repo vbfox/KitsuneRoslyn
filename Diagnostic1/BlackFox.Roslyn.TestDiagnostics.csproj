@@ -96,7 +96,7 @@
   <ItemGroup>
     <Compile Include="NoStringConcatDiagnostic.cs" />
     <Compile Include="RoslynExtensions\DiagnosticExtensions.cs" />
-    <Compile Include="RoslynExtensions\NamedTypeSymbolExtensions.cs" />
+    <Compile Include="RoslynExtensions\TypeSymbolExtensions.cs" />
     <Compile Include="NoNewGuidCodeFix.cs" />
     <Compile Include="NoStringEmptyCodeFix.cs" />
     <Compile Include="NoNewGuidDiagnostic.cs" />

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
 {
-    static class NamedTypeSymbolExtensions
+    static class TypeSymbolExtensions
     {
         public static bool IsEqualTo(this ITypeSymbol type, params string[] names)
         {
