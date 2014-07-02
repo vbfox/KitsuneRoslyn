@@ -5,7 +5,7 @@ using TestDiagnosticsUnitTests.DiagnosticTestHelpers;
 
 namespace TestDiagnosticsUnitTests
 {
-    public class NoStringEmptyDiagnosticTests
+    public class NoStringEmptyAnalyzerTests
     {
         [Fact]
         public void No_diagnostic_on_empty_string()
