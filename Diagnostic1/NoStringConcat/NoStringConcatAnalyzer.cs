@@ -12,7 +12,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
 {
     [DiagnosticAnalyzer]
     [ExportDiagnosticAnalyzer("BlackFox.NoStringConcat", LanguageNames.CSharp)]
-    public class NoStringConcatDiagnostic : ISyntaxNodeAnalyzer<SyntaxKind>
+    public class NoStringConcatAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
         internal const string DiagnosticIdFormat = "BlackFox.NoStringConcat_UseFormat";
         internal const string DiagnosticIdSimple = "BlackFox.NoStringConcat_UseString";

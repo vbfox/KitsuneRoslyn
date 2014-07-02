@@ -10,7 +10,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
 {
     [DiagnosticAnalyzer]
     [ExportDiagnosticAnalyzer(DiagnosticId, LanguageNames.CSharp)]
-    public class NoStringEmptyDiagnostic : ISyntaxNodeAnalyzer<SyntaxKind>
+    public class NoStringEmptyAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
         internal const string DiagnosticId = "BlackFox.NoStringEmpty";
 

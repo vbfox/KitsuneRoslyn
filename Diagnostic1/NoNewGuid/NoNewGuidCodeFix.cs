@@ -13,12 +13,12 @@ using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 
 namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
 {
-    [ExportCodeFixProvider(NoNewGuidDiagnostic.DiagnosticId, LanguageNames.CSharp)]
+    [ExportCodeFixProvider(NoNewGuidAnalyzer.DiagnosticId, LanguageNames.CSharp)]
     internal class NoNewGuidCodeFix : ICodeFixProvider
     {
         public IEnumerable<string> GetFixableDiagnosticIds()
         {
-            return new[] { NoNewGuidDiagnostic.DiagnosticId };
+            return new[] { NoNewGuidAnalyzer.DiagnosticId };
         }
 
         ExpressionSyntax guidEmptyExpression = SimpleMemberAccessExpression("System", "Guid", "Empty");
