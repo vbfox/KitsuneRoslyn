@@ -14,11 +14,11 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
     [ExportDiagnosticAnalyzer("BlackFox.NoStringConcat", LanguageNames.CSharp)]
     public class NoStringConcatAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        internal const string DiagnosticIdFormat = "BlackFox.NoStringConcat_UseFormat";
-        internal const string DiagnosticIdSimple = "BlackFox.NoStringConcat_UseString";
+        public const string DIAGNOSTIC_ID_FORMAT = "BlackFox.NoStringConcat_UseFormat";
+        public const string DIAGNOSTIC_ID_SIMPLE = "BlackFox.NoStringConcat_UseString";
 
         static DiagnosticDescriptor RuleFormat = new DiagnosticDescriptor(
-            DiagnosticIdFormat,
+            DIAGNOSTIC_ID_FORMAT,
             "Don't use string.Concat prefer string.Format",
             "Don't use string.Concat prefer string.Format",
             "Readability",
@@ -26,7 +26,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
             isEnabledByDefault: true);
 
         static DiagnosticDescriptor RuleSimple = new DiagnosticDescriptor(
-            DiagnosticIdSimple,
+            DIAGNOSTIC_ID_SIMPLE,
             "Don't use string.Concat prefer a simple string",
             "Don't use string.Concat prefer a simple string",
             "Readability",
