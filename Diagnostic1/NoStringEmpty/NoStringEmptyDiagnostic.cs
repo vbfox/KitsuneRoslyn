@@ -39,6 +39,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
 
             var symbol = semanticModel.GetSymbolInfo(memberAccess).Symbol;
             if (symbol == null
+                || symbol.ContainingType == null
                 || symbol.ContainingType.SpecialType != SpecialType.System_String
                 || !symbol.IsStatic
                 || symbol.Kind != SymbolKind.Field
