@@ -77,7 +77,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Diagnostic1\BlackFox.Roslyn.TestDiagnostics.csproj">
+    <ProjectReference Include="..\TestDiagnostics\BlackFox.Roslyn.TestDiagnostics.csproj">
       <Project>{0c5bb55f-b83d-4faf-8095-980ba1c19b45}</Project>
       <Name>BlackFox.Roslyn.TestDiagnostics</Name>
     </ProjectReference>

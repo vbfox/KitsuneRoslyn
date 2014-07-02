@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.21730.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackFox.Roslyn.TestDiagnostics", "Diagnostic1\BlackFox.Roslyn.TestDiagnostics.csproj", "{0C5BB55F-B83D-4FAF-8095-980BA1C19B45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackFox.Roslyn.TestDiagnostics", "TestDiagnostics\BlackFox.Roslyn.TestDiagnostics.csproj", "{0C5BB55F-B83D-4FAF-8095-980BA1C19B45}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5BCCB730-C5D1-47DB-AAE8-285DBC65725F}"
 	ProjectSection(SolutionItems) = preProject

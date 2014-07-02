@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Vsix Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
-  <Identifier Id="Diagnostic1..ad6e95a0-8e09-45f3-97b4-417ed5d4d5d0">
-    <Name>Diagnostic1</Name>
+  <Identifier Id="TestDiagnostics..ad6e95a0-8e09-45f3-97b4-417ed5d4d5d0">
+    <Name>TestDiagnostics</Name>
     <Author>Roslyn ()</Author>
     <Version>1.0</Version>
     <Description xml:space="preserve">This is a sample diagnostic extension for the .NET Compiler Platform ("Roslyn").</Description>
