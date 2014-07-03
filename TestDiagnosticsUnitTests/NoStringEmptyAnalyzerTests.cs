@@ -1,7 +1,7 @@
 ﻿using BlackFox.Roslyn.TestDiagnostics.NoStringEmpty;
 using NFluent;
+using TestDiagnosticsUnitTests.Helpers.DiagnosticTestHelpers;
 using Xunit;
-using TestDiagnosticsUnitTests.DiagnosticTestHelpers;
 
 namespace TestDiagnosticsUnitTests
 {
@@ -39,4 +39,6 @@ namespace TestDiagnosticsUnitTests
             Check.That(diagnostics).HasSize(1);
         }
     }
+
+
 }

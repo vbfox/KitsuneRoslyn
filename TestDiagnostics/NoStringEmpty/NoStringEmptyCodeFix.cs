@@ -14,7 +14,7 @@ using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
 {
     [ExportCodeFixProvider(NoStringEmptyAnalyzer.DiagnosticId, LanguageNames.CSharp)]
-    internal class NoStringEmptyCodeFix : ICodeFixProvider
+    public class NoStringEmptyCodeFix : ICodeFixProvider
     {
         public IEnumerable<string> GetFixableDiagnosticIds()
         {

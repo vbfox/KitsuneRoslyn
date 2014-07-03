@@ -1,6 +1,6 @@
 ﻿using BlackFox.Roslyn.TestDiagnostics.NoStringConcat;
 using NFluent;
-using TestDiagnosticsUnitTests.DiagnosticTestHelpers;
+using TestDiagnosticsUnitTests.Helpers.DiagnosticTestHelpers;
 using Xunit;
 
 namespace TestDiagnosticsUnitTests
