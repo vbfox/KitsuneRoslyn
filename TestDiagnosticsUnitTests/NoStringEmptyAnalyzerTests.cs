@@ -1,13 +1,14 @@
 ﻿using BlackFox.Roslyn.TestDiagnostics.NoStringEmpty;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using TestDiagnosticsUnitTests.Helpers.DiagnosticTestHelpers;
-using Xunit;
 
 namespace TestDiagnosticsUnitTests
 {
+    [TestClass]
     public class NoStringEmptyAnalyzerTests
     {
-        [Fact]
+        [TestMethod]
         public void No_diagnostic_on_empty_string()
         {
             var analyzer = new NoStringEmptyAnalyzer();
@@ -15,7 +16,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diagnostics).IsEmpty();
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_on_standard_call()
         {
             var analyzer = new NoStringEmptyAnalyzer();
@@ -23,7 +24,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diagnostics).HasSize(1);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_on_namespace_qualified_call()
         {
             var analyzer = new NoStringEmptyAnalyzer();
@@ -31,7 +32,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diagnostics).HasSize(1);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_on_fully_qualified_call()
         {
             var analyzer = new NoStringEmptyAnalyzer();

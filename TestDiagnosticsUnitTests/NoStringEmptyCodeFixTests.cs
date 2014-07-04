@@ -1,43 +1,54 @@
 ﻿using BlackFox.Roslyn.TestDiagnostics.NoStringEmpty;
-using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDiagnosticsUnitTests.Helpers.CodeFixTestHelpers;
-using Xunit;
 
 namespace TestDiagnosticsUnitTests
 {
+    [TestClass]
     public class NoStringEmptyCodeFixTests
     {
-        [Fact]
-        public Task Fix_on_fully_qualified_call()
+        [TestMethod]
+        public void Fix_on_fully_qualified_call()
         {
-            return CheckSingleFixAsync(
+            CheckSingleFixAsync(
                 "class Foo{void Bar(){var x = global::System.String.Empty;}}",
                 "class Foo{void Bar(){var x = \"\";}}",
                 "Use \"\"",
                 new NoStringEmptyCodeFix(),
-                new NoStringEmptyAnalyzer());
+                new NoStringEmptyAnalyzer()).Wait();
         }
 
-        [Fact]
-        public Task Fix_on_namespace_qualified_call()
+        [TestMethod]
+        public void Fix_on_namespace_qualified_call()
         {
-            return CheckSingleFixAsync(
+            CheckSingleFixAsync(
                 "class Foo{void Bar(){var x = System.String.Empty;}}",
                 "class Foo{void Bar(){var x = \"\";}}",
                 "Use \"\"",
                 new NoStringEmptyCodeFix(),
-                new NoStringEmptyAnalyzer());
+                new NoStringEmptyAnalyzer()).Wait();
         }
 
-        [Fact]
-        public Task Fix_on_standard_call()
+        [TestMethod]
+        public void Fix_on_standard_call()
         {
-            return CheckSingleFixAsync(
+            CheckSingleFixAsync(
                 "using System;class Foo{void Bar(){var x = String.Empty;}}",
                 "using System;class Foo{void Bar(){var x = \"\";}}",
                 "Use \"\"",
                 new NoStringEmptyCodeFix(),
-                new NoStringEmptyAnalyzer());
+                new NoStringEmptyAnalyzer()).Wait();
+        }
+
+        [TestMethod]
+        public void Fix_on_method_call()
+        {
+            CheckSingleFixAsync(
+                "using System;class Foo{void Bar(){var x = FooBar(String.Empty);} void FooBar(string s) {}}",
+                "using System;class Foo{void Bar(){var x = FooBar(\"\");} void FooBar(string s) {}}",
+                "Use \"\"",
+                new NoStringEmptyCodeFix(),
+                new NoStringEmptyAnalyzer()).Wait();
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using BlackFox.Roslyn.TestDiagnostics.NoStringConcat;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using TestDiagnosticsUnitTests.Helpers.DiagnosticTestHelpers;
-using Xunit;
 
 namespace TestDiagnosticsUnitTests
 {
+    [TestClass]
     public class NoStringConcatAnalyzerTests
     {
-        [Fact]
+        [TestMethod]
         public void No_diagnostic_on_other_call()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -15,7 +16,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diagnostics).IsEmpty();
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_simple_one_string_param()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -25,7 +26,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_simple_one_string_para_with_namespace()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -35,7 +36,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_simple_one_string_param_fully_qualified()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -45,7 +46,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_simple_two_string_param()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -55,7 +56,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_simple_five_string_param()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -65,7 +66,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_simple_with_null()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -75,7 +76,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_simple_with_char()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -85,7 +86,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_simple_array()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -95,7 +96,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_format_string_const()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -105,7 +106,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_FORMAT);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_format_int_const()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -115,7 +116,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_FORMAT);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_format_literal_non_string()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -125,7 +126,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_FORMAT);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_format_var()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -135,7 +136,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_FORMAT);
         }
 
-        [Fact]
+        [TestMethod]
         public void Diagnostic_format_string_array()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -145,6 +146,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_FORMAT);
         }
 
+        [TestMethod]
         public void No_diagnostic_external_array()
         {
             var analyzer = new NoStringConcatAnalyzer();
@@ -152,6 +154,7 @@ namespace TestDiagnosticsUnitTests
             Check.That(diagnostics).IsEmpty();
         }
 
+        [TestMethod]
         public void No_diagnostic_string_enumerable()
         {
             var analyzer = new NoStringConcatAnalyzer();
