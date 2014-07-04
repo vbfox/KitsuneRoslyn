@@ -1,5 +1,4 @@
 ﻿using BlackFox.Roslyn.TestDiagnostics.NoNewGuid;
-using BlackFox.Roslyn.TestDiagnostics.NoStringEmpty;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using TestDiagnosticsUnitTests.Helpers.DiagnosticTestHelpers;
