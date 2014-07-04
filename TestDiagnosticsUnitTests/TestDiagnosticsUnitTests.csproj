@@ -74,6 +74,7 @@
     <Compile Include="Helpers\CodeFixTestHelpers.cs" />
     <Compile Include="Helpers\DiagnosticTestHelpers.cs" />
     <Compile Include="NoStringConcatAnalyzerTests.cs" />
+    <Compile Include="NoNewGuidAnalyzerTests.cs" />
     <Compile Include="NoStringEmptyAnalyzerTests.cs" />
     <Compile Include="NoStringEmptyCodeFixTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
