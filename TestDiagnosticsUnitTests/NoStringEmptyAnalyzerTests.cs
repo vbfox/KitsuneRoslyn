@@ -40,6 +40,4 @@ namespace TestDiagnosticsUnitTests
             Check.That(diagnostics).HasSize(1);
         }
     }
-
-
 }
