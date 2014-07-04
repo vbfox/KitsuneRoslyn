@@ -28,7 +28,8 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
-            var stringEmptyExpression = diagnostics.First().GetAncestorSyntaxNode<MemberAccessExpressionSyntax>(root);
+            var stringEmptyExpression = diagnostics.First()
+                .GetAncestorSyntaxNode<MemberAccessExpressionSyntax>(root);
 
             var action = CodeAction.Create(
                 "Use \"\"",
