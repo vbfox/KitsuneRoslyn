@@ -24,6 +24,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
             return root.FindToken(diagnosticSpan.Start)
                 .Parent
                 .AncestorsAndSelf()
+                .Where(x => x.GetLocation().SourceSpan == diagnosticSpan)
                 .OfType<TSyntaxNode>()
                 .First();
         }
