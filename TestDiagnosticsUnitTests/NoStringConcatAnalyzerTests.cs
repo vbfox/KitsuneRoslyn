@@ -23,7 +23,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"");");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
@@ -33,7 +33,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"System.String.Concat(""Hello"");");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"global::System.String.Concat(""Hello"");");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
@@ -53,7 +53,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"", ""World"");");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
@@ -63,7 +63,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"", ""World"", ""hi"", ""params"", ""version"");");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
@@ -73,7 +73,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"", null, ""hi"", ""params"", ""version"");");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
@@ -83,7 +83,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"", 'a', ""hi"", ""params"", ""version"");");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
@@ -93,7 +93,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(new[] { ""hello"", ""world"" });");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_SIMPLE);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"const string TOTO=""toto""; string.Concat(""Hello"", TOTO);");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_FORMAT);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseFormatId);
         }
 
         [TestMethod]
@@ -113,7 +113,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"const int FORTY_TWO=42; string.Concat(""Hello"", FORTY_TWO);");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_FORMAT);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseFormatId);
         }
 
         [TestMethod]
@@ -123,7 +123,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"", 0);");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_FORMAT);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseFormatId);
         }
 
         [TestMethod]
@@ -133,7 +133,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var d = 666.42; string.Concat(""Hello"", d, 'w', 'o', 'r', 'l', 'd');");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_FORMAT);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseFormatId);
         }
 
         [TestMethod]
@@ -143,7 +143,7 @@ namespace TestDiagnosticsUnitTests
             var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var y = ""z""; string.Concat(new[] { ""hello"", y });");
             Check.That(diagnostics).HasSize(1);
             var diag = diagnostics[0];
-            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.DIAGNOSTIC_ID_FORMAT);
+            Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseFormatId);
         }
 
         [TestMethod]
