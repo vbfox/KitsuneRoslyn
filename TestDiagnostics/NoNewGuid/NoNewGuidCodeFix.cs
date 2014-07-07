@@ -10,15 +10,16 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.SyntaxFactoryAdditions;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
+using Microsoft.CodeAnalysis.Simplification;
 
 namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
 {
-    [ExportCodeFixProvider(NoNewGuidAnalyzer.DiagnosticId, LanguageNames.CSharp)]
-    internal class NoNewGuidCodeFix : ICodeFixProvider
+    [ExportCodeFixProvider(NoNewGuidAnalyzer.Id, LanguageNames.CSharp)]
+    public class NoNewGuidCodeFix : ICodeFixProvider
     {
         public IEnumerable<string> GetFixableDiagnosticIds()
         {
-            return new[] { NoNewGuidAnalyzer.DiagnosticId };
+            return new[] { NoNewGuidAnalyzer.Id };
         }
 
         ExpressionSyntax guidEmptyExpression = SimpleMemberAccessExpression("System", "Guid", "Empty");
@@ -33,17 +34,25 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
 
             var action = CodeAction.Create(
                 "Replace with Guid.Empty",
-                ReplaceWithEmptyGuid(document, root, guidCreationExpression));
+                token => ReplaceWithEmptyGuid(document, root, guidCreationExpression, token));
 
             return new[] { action };
         }
 
-        private Solution ReplaceWithEmptyGuid(Document document, SyntaxNode root,
-            ObjectCreationExpressionSyntax guidCreationExpression)
+        private async Task<Document> ReplaceWithEmptyGuid(Document document, SyntaxNode root,
+            ObjectCreationExpressionSyntax guidCreationExpression, CancellationToken cancellationToken)
         {
-            var finalExpression = guidEmptyExpression.WithSameTriviaAs(guidCreationExpression);
+            var finalExpression = guidEmptyExpression
+                .WithSameTriviaAs(guidCreationExpression)
+                .WithAdditionalAnnotations(Simplifier.Annotation);
             var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(guidCreationExpression, finalExpression);
-            return document.WithSyntaxRoot(newRoot).Project.Solution;
+
+            var simplificationTask = Simplifier.ReduceAsync(
+                document.WithSyntaxRoot(newRoot),
+                Simplifier.Annotation,
+                cancellationToken: cancellationToken);
+
+            return await simplificationTask.ConfigureAwait(false);
         }
     }
 }

@@ -10,20 +10,20 @@ using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
 {
     [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer(DiagnosticId, LanguageNames.CSharp)]
+    [ExportDiagnosticAnalyzer(Id, LanguageNames.CSharp)]
     public class NoNewGuidAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        internal const string DiagnosticId = "BlackFox.NoNewGuid";
+        public const string Id = "BlackFox.NoNewGuid";
 
-        static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+        public static DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+            Id,
             "Don't use new Guid()",
             "Don't use new Guid() prefer Guid.Empty",
             "Readability",
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true);
 
-        static readonly ImmutableArray<DiagnosticDescriptor> supportedDiagnostics = ImmutableArray.Create(Rule);
+        static readonly ImmutableArray<DiagnosticDescriptor> supportedDiagnostics = ImmutableArray.Create(Descriptor);
 
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return supportedDiagnostics; } }
 
@@ -53,7 +53,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
                 return;
             }
             
-            addDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
+            addDiagnostic(Diagnostic.Create(Descriptor, node.GetLocation()));
         }
 
     }
