@@ -13,12 +13,12 @@ using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 
 namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
 {
-    [ExportCodeFixProvider(NoStringEmptyAnalyzer.DiagnosticId, LanguageNames.CSharp)]
+    [ExportCodeFixProvider(NoStringEmptyAnalyzer.Id, LanguageNames.CSharp)]
     public class NoStringEmptyCodeFix : ICodeFixProvider
     {
         public IEnumerable<string> GetFixableDiagnosticIds()
         {
-            return new[] { NoStringEmptyAnalyzer.DiagnosticId };
+            return new[] { NoStringEmptyAnalyzer.Id };
         }
 
         LiteralExpressionSyntax emptyStringLiteralExpression = StringLiteralExpression("");

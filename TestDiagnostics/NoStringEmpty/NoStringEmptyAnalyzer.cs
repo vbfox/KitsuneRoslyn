@@ -9,20 +9,20 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
 {
     [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer(DiagnosticId, LanguageNames.CSharp)]
+    [ExportDiagnosticAnalyzer(Id, LanguageNames.CSharp)]
     public class NoStringEmptyAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        internal const string DiagnosticId = "BlackFox.NoStringEmpty";
+        public const string Id = "BlackFox.NoStringEmpty";
 
-        internal static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId,
+        public static DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
+            Id,
             "Don't use String.Empty",
             "String.Empty should be replaced by \"\"",
             "Readability",
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Descriptor); } }
 
         public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest
         {
@@ -49,7 +49,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
                 return;
             }
 
-            addDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
+            addDiagnostic(Diagnostic.Create(Descriptor, node.GetLocation()));
         }
     }
 }

@@ -12,10 +12,11 @@ namespace TestDiagnosticsUnitTests
         {
             CheckSingleFixAsync(
                 "class Foo{void Bar(){var x = global::System.String.Empty;}}",
+                "global::System.String.Empty",
                 "class Foo{void Bar(){var x = \"\";}}",
                 "Use \"\"",
                 new NoStringEmptyCodeFix(),
-                new NoStringEmptyAnalyzer()).Wait();
+                NoStringEmptyAnalyzer.Descriptor).Wait();
         }
 
         [TestMethod]
@@ -23,10 +24,11 @@ namespace TestDiagnosticsUnitTests
         {
             CheckSingleFixAsync(
                 "class Foo{void Bar(){var x = System.String.Empty;}}",
+                "System.String.Empty",
                 "class Foo{void Bar(){var x = \"\";}}",
                 "Use \"\"",
                 new NoStringEmptyCodeFix(),
-                new NoStringEmptyAnalyzer()).Wait();
+                NoStringEmptyAnalyzer.Descriptor).Wait();
         }
 
         [TestMethod]
@@ -34,10 +36,11 @@ namespace TestDiagnosticsUnitTests
         {
             CheckSingleFixAsync(
                 "using System;class Foo{void Bar(){var x = String.Empty;}}",
+                "String.Empty",
                 "using System;class Foo{void Bar(){var x = \"\";}}",
                 "Use \"\"",
                 new NoStringEmptyCodeFix(),
-                new NoStringEmptyAnalyzer()).Wait();
+                NoStringEmptyAnalyzer.Descriptor).Wait();
         }
 
         [TestMethod]
@@ -45,10 +48,11 @@ namespace TestDiagnosticsUnitTests
         {
             CheckSingleFixAsync(
                 "using System;class Foo{void Bar(){var x = FooBar(String.Empty);} void FooBar(string s) {}}",
+                "String.Empty",
                 "using System;class Foo{void Bar(){var x = FooBar(\"\");} void FooBar(string s) {}}",
                 "Use \"\"",
                 new NoStringEmptyCodeFix(),
-                new NoStringEmptyAnalyzer()).Wait();
+                NoStringEmptyAnalyzer.Descriptor).Wait();
         }
     }
 }

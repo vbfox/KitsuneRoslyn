@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 using NFluent;
 using System;
 using System.Collections.Generic;
@@ -27,31 +28,108 @@ namespace TestDiagnosticsUnitTests.Helpers
             Check.That(fix.Item2).IsEqualTo(expectedCode);
         }
 
+        public static async Task CheckSingleFixAsync(string code, string spanText, string expectedCode,
+            string expectedDescription, ICodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
+        {
+            var fixes = await GetFixesAsync(code, codeFixProvider, diagnosticDescriptor, spanText);
+
+            Check.That(fixes).HasSize(1);
+            var fix = fixes.Single();
+            Check.That(fix.Item1.Description).IsEqualTo(expectedDescription);
+            Check.That(fix.Item2).IsEqualTo(expectedCode);
+        }
+
+        class SingleDocumentTestSolution
+        {
+            public ProjectId ProjectId { get; private set; }
+            public DocumentId DocumentId { get; private set; }
+            public Solution Solution { get; private set; }
+            public Document Document { get; private set; }
+            public SyntaxTree DocumentSyntaxTree { get; private set; }
+            public Compilation SolutionCompilation { get; private set; }
+
+            public static async Task<SingleDocumentTestSolution> CreateAsync(string code)
+            {
+                var result = new SingleDocumentTestSolution()
+                {
+                    ProjectId = ProjectId.CreateNewId()
+                };
+
+                result.DocumentId = DocumentId.CreateNewId(result.ProjectId);
+                result.Solution = new CustomWorkspace().CurrentSolution
+                  .AddProject(result.ProjectId, "TestProject", "TestAssembly", LanguageNames.CSharp)
+                  .AddMetadataReference(result.ProjectId,
+                    new MetadataFileReference(typeof(object).Assembly.Location))
+                  .AddDocument(result.DocumentId, "TestDocument.cs", code);
+                result.Document = result.Solution.GetDocument(result.DocumentId);
+                result.DocumentSyntaxTree = await result.Document.GetSyntaxTreeAsync();
+                result.SolutionCompilation = await result.Solution.Projects.Single().GetCompilationAsync();
+
+                return result;
+            }
+        }
+
+        public static async Task<ImmutableList<Tuple<CodeAction, string>>> GetFixesAsync(string code,
+            ICodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor, string spanText)
+        {
+            var solution = await SingleDocumentTestSolution.CreateAsync(code);
+
+            TextSpan span = SpanFromText(code, spanText);
+            var location = Location.Create(solution.DocumentSyntaxTree, span);
+            var diagnostic = Diagnostic.Create(diagnosticDescriptor, location);
+
+            return await GetFixesAsync(codeFixProvider, solution.Document, ImmutableList.Create(diagnostic));
+        }
+
+        private static TextSpan SpanFromText(string code, string spanText)
+        {
+            if (spanText.StartsWith("#"))
+            {
+                var interesting = spanText.Select((c, i) => Tuple.Create(c != '#', i)).Where(t => t.Item1);
+                var start = interesting.First().Item2;
+                var end = interesting.Last().Item2;
+                var length = end - start + 1;
+
+                return new TextSpan(start, length);
+            }
+            else
+            {
+                var start = code.IndexOf(spanText);
+                if (start == -1)
+                {
+                    throw new ArgumentException(
+                        string.Format("Unable to find span '{0}' in '{1}'", spanText, code),
+                        "spanText");
+                }
+                if (start != code.Length - 1 && code.IndexOf(spanText, start + 1) != -1)
+                {
+                    throw new ArgumentException(
+                        string.Format("Found span '{0}' more than one time in '{1}'", spanText, code),
+                        "spanText");
+                }
+
+                return new TextSpan(start, spanText.Length);
+            }
+        }
+
         public static async Task<ImmutableList<Tuple<CodeAction, string>>> GetFixesAsync(string code,
             ICodeFixProvider codeFixProvider, params ISyntaxNodeAnalyzer<SyntaxKind>[] analyzers)
         {
-            var projectId = ProjectId.CreateNewId();
-            var documentId = DocumentId.CreateNewId(projectId);
-            var solution = new CustomWorkspace().CurrentSolution
-              .AddProject(projectId, "TestProject", "TestAssembly", LanguageNames.CSharp)
-              .AddMetadataReference(projectId,
-                new MetadataFileReference(typeof(object).Assembly.Location))
-              .AddDocument(documentId, "TestDocument.cs", code);
-            var document = solution.GetDocument(documentId);
-            var tree = await document.GetSyntaxTreeAsync();
-            var compilation = await solution.Projects.Single().GetCompilationAsync();
+            var solution = await SingleDocumentTestSolution.CreateAsync(code);
 
-            return await GetFixesAsync(codeFixProvider, analyzers, documentId, document, tree, compilation);
+            var diagnostics = GetFixableDiagnostics(codeFixProvider, analyzers, solution.DocumentSyntaxTree,
+                solution.SolutionCompilation);
+
+            return await GetFixesAsync(codeFixProvider, solution.Document, diagnostics);
         }
 
         private static async Task<ImmutableList<Tuple<CodeAction, string>>> GetFixesAsync(
-            ICodeFixProvider codeFixProvider, ISyntaxNodeAnalyzer<SyntaxKind>[] analyzers, DocumentId documentId,
-            Document document, SyntaxTree tree, Compilation compilation)
+            ICodeFixProvider codeFixProvider, Document document,
+            ImmutableList<Diagnostic> diagnostics)
         {
-            var diagnostics = GetFixableDiagnostics(codeFixProvider, analyzers, tree, compilation);
             var codeActions = await GetCodeActionsFromFixesAsync(codeFixProvider, document, diagnostics);
 
-            var codeChangeTasks = codeActions.Select(a => GetChangedText(a, documentId));
+            var codeChangeTasks = codeActions.Select(a => GetChangedText(a, document.Id));
             var codeChanges = await Task.WhenAll(codeChangeTasks);
 
             var result = codeActions.Zip(codeChanges, (a, t) => Tuple.Create(a, t));
