@@ -95,6 +95,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NoStringConcat\NoStringConcatAnalyzer.cs" />
+    <Compile Include="NoStringConcat\NoStringConcatCodeFix.cs" />
+    <Compile Include="NoStringConcat\StringConcatClassification.cs" />
+    <Compile Include="NoStringConcat\StringConcatInfo.cs" />
     <Compile Include="OverloadDefinition.cs" />
     <Compile Include="RoslynExtensions\DiagnosticExtensions.cs" />
     <Compile Include="RoslynExtensions\TypeSymbolExtensions.cs" />

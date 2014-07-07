@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="Helpers\CodeFixTestHelpers.cs" />
     <Compile Include="Helpers\DiagnosticTestHelpers.cs" />
+    <Compile Include="NoStringConcatCodeFixTests.cs" />
     <Compile Include="NoNewGuidCodeFixTests.cs" />
     <Compile Include="NoStringConcatAnalyzerTests.cs" />
     <Compile Include="NoNewGuidAnalyzerTests.cs" />

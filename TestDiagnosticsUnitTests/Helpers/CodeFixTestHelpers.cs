@@ -39,6 +39,16 @@ namespace TestDiagnosticsUnitTests.Helpers
             Check.That(fix.Item2).IsEqualTo(expectedCode);
         }
 
+        public static async Task CheckSingleFixAsync(string code, string spanText, string expectedCode,
+            ICodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
+        {
+            var fixes = await GetFixesAsync(code, codeFixProvider, diagnosticDescriptor, spanText);
+
+            Check.That(fixes).HasSize(1);
+            var fix = fixes.Single();
+            Check.That(fix.Item2).IsEqualTo(expectedCode);
+        }
+
         class SingleDocumentTestSolution
         {
             public ProjectId ProjectId { get; private set; }

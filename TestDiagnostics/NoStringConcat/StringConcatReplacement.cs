@@ -8,7 +8,7 @@ using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.TypeSymbolExtensions;
 
 namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
 {
-    static class StringConcatReplacement
+    static class StringConcatIdentification
     {
         public static bool IsDirectArrayOverloadCall(SemanticModel semanticModel, InvocationExpressionSyntax invocation,
             IMethodSymbol symbol)

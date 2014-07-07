@@ -5,8 +5,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Linq;
-using BlackFox.Roslyn.TestDiagnostics.NoStringConcat.StringConcatReplacement;
 
 namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
 {
@@ -48,56 +46,17 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
         {
             var invocation = (InvocationExpressionSyntax)node;
 
-            if (!CouldBeStringConcatFast(invocation))
+            var infos = StringConcatInfo.Create(invocation, semanticModel);
+
+            switch (infos.Classification)
             {
-                // In some cases without ever calling into the semantic model we know that we aren't interested
-                return;
+                case StringConcatClassification.ReplaceWithSingleString:
+                    addDiagnostic(Diagnostic.Create(UseStringDescriptor, node.GetLocation()));
+                    break;
+                case StringConcatClassification.ReplaceWithStringFormat:
+                    addDiagnostic(Diagnostic.Create(UseFormatDescriptor, node.GetLocation()));
+                    break;
             }
-
-            var methodSymbol = semanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol;
-
-            if (!IsNonGenericStringConcat(methodSymbol) || !IsConcernedOverload(methodSymbol))
-            {
-                // Not String.Concat or Not one of the overload we know that we can transform successfuly
-                return;
-            }
-
-            bool canBeTransformedToSingleString;
-            if (IsDirectArrayOverloadCall(semanticModel, invocation, methodSymbol))
-            {
-                // It is one of the single array overload, called via a non-params call
-
-                var arrayExpression = invocation.ArgumentList.Arguments[0].Expression;
-                var explicitCreation = arrayExpression as ArrayCreationExpressionSyntax;
-                var implicitCreation = arrayExpression as ImplicitArrayCreationExpressionSyntax;
-
-                if (explicitCreation == null && implicitCreation == null)
-                {
-                    return;
-                }
-
-                var initializer = explicitCreation != null
-                    ? explicitCreation.Initializer
-                    : implicitCreation.Initializer;
-
-                if (initializer != null)
-                {
-                    canBeTransformedToSingleString = StringCoalescing.CanBeTransformedToSingleString(semanticModel,
-                        initializer.Expressions);
-                }
-                else
-                {
-                    canBeTransformedToSingleString = true; // Empty string
-                }
-            }
-            else
-            {
-                canBeTransformedToSingleString = StringCoalescing.CanBeTransformedToSingleString(semanticModel,
-                    invocation.ArgumentList.Arguments.Select(a => a.Expression));
-            }
-
-            var descriptor = canBeTransformedToSingleString ? UseStringDescriptor : UseFormatDescriptor;
-            addDiagnostic(Diagnostic.Create(descriptor, node.GetLocation()));
         }
     }
 }
