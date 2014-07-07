@@ -94,6 +94,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeFixProviderBase.cs" />
     <Compile Include="NoStringConcat\NoStringConcatAnalyzer.cs" />
     <Compile Include="NoStringConcat\NoStringConcatCodeFix.cs" />
     <Compile Include="NoStringConcat\StringConcatClassification.cs" />

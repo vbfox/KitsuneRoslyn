@@ -1,13 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.SyntaxFactoryAdditions;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 using Microsoft.CodeAnalysis.Simplification;
@@ -15,33 +11,33 @@ using Microsoft.CodeAnalysis.Simplification;
 namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
 {
     [ExportCodeFixProvider(NoNewGuidAnalyzer.Id, LanguageNames.CSharp)]
-    public class NoNewGuidCodeFix : ICodeFixProvider
+    public class NoNewGuidCodeFix : CodeFixProviderBase
     {
-        public IEnumerable<string> GetFixableDiagnosticIds()
+        public override IEnumerable<string> GetFixableDiagnosticIds()
         {
             return new[] { NoNewGuidAnalyzer.Id };
         }
 
         ExpressionSyntax guidEmptyExpression = SimpleMemberAccessExpression("System", "Guid", "Empty");
 
-        public async Task<IEnumerable<CodeAction>> GetFixesAsync(Document document, TextSpan span,
-            IEnumerable<Diagnostic> diagnostics, CancellationToken cancellationToken)
+        protected override string GetCodeFixDescription(string ruleId)
         {
-            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-
-            var guidCreationExpression = diagnostics.First()
-                .GetAncestorSyntaxNode<ObjectCreationExpressionSyntax>(root);
-
-            var action = CodeAction.Create(
-                "Replace with Guid.Empty",
-                token => ReplaceWithEmptyGuid(document, root, guidCreationExpression, token));
-
-            return new[] { action };
+            return "Replace with Guid.Empty";
         }
 
-        private async Task<Document> ReplaceWithEmptyGuid(Document document, SyntaxNode root,
-            ObjectCreationExpressionSyntax guidCreationExpression, CancellationToken cancellationToken)
+        protected override bool GetInnermostNodeForTie
         {
+            get
+            {
+                return true;
+            }
+        }
+
+        internal override async Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel model,
+            SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken)
+        {
+            var guidCreationExpression = (ObjectCreationExpressionSyntax)nodeToFix;
+
             var finalExpression = guidEmptyExpression
                 .WithSameTriviaAs(guidCreationExpression)
                 .WithAdditionalAnnotations(Simplifier.Annotation);
