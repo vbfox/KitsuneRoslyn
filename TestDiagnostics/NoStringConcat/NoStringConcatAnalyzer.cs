@@ -14,26 +14,27 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
     [ExportDiagnosticAnalyzer("BlackFox.NoStringConcat", LanguageNames.CSharp)]
     public class NoStringConcatAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        public const string DIAGNOSTIC_ID_FORMAT = "BlackFox.NoStringConcat_UseFormat";
-        public const string DIAGNOSTIC_ID_SIMPLE = "BlackFox.NoStringConcat_UseString";
+        public const string UseFormatId = "BlackFox.NoStringConcat_UseFormat";
+        public const string UseStringId = "BlackFox.NoStringConcat_UseString";
 
-        static DiagnosticDescriptor RuleFormat = new DiagnosticDescriptor(
-            DIAGNOSTIC_ID_FORMAT,
+        public static DiagnosticDescriptor UseFormatDescriptor = new DiagnosticDescriptor(
+            UseFormatId,
             "Don't use string.Concat prefer string.Format",
             "Don't use string.Concat prefer string.Format",
             "Readability",
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true);
 
-        static DiagnosticDescriptor RuleSimple = new DiagnosticDescriptor(
-            DIAGNOSTIC_ID_SIMPLE,
+        public static DiagnosticDescriptor UseStringDescriptor = new DiagnosticDescriptor(
+            UseStringId,
             "Don't use string.Concat prefer a simple string",
             "Don't use string.Concat prefer a simple string",
             "Readability",
             DiagnosticSeverity.Warning,
             isEnabledByDefault: true);
 
-        static readonly ImmutableArray<DiagnosticDescriptor> supportedDiagnostics = ImmutableArray.Create(RuleFormat, RuleSimple);
+        static readonly ImmutableArray<DiagnosticDescriptor> supportedDiagnostics
+            = ImmutableArray.Create(UseFormatDescriptor, UseStringDescriptor);
 
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return supportedDiagnostics; } }
 
@@ -75,7 +76,10 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
                     return;
                 }
 
-                var initializer = explicitCreation != null ? explicitCreation.Initializer : implicitCreation.Initializer;
+                var initializer = explicitCreation != null
+                    ? explicitCreation.Initializer
+                    : implicitCreation.Initializer;
+
                 if (initializer != null)
                 {
                     canBeTransformedToSingleString = StringCoalescing.CanBeTransformedToSingleString(semanticModel,
@@ -92,7 +96,8 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
                     invocation.ArgumentList.Arguments.Select(a => a.Expression));
             }
 
-            addDiagnostic(Diagnostic.Create(canBeTransformedToSingleString ? RuleSimple : RuleFormat, node.GetLocation()));
+            var descriptor = canBeTransformedToSingleString ? UseStringDescriptor : UseFormatDescriptor;
+            addDiagnostic(Diagnostic.Create(descriptor, node.GetLocation()));
         }
     }
 }
