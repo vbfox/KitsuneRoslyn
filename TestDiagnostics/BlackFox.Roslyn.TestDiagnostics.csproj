@@ -101,6 +101,7 @@
     <Compile Include="NoStringConcat\StringConcatInfo.cs" />
     <Compile Include="OverloadDefinition.cs" />
     <Compile Include="RoslynExtensions\DiagnosticExtensions.cs" />
+    <Compile Include="RoslynExtensions\DocumentExtensions.cs" />
     <Compile Include="RoslynExtensions\TypeSymbolExtensions.cs" />
     <Compile Include="NoNewGuid\NoNewGuidCodeFix.cs" />
     <Compile Include="NoStringEmpty\NoStringEmptyCodeFix.cs" />

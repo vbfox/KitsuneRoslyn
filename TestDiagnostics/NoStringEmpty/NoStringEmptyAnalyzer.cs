@@ -12,7 +12,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
     [ExportDiagnosticAnalyzer(Id, LanguageNames.CSharp)]
     public class NoStringEmptyAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        public const string Id = "BlackFox.NoStringEmpty";
+        public const string Id = "BlackFox.Analyzers.NoStringEmpty";
 
         public static DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             Id,

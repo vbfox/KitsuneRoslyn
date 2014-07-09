@@ -13,7 +13,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
     [ExportDiagnosticAnalyzer(Id, LanguageNames.CSharp)]
     public class NoNewGuidAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        public const string Id = "BlackFox.NoNewGuid";
+        public const string Id = "BlackFox.NoNewGuid.Analyzer";
 
         public static DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
             Id,

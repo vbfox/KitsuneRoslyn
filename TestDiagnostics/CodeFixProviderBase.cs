@@ -7,16 +7,45 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
+using System;
 
 namespace BlackFox.Roslyn.TestDiagnostics
 {
     public abstract class CodeFixProviderBase : ICodeFixProvider
     {
-        protected virtual bool GetInnermostNodeForTie { get { return false; } }
+        protected virtual bool GetInnermostNodeForTie { get { return true; } }
 
-        protected abstract string GetCodeFixDescription(string ruleId);
+        ImmutableDictionary<string, string> diagnosticIdsAndDescriptions;
 
-        public abstract IEnumerable<string> GetFixableDiagnosticIds();
+        protected CodeFixProviderBase(ImmutableDictionary<string, string> diagnosticIdsAndDescriptions)
+        {
+            if (diagnosticIdsAndDescriptions == null)
+            {
+                throw new ArgumentNullException("diagnosticIdsAndDescriptions");
+            }
+
+            this.diagnosticIdsAndDescriptions = diagnosticIdsAndDescriptions;
+        }
+
+        protected CodeFixProviderBase(string diagnosticId, string fixDescription)
+        {
+            if (diagnosticId == null)
+            {
+                throw new ArgumentNullException("diagnosticId");
+            }
+            if (fixDescription == null)
+            {
+                throw new ArgumentNullException("fixDescription");
+            }
+
+            diagnosticIdsAndDescriptions = ImmutableDictionary<string, string>.Empty
+                .Add(diagnosticId, fixDescription);
+        }
+
+        IEnumerable<string> ICodeFixProvider.GetFixableDiagnosticIds()
+        {
+            return diagnosticIdsAndDescriptions.Keys;
+        }
 
         internal abstract Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel model,
             SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken);
@@ -41,7 +70,7 @@ namespace BlackFox.Roslyn.TestDiagnostics
                 Debug.Assert(newDocument != null);
                 if (newDocument != document)
                 {
-                    var codeFixDescription = GetCodeFixDescription(diagnostic.Id);
+                    var codeFixDescription = diagnosticIdsAndDescriptions[diagnostic.Id];
                     actions = actions.Add(CodeAction.Create(codeFixDescription, newDocument));
                 }
             }
