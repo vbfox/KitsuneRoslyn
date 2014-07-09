@@ -6,9 +6,8 @@ namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
 {
     public static class DocumentExtensions
     {
-        public static async Task<Document> ReplaceNode<TRoot, TNode>(this Document document, TNode oldNode,
-            TNode newNode, CancellationToken cancellationToken = default(CancellationToken))
-            where TRoot : SyntaxNode
+        public static async Task<Document> ReplaceNodeAsync<TNode>(this Document document,
+            TNode oldNode, TNode newNode, CancellationToken cancellationToken = default(CancellationToken))
             where TNode : SyntaxNode
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);

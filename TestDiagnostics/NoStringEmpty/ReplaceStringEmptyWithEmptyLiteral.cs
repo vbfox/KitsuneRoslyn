@@ -9,7 +9,7 @@ using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class ReplaceStringEmptyWithEmptyLiteral : CodeFixProviderBase
+    public class ReplaceStringEmptyWithEmptyLiteral : ReplacementCodeFixProviderBase
     {
         public const string Id = "BlackFox.ReplaceStringEmptyWithEmptyLiteral";
 
@@ -20,13 +20,13 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
 
         LiteralExpressionSyntax emptyStringLiteralExpression = StringLiteralExpression("");
 
-        internal override Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel model,
+        protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document, SemanticModel model,
             SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken)
         {
             var stringEmptyExpression = (MemberAccessExpressionSyntax)nodeToFix;
             var finalExpression = emptyStringLiteralExpression.WithSameTriviaAs(stringEmptyExpression);
-            
-            return document.ReplaceNode<SyntaxNode, SyntaxNode>(stringEmptyExpression, finalExpression);
+
+            return finalExpression;
         }
     }
 }

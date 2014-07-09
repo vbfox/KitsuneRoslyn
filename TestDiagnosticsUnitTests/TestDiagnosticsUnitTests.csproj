@@ -73,13 +73,14 @@
   <ItemGroup>
     <Compile Include="Helpers\CodeFixTestHelpers.cs" />
     <Compile Include="Helpers\DiagnosticTestHelpers.cs" />
-    <Compile Include="NoStringConcatCodeFixTests.cs" />
+    <Compile Include="ReplaceStringConcatWithSingleStringTests.cs" />
     <Compile Include="NoNewGuidCodeFixTests.cs" />
     <Compile Include="NoStringConcatAnalyzerTests.cs" />
     <Compile Include="NoNewGuidAnalyzerTests.cs" />
     <Compile Include="NoStringEmptyAnalyzerTests.cs" />
     <Compile Include="NoStringEmptyCodeFixTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReplaceStringConcatWithStringFormatTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

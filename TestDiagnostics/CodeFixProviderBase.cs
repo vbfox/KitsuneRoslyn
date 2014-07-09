@@ -47,7 +47,7 @@ namespace BlackFox.Roslyn.TestDiagnostics
             return diagnosticIdsAndDescriptions.Keys;
         }
 
-        internal abstract Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel model,
+        protected abstract Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel model,
             SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken);
 
         async Task<IEnumerable<CodeAction>> ICodeFixProvider.GetFixesAsync(Document document, TextSpan span,

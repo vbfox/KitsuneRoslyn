@@ -95,8 +95,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
                 expressions = invocation.ArgumentList.Arguments.Select(a => a.Expression).ToImmutableList();
             }
 
-            var coalescable = expressions.IsCoalescable(semanticModel);
-            var classification = coalescable
+            var classification = expressions.IsCoalescable()
                 ? StringConcatClassification.ReplaceWithSingleString
                 : StringConcatClassification.ReplaceWithStringFormat;
 

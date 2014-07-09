@@ -11,13 +11,12 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
 {
     static class StringCoalescing
     {
-        public static bool IsCoalescable(this IEnumerable<ExpressionSyntax> expressions,
-            SemanticModel semanticModel)
+        public static bool IsCoalescable(this IEnumerable<ExpressionSyntax> expressions)
         {
-            return expressions.All(expression => IsLiteralStringOrSimilar(semanticModel, expression));
+            return expressions.All(expression => IsLiteralStringOrSimilar(expression));
         }
 
-        static bool IsLiteralStringOrSimilar(SemanticModel semanticModel, ExpressionSyntax expression)
+        public static bool IsLiteralStringOrSimilar(ExpressionSyntax expression)
         {
             var kind = expression.CSharpKind();
             return kind == SyntaxKind.StringLiteralExpression
@@ -33,8 +32,10 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
                 switch (expression.CSharpKind())
                 {
                     case SyntaxKind.StringLiteralExpression:
-                    case SyntaxKind.CharacterLiteralExpression:
                         return (string)semanticModel.GetConstantValue(expression).Value;
+
+                    case SyntaxKind.CharacterLiteralExpression:
+                        return ((char)semanticModel.GetConstantValue(expression).Value).ToString();
 
                     case SyntaxKind.NullLiteralExpression:
                         return "";

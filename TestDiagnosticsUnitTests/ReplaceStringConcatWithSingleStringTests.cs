@@ -5,7 +5,7 @@ using BlackFox.Roslyn.TestDiagnostics.NoStringConcat;
 namespace TestDiagnosticsUnitTests
 {
     [TestClass]
-    public class NoStringConcatCodeFixTests
+    public class ReplaceStringConcatWithSingleStringTests
     {
         [TestMethod]
         public void Single_string()
@@ -14,7 +14,7 @@ namespace TestDiagnosticsUnitTests
                 @"using System;class Foo{void Bar(){var x = string.Concat(""Hello"");}}",
                 @"string.Concat(""Hello"")",
                 @"using System;class Foo{void Bar(){var x = ""Hello"";}}",
-                new NoStringConcatCodeFix(),
+                new ReplaceStringConcatWithSingleString(),
                 NoStringConcatAnalyzer.UseStringDescriptor).Wait();
         }
 
@@ -25,7 +25,7 @@ namespace TestDiagnosticsUnitTests
                 @"using System;class Foo{void Bar(){var x = string.Concat(""Hello"", ""World"");}}",
                 @"string.Concat(""Hello"", ""World"")",
                 @"using System;class Foo{void Bar(){var x = ""HelloWorld"";}}",
-                new NoStringConcatCodeFix(),
+                new ReplaceStringConcatWithSingleString(),
                 NoStringConcatAnalyzer.UseStringDescriptor).Wait();
         }
 
@@ -36,7 +36,7 @@ namespace TestDiagnosticsUnitTests
                 @"using System;class Foo{void Bar(){var x = string.Concat(""Hello"", ""World"", ""How"");}}",
                 @"string.Concat(""Hello"", ""World"", ""How"")",
                 @"using System;class Foo{void Bar(){var x = ""HelloWorldHow"";}}",
-                new NoStringConcatCodeFix(),
+                new ReplaceStringConcatWithSingleString(),
                 NoStringConcatAnalyzer.UseStringDescriptor).Wait();
         }
 
@@ -47,7 +47,7 @@ namespace TestDiagnosticsUnitTests
                 @"using System;class Foo{void Bar(){var x = string.Concat(""Hello"", ""World"", ""How"", ""Are"");}}",
                 @"string.Concat(""Hello"", ""World"", ""How"", ""Are"")",
                 @"using System;class Foo{void Bar(){var x = ""HelloWorldHowAre"";}}",
-                new NoStringConcatCodeFix(),
+                new ReplaceStringConcatWithSingleString(),
                 NoStringConcatAnalyzer.UseStringDescriptor).Wait();
         }
 
@@ -58,7 +58,7 @@ namespace TestDiagnosticsUnitTests
                 @"using System;class Foo{void Bar(){var x = string.Concat(""Hello"", ""World"", ""How"", ""Are"", ""U"");}}",
                 @"string.Concat(""Hello"", ""World"", ""How"", ""Are"", ""U"")",
                 @"using System;class Foo{void Bar(){var x = ""HelloWorldHowAreU"";}}",
-                new NoStringConcatCodeFix(),
+                new ReplaceStringConcatWithSingleString(),
                 NoStringConcatAnalyzer.UseStringDescriptor).Wait();
         }
 
@@ -69,7 +69,7 @@ namespace TestDiagnosticsUnitTests
                 @"using System;class Foo{void Bar(){var x = string.Concat(new string [] { ""Hello"", ""World"", ""How"", ""Are"", ""U"" });}}",
                 @"string.Concat(new string [] { ""Hello"", ""World"", ""How"", ""Are"", ""U"" })",
                 @"using System;class Foo{void Bar(){var x = ""HelloWorldHowAreU"";}}",
-                new NoStringConcatCodeFix(),
+                new ReplaceStringConcatWithSingleString(),
                 NoStringConcatAnalyzer.UseStringDescriptor).Wait();
         }
 
@@ -80,7 +80,7 @@ namespace TestDiagnosticsUnitTests
                 @"using System;class Foo{void Bar(){var x = string.Concat(new [] { ""Hello"", ""World"", ""How"", ""Are"", ""U"" });}}",
                 @"string.Concat(new [] { ""Hello"", ""World"", ""How"", ""Are"", ""U"" })",
                 @"using System;class Foo{void Bar(){var x = ""HelloWorldHowAreU"";}}",
-                new NoStringConcatCodeFix(),
+                new ReplaceStringConcatWithSingleString(),
                 NoStringConcatAnalyzer.UseStringDescriptor).Wait();
         }
 
@@ -91,7 +91,7 @@ namespace TestDiagnosticsUnitTests
                 @"using System;class Foo{void Bar(){var x = string.Concat(new string[0]);}}",
                 @"string.Concat(new string[0])",
                 @"using System;class Foo{void Bar(){var x = """";}}",
-                new NoStringConcatCodeFix(),
+                new ReplaceStringConcatWithSingleString(),
                 NoStringConcatAnalyzer.UseStringDescriptor).Wait();
         }
     }

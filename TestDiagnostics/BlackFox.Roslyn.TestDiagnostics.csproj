@@ -96,10 +96,12 @@
   <ItemGroup>
     <Compile Include="CodeFixProviderBase.cs" />
     <Compile Include="NoStringConcat\NoStringConcatAnalyzer.cs" />
-    <Compile Include="NoStringConcat\NoStringConcatCodeFix.cs" />
+    <Compile Include="NoStringConcat\ReplaceStringConcatWithSingleString.cs" />
+    <Compile Include="NoStringConcat\ReplaceStringConcatWithStringFormat.cs" />
     <Compile Include="NoStringConcat\StringConcatClassification.cs" />
     <Compile Include="NoStringConcat\StringConcatInfo.cs" />
     <Compile Include="OverloadDefinition.cs" />
+    <Compile Include="ReplacementCodeFixProviderBase.cs" />
     <Compile Include="RoslynExtensions\DiagnosticExtensions.cs" />
     <Compile Include="RoslynExtensions\DocumentExtensions.cs" />
     <Compile Include="RoslynExtensions\TypeSymbolExtensions.cs" />

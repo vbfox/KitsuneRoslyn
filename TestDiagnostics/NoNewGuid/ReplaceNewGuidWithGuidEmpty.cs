@@ -4,13 +4,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.SyntaxFactoryAdditions;
-using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
-using Microsoft.CodeAnalysis.Simplification;
 
 namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class ReplaceNewGuidWithGuidEmpty : CodeFixProviderBase
+    public class ReplaceNewGuidWithGuidEmpty : ReplacementCodeFixProviderBase
     {
         public const string Id = "BlackFox.ReplaceNewGuidWithGuidEmpty";
 
@@ -19,24 +17,20 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
         {
         }
 
+        protected override bool Simplify
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         ExpressionSyntax guidEmptyExpression = SimpleMemberAccessExpression("System", "Guid", "Empty");
 
-        internal override async Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel model,
+        protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document, SemanticModel model,
             SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken)
         {
-            var guidCreationExpression = (ObjectCreationExpressionSyntax)nodeToFix;
-
-            var finalExpression = guidEmptyExpression
-                .WithSameTriviaAs(guidCreationExpression)
-                .WithAdditionalAnnotations(Simplifier.Annotation);
-            var newRoot = root.ReplaceNode<SyntaxNode, SyntaxNode>(guidCreationExpression, finalExpression);
-
-            var simplificationTask = Simplifier.ReduceAsync(
-                document.WithSyntaxRoot(newRoot),
-                Simplifier.Annotation,
-                cancellationToken: cancellationToken);
-
-            return await simplificationTask.ConfigureAwait(false);
+            return guidEmptyExpression;
         }
     }
 }
