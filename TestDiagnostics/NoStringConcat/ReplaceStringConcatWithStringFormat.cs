@@ -51,10 +51,23 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
             Debug.Assert(info.Classification == StringConcatClassification.ReplaceWithStringFormat,
                 "Expected replace with string format classification");
 
-            var formatString = "";
+            string formatString;
+            ImmutableQueue<ExpressionSyntax> otherArguments;
+            BuildArguments(semanticModel, info, out formatString, out otherArguments);
+
+            var arguments = new[] { StringLiteralExpression(formatString) }
+                .Concat(otherArguments);
+
+            return InvocationExpression(stringFormatAccess, ArgumentList(arguments));
+        }
+
+        private void BuildArguments(SemanticModel semanticModel, StringConcatInfo info,
+            out string formatString, out ImmutableQueue<ExpressionSyntax> otherArguments)
+        {
+            formatString = "";
             var remainingExpressions = info.Expressions.AsEnumerable();
             int currentReplacementIndex = 0;
-            var stringFormatArguments = ImmutableQueue<ExpressionSyntax>.Empty;
+            otherArguments = ImmutableQueue<ExpressionSyntax>.Empty;
             while (remainingExpressions.Any())
             {
                 int takenAsSingleString;
@@ -70,18 +83,10 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
                     formatString += "{" + currentReplacementIndex + "}";
                     currentReplacementIndex += 1;
                     var expression = remainingExpressions.First();
-                    stringFormatArguments = stringFormatArguments.Enqueue(expression);
+                    otherArguments = otherArguments.Enqueue(expression);
                     remainingExpressions = remainingExpressions.Skip(1);
                 }
             }
-
-            var arguments = new[] { StringLiteralExpression(formatString) }
-                .Concat(stringFormatArguments)
-                .Select(e => Argument(e));
-
-            var argumentsSyntaxList = new SeparatedSyntaxList<ArgumentSyntax>().AddRange(arguments);
-
-            return InvocationExpression(stringFormatAccess, ArgumentList(argumentsSyntaxList));
         }
 
         string GetLongestSingleString(IEnumerable<ExpressionSyntax> expressions, SemanticModel semanticModel,

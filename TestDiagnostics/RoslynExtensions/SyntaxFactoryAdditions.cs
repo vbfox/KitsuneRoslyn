@@ -3,6 +3,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Microsoft.CodeAnalysis.Simplification;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
 {
@@ -10,6 +13,11 @@ namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
     {
         public static ExpressionSyntax SimpleMemberAccessExpression(params string[] names)
         {
+            if (names == null)
+            {
+                throw new ArgumentNullException("names");
+            }
+
             ExpressionSyntax result = IdentifierName(Token(SyntaxKind.GlobalKeyword));
             for (int i = 0; i < names.Length; i++)
             {
@@ -26,13 +34,27 @@ namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
                 }
             }
 
-            // Simplify to remove global:: and namespace declarations when not necessary
+            // Ask Simplify to remove global:: and namespace declarations when not necessary
             return result.WithAdditionalAnnotations(Simplifier.Annotation);
         }
 
         public static LiteralExpressionSyntax StringLiteralExpression(string value)
         {
             return LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(value));
+        }
+
+        public static ArgumentListSyntax ArgumentList(IEnumerable<ExpressionSyntax> expressions)
+        {
+            if (expressions == null)
+            {
+                throw new ArgumentNullException("names");
+            }
+
+            var arguments = expressions.Select(e => Argument(e));
+
+            var argumentsSyntaxList = new SeparatedSyntaxList<ArgumentSyntax>().AddRange(arguments);
+
+            return SyntaxFactory.ArgumentList(argumentsSyntaxList);
         }
     }
 }
