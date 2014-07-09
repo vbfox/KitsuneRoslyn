@@ -61,5 +61,38 @@ namespace TestDiagnosticsUnitTests
                 new NoStringConcatCodeFix(),
                 NoStringConcatAnalyzer.UseStringDescriptor).Wait();
         }
+
+        [TestMethod]
+        public void Array_with_explicit_initializer()
+        {
+            CheckSingleFixAsync(
+                @"using System;class Foo{void Bar(){var x = string.Concat(new string [] { ""Hello"", ""World"", ""How"", ""Are"", ""U"" });}}",
+                @"string.Concat(new string [] { ""Hello"", ""World"", ""How"", ""Are"", ""U"" })",
+                @"using System;class Foo{void Bar(){var x = ""HelloWorldHowAreU"";}}",
+                new NoStringConcatCodeFix(),
+                NoStringConcatAnalyzer.UseStringDescriptor).Wait();
+        }
+
+        [TestMethod]
+        public void Array_with_implicit_initializer()
+        {
+            CheckSingleFixAsync(
+                @"using System;class Foo{void Bar(){var x = string.Concat(new [] { ""Hello"", ""World"", ""How"", ""Are"", ""U"" });}}",
+                @"string.Concat(new [] { ""Hello"", ""World"", ""How"", ""Are"", ""U"" })",
+                @"using System;class Foo{void Bar(){var x = ""HelloWorldHowAreU"";}}",
+                new NoStringConcatCodeFix(),
+                NoStringConcatAnalyzer.UseStringDescriptor).Wait();
+        }
+
+        [TestMethod]
+        public void Array_empty()
+        {
+            CheckSingleFixAsync(
+                @"using System;class Foo{void Bar(){var x = string.Concat(new string[0]);}}",
+                @"string.Concat(new string[0])",
+                @"using System;class Foo{void Bar(){var x = """";}}",
+                new NoStringConcatCodeFix(),
+                NoStringConcatAnalyzer.UseStringDescriptor).Wait();
+        }
     }
 }
