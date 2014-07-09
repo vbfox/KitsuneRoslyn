@@ -103,8 +103,8 @@
     <Compile Include="RoslynExtensions\DiagnosticExtensions.cs" />
     <Compile Include="RoslynExtensions\DocumentExtensions.cs" />
     <Compile Include="RoslynExtensions\TypeSymbolExtensions.cs" />
-    <Compile Include="NoNewGuid\NoNewGuidCodeFix.cs" />
-    <Compile Include="NoStringEmpty\NoStringEmptyCodeFix.cs" />
+    <Compile Include="NoNewGuid\ReplaceNewGuidWithGuidEmpty.cs" />
+    <Compile Include="NoStringEmpty\ReplaceStringEmptyWithEmptyLiteral.cs" />
     <Compile Include="NoNewGuid\NoNewGuidAnalyzer.cs" />
     <Compile Include="NoStringEmpty\NoStringEmptyAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

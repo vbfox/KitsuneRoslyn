@@ -15,7 +15,7 @@ namespace TestDiagnosticsUnitTests
                 "global::System.String.Empty",
                 "class Foo{void Bar(){var x = \"\";}}",
                 "Use \"\"",
-                new NoStringEmptyCodeFix(),
+                new ReplaceStringEmptyWithEmptyLiteral(),
                 NoStringEmptyAnalyzer.Descriptor).Wait();
         }
 
@@ -27,7 +27,7 @@ namespace TestDiagnosticsUnitTests
                 "System.String.Empty",
                 "class Foo{void Bar(){var x = \"\";}}",
                 "Use \"\"",
-                new NoStringEmptyCodeFix(),
+                new ReplaceStringEmptyWithEmptyLiteral(),
                 NoStringEmptyAnalyzer.Descriptor).Wait();
         }
 
@@ -39,7 +39,7 @@ namespace TestDiagnosticsUnitTests
                 "String.Empty",
                 "using System;class Foo{void Bar(){var x = \"\";}}",
                 "Use \"\"",
-                new NoStringEmptyCodeFix(),
+                new ReplaceStringEmptyWithEmptyLiteral(),
                 NoStringEmptyAnalyzer.Descriptor).Wait();
         }
 
@@ -51,7 +51,7 @@ namespace TestDiagnosticsUnitTests
                 "String.Empty",
                 "using System;class Foo{void Bar(){var x = FooBar(\"\");} void FooBar(string s) {}}",
                 "Use \"\"",
-                new NoStringEmptyCodeFix(),
+                new ReplaceStringEmptyWithEmptyLiteral(),
                 NoStringEmptyAnalyzer.Descriptor).Wait();
         }
     }

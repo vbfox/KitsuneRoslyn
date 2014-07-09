@@ -9,11 +9,11 @@ using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class NoStringEmptyCodeFix : CodeFixProviderBase
+    public class ReplaceStringEmptyWithEmptyLiteral : CodeFixProviderBase
     {
-        public const string Id = "BlackFox.CodeFixes.NoStringEmpty";
+        public const string Id = "BlackFox.ReplaceStringEmptyWithEmptyLiteral";
 
-        public NoStringEmptyCodeFix()
+        public ReplaceStringEmptyWithEmptyLiteral()
             : base(NoStringEmptyAnalyzer.Id, "Use \"\"")
         {
         }

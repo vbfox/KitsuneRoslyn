@@ -10,11 +10,11 @@ using Microsoft.CodeAnalysis.Simplification;
 namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class NoNewGuidCodeFix : CodeFixProviderBase
+    public class ReplaceNewGuidWithGuidEmpty : CodeFixProviderBase
     {
-        public const string Id = "BlackFox.NoNewGuid.CodeFix";
+        public const string Id = "BlackFox.ReplaceNewGuidWithGuidEmpty";
 
-        public NoNewGuidCodeFix()
+        public ReplaceNewGuidWithGuidEmpty()
             : base(NoNewGuidAnalyzer.Id, "Replace with Guid.Empty")
         {
         }

@@ -15,7 +15,7 @@ namespace TestDiagnosticsUnitTests
                 "new global::System.Guid()",
                 "class Foo{void Bar(){var x = System.Guid.Empty;}}",
                 "Replace with Guid.Empty",
-                new NoNewGuidCodeFix(),
+                new ReplaceNewGuidWithGuidEmpty(),
                 NoNewGuidAnalyzer.Descriptor).Wait();
         }
 
@@ -27,7 +27,7 @@ namespace TestDiagnosticsUnitTests
                 "new System.Guid()",
                 "class Foo{void Bar(){var x = System.Guid.Empty;}}",
                 "Replace with Guid.Empty",
-                new NoNewGuidCodeFix(),
+                new ReplaceNewGuidWithGuidEmpty(),
                 NoNewGuidAnalyzer.Descriptor).Wait();
         }
 
@@ -39,7 +39,7 @@ namespace TestDiagnosticsUnitTests
                 "new Guid()",
                 "using System;class Foo{void Bar(){var x = Guid.Empty;}}",
                 "Replace with Guid.Empty",
-                new NoNewGuidCodeFix(),
+                new ReplaceNewGuidWithGuidEmpty(),
                 NoNewGuidAnalyzer.Descriptor).Wait();
         }
 
@@ -51,7 +51,7 @@ namespace TestDiagnosticsUnitTests
                 "new Guid()",
                 "using System;class Foo{void Bar(){var x = FooBar(Guid.Empty);} void FooBar(Guid g) {}}",
                 "Replace with Guid.Empty",
-                new NoNewGuidCodeFix(),
+                new ReplaceNewGuidWithGuidEmpty(),
                 NoNewGuidAnalyzer.Descriptor).Wait();
         }
     }
