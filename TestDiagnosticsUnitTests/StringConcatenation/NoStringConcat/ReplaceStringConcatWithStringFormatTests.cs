@@ -79,7 +79,7 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
         //
 
         [TestMethod]
-        public void Varialbe_and_chars()
+        public void Variable_and_chars()
         {
             CheckSingleFixAsync(
                 @"using System;class Foo{void Bar(){string d = ""42"";var x = string.Concat(""Hello"", d, 'w', 'o', 'r', 'l', 'd');}}",

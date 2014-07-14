@@ -71,11 +71,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithSingleStringTests.cs" />
+    <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithStringFormatTests.cs" />
+    <Compile Include="StringConcatenation\NoStringConcat\NoStringConcatAnalyzerTests.cs" />
     <Compile Include="TestHelpers\CodeFixTestHelpers.cs" />
     <Compile Include="TestHelpers\DiagnosticTestHelpers.cs" />
     <Compile Include="StringConcatenation\NoStringConcat\ReplaceStringConcatWithSingleStringTests.cs" />
     <Compile Include="NoNewGuid\NoNewGuidCodeFixTests.cs" />
-    <Compile Include="StringConcatenation\NoStringConcat\NoStringConcatAnalyzerTests.cs" />
+    <Compile Include="StringConcatenation\CanReplaceConcatOperator\CanReplaceConcatOperatorAnalyzerTests.cs" />
     <Compile Include="NoNewGuid\NoNewGuidAnalyzerTests.cs" />
     <Compile Include="NoStringEmpty\NoStringEmptyAnalyzerTests.cs" />
     <Compile Include="NoStringEmpty\NoStringEmptyCodeFixTests.cs" />
