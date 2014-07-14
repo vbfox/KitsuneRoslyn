@@ -95,6 +95,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeFixProviderBase.cs" />
+    <Compile Include="StringConcatenation\CanReplaceConcatOperator\CanReplaceConcatOperatorAnalyzer.cs" />
+    <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceStringConcatWithSingleString.cs" />
+    <Compile Include="StringConcatenation\CanReplaceConcatOperator\StringConcatOperatorClassification.cs" />
+    <Compile Include="StringConcatenation\CanReplaceConcatOperator\StringConcatOperatorInfo.cs" />
     <Compile Include="StringConcatenation\NoStringConcat\NoStringConcatAnalyzer.cs" />
     <Compile Include="StringConcatenation\NoStringConcat\ReplaceStringConcatWithSingleString.cs" />
     <Compile Include="StringConcatenation\NoStringConcat\ReplaceStringConcatWithStringFormat.cs" />
@@ -153,6 +157,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

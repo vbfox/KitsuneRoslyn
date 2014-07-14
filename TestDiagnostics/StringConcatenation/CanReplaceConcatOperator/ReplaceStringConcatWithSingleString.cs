@@ -1,0 +1,39 @@
+﻿// Copyright (c) Julien Roncaglia.  All Rights Reserved.
+// Licensed under the BSD 2-Clause License.
+// See LICENSE.txt in the project root for license information.
+
+using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.SyntaxFactoryAdditions;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation.CanReplaceConcatOperator
+{
+    [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
+    public class ReplaceConcatenationWithSingleString : ReplacementCodeFixProviderBase
+    {
+        public const string Id = "BlackFox.ReplaceConcatenationWithSingleString";
+
+        public ReplaceConcatenationWithSingleString()
+            :base(CanReplaceConcatOperatorAnalyzer.UseStringId, "Replace with a single string")
+        {
+        }
+
+        protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
+            SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,
+            CancellationToken cancellationToken)
+        {
+            var binaryExpression = (BinaryExpressionSyntax)nodeToFix;
+
+            var info = StringConcatOperatorInfo.Create(binaryExpression, semanticModel);
+            Debug.Assert(info.Classification == StringConcatOperatorClassification.ReplaceWithSingleString,
+                "Expected replace with single string classification");
+
+            var singleString = info.Expressions.Coalesce(semanticModel);
+            return StringLiteralExpression(singleString);
+        }
+    }
+}
