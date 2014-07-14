@@ -34,7 +34,7 @@ namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation.NoStringConcat
             Debug.Assert(info.Classification == StringConcatClassification.ReplaceWithSingleString,
                 "Expected replace with single string classification");
 
-            var singleString = info.Expressions.Coalesce(semanticModel);
+            var singleString = StringCoalescing.Coalesce(info.Expressions, semanticModel);
             return StringLiteralExpression(singleString);
         }
     }
