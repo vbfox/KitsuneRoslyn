@@ -119,7 +119,7 @@
     <Compile Include="RoslynExtensions\SyntaxFactoryAdditions.cs" />
     <Compile Include="RoslynExtensions\SyntaxNodeExtensions.cs" />
     <Compile Include="StringConcatenation\StringCoalescing.cs" />
-    <Compile Include="StringConcatenation\NoStringConcat\StringConcatReplacement.cs" />
+    <Compile Include="StringConcatenation\NoStringConcat\StringConcatIdentification.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
