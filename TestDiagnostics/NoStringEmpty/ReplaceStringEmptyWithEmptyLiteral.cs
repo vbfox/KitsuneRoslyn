@@ -10,6 +10,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.SyntaxFactoryAdditions;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 
+#pragma warning disable 1998 // This async method lacks 'await' operators and will run synchronously
+
 namespace BlackFox.Roslyn.TestDiagnostics.NoStringEmpty
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
