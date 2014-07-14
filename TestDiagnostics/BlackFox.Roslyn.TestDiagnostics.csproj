@@ -95,11 +95,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeFixProviderBase.cs" />
-    <Compile Include="NoStringConcat\NoStringConcatAnalyzer.cs" />
-    <Compile Include="NoStringConcat\ReplaceStringConcatWithSingleString.cs" />
-    <Compile Include="NoStringConcat\ReplaceStringConcatWithStringFormat.cs" />
-    <Compile Include="NoStringConcat\StringConcatClassification.cs" />
-    <Compile Include="NoStringConcat\StringConcatInfo.cs" />
+    <Compile Include="StringConcatenation\NoStringConcat\NoStringConcatAnalyzer.cs" />
+    <Compile Include="StringConcatenation\NoStringConcat\ReplaceStringConcatWithSingleString.cs" />
+    <Compile Include="StringConcatenation\NoStringConcat\ReplaceStringConcatWithStringFormat.cs" />
+    <Compile Include="StringConcatenation\NoStringConcat\StringConcatClassification.cs" />
+    <Compile Include="StringConcatenation\NoStringConcat\StringConcatInfo.cs" />
     <Compile Include="OverloadDefinition.cs" />
     <Compile Include="ReplacementCodeFixProviderBase.cs" />
     <Compile Include="RoslynExtensions\DiagnosticExtensions.cs" />
@@ -112,8 +112,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoslynExtensions\SyntaxFactoryAdditions.cs" />
     <Compile Include="RoslynExtensions\SyntaxNodeExtensions.cs" />
-    <Compile Include="NoStringConcat\StringCoalescing.cs" />
-    <Compile Include="NoStringConcat\StringConcatReplacement.cs" />
+    <Compile Include="StringConcatenation\StringCoalescing.cs" />
+    <Compile Include="StringConcatenation\NoStringConcat\StringConcatReplacement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

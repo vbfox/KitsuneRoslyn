@@ -10,7 +10,7 @@ using System.Linq;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.TypeSymbolExtensions;
 
-namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
+namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation.NoStringConcat
 {
     static class StringConcatIdentification
     {

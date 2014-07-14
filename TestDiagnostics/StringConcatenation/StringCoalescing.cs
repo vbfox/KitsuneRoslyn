@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
+namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation
 {
     static class StringCoalescing
     {
@@ -45,7 +45,8 @@ namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
                         return "";
 
                     default:
-                        throw new ArgumentException("Unexpected literal kind: " + expression.CSharpKind(), "expression");
+                        throw new ArgumentException("Unexpected literal kind: " + expression.CSharpKind(),
+                            "expression");
                 }
             });
 

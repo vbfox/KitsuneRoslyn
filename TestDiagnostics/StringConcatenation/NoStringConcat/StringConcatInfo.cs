@@ -8,9 +8,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
-using BlackFox.Roslyn.TestDiagnostics.NoStringConcat.StringConcatIdentification;
+using BlackFox.Roslyn.TestDiagnostics.StringConcatenation.NoStringConcat.StringConcatIdentification;
 
-namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
+namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation.NoStringConcat
 {
     class StringConcatInfo
     {

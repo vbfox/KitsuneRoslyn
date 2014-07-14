@@ -2,7 +2,7 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
-using BlackFox.Roslyn.TestDiagnostics.NoStringConcat;
+using BlackFox.Roslyn.TestDiagnostics.StringConcatenation.NoStringConcat;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
 using TestDiagnosticsUnitTests.Helpers.DiagnosticTestHelpers;

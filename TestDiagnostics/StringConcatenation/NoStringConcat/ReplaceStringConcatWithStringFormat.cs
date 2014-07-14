@@ -15,7 +15,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
+namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation.NoStringConcat
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class ReplaceStringConcatWithStringFormat : ReplacementCodeFixProviderBase

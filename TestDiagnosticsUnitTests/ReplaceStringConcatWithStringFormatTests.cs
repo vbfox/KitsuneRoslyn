@@ -4,7 +4,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestDiagnosticsUnitTests.Helpers.CodeFixTestHelpers;
-using BlackFox.Roslyn.TestDiagnostics.NoStringConcat;
+using BlackFox.Roslyn.TestDiagnostics.StringConcatenation.NoStringConcat;
 
 namespace TestDiagnosticsUnitTests
 {

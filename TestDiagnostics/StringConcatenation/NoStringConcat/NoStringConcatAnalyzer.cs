@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace BlackFox.Roslyn.TestDiagnostics.NoStringConcat
+namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation.NoStringConcat
 {
     [DiagnosticAnalyzer]
     [ExportDiagnosticAnalyzer("BlackFox.NoStringConcat", LanguageNames.CSharp)]
