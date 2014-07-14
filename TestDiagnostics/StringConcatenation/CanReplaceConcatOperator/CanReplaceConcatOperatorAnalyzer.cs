@@ -10,7 +10,7 @@ using System;
 using System.Collections.Immutable;
 using System.Threading;
 
-namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation.CanReplaceConcatOperator
+namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperator
 {
     [DiagnosticAnalyzer]
     [ExportDiagnosticAnalyzer("BlackFox.CanReplaceConcatOperator", LanguageNames.CSharp)]

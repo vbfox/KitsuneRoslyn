@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
+namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 {
     public static class DocumentExtensions
     {

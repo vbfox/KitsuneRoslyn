@@ -7,7 +7,7 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
+namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 {
     static class TypeSymbolExtensions
     {

@@ -2,16 +2,16 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
+using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Immutable;
 using System.Threading;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
 
-namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
+namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
 {
     [DiagnosticAnalyzer]
     [ExportDiagnosticAnalyzer(Id, LanguageNames.CSharp)]

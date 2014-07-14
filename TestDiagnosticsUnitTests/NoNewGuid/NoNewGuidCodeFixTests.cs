@@ -2,11 +2,10 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
+using BlackFox.Roslyn.Diagnostics.TestHelpers.CodeFixTestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestDiagnosticsUnitTests.Helpers.CodeFixTestHelpers;
-using BlackFox.Roslyn.TestDiagnostics.NoNewGuid;
 
-namespace TestDiagnosticsUnitTests
+namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
 {
     [TestClass]
     public class NoNewGuidCodeFixTests

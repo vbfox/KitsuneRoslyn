@@ -2,16 +2,16 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
-using System.Threading;
-using System.Threading.Tasks;
+using BlackFox.Roslyn.Diagnostics.RoslynExtensions.SyntaxFactoryAdditions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.SyntaxFactoryAdditions;
+using System.Threading;
+using System.Threading.Tasks;
 
 #pragma warning disable 1998 // This async method lacks 'await' operators and will run synchronously
 
-namespace BlackFox.Roslyn.TestDiagnostics.NoNewGuid
+namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class ReplaceNewGuidWithGuidEmpty : ReplacementCodeFixProviderBase

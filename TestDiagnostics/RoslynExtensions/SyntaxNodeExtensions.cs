@@ -5,7 +5,7 @@
 using Microsoft.CodeAnalysis;
 using System;
 
-namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
+namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 {
     static class SyntaxNodeExtensions
     {

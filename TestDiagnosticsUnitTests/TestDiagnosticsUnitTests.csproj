@@ -7,8 +7,8 @@
     <ProjectGuid>{663E1426-B1E8-4AE5-BF39-9CB8B2D9400A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestDiagnosticsUnitTests</RootNamespace>
-    <AssemblyName>TestDiagnosticsUnitTests</AssemblyName>
+    <RootNamespace>BlackFox.Roslyn.Diagnostics</RootNamespace>
+    <AssemblyName>BlackFox.Roslyn.Diagnostics.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -71,24 +71,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\CodeFixTestHelpers.cs" />
-    <Compile Include="Helpers\DiagnosticTestHelpers.cs" />
-    <Compile Include="ReplaceStringConcatWithSingleStringTests.cs" />
-    <Compile Include="NoNewGuidCodeFixTests.cs" />
-    <Compile Include="NoStringConcatAnalyzerTests.cs" />
-    <Compile Include="NoNewGuidAnalyzerTests.cs" />
-    <Compile Include="NoStringEmptyAnalyzerTests.cs" />
-    <Compile Include="NoStringEmptyCodeFixTests.cs" />
+    <Compile Include="TestHelpers\CodeFixTestHelpers.cs" />
+    <Compile Include="TestHelpers\DiagnosticTestHelpers.cs" />
+    <Compile Include="StringConcatenation\NoStringConcat\ReplaceStringConcatWithSingleStringTests.cs" />
+    <Compile Include="NoNewGuid\NoNewGuidCodeFixTests.cs" />
+    <Compile Include="StringConcatenation\NoStringConcat\NoStringConcatAnalyzerTests.cs" />
+    <Compile Include="NoNewGuid\NoNewGuidAnalyzerTests.cs" />
+    <Compile Include="NoStringEmpty\NoStringEmptyAnalyzerTests.cs" />
+    <Compile Include="NoStringEmpty\NoStringEmptyCodeFixTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReplaceStringConcatWithStringFormatTests.cs" />
+    <Compile Include="StringConcatenation\NoStringConcat\ReplaceStringConcatWithStringFormatTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TestDiagnostics\BlackFox.Roslyn.TestDiagnostics.csproj">
+    <ProjectReference Include="..\TestDiagnostics\BlackFox.Roslyn.Diagnostics.csproj">
       <Project>{0c5bb55f-b83d-4faf-8095-980ba1c19b45}</Project>
-      <Name>BlackFox.Roslyn.TestDiagnostics</Name>
+      <Name>BlackFox.Roslyn.Diagnostics</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -2,19 +2,17 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
-using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
+using BlackFox.Roslyn.Diagnostics.RoslynExtensions.SyntaxFactoryAdditions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.SyntaxFactoryAdditions;
 
-namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation
+namespace BlackFox.Roslyn.Diagnostics.StringConcatenation
 {
     static class StringCoalescing
     {

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace BlackFox.Roslyn.TestDiagnostics
+namespace BlackFox.Roslyn.Diagnostics
 {
     class OverloadDefinition
     {

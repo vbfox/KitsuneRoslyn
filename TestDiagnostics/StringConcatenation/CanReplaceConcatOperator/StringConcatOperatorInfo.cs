@@ -2,7 +2,7 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
-using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
+using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,7 +10,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation.CanReplaceConcatOperator
+namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperator
 {
     class StringConcatOperatorInfo
     {

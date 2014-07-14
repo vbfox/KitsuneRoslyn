@@ -9,8 +9,8 @@
     <ProjectGuid>{0C5BB55F-B83D-4FAF-8095-980BA1C19B45}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlackFox.Roslyn.TestDiagnostics</RootNamespace>
-    <AssemblyName>BlackFox.Roslyn.TestDiagnostics</AssemblyName>
+    <RootNamespace>BlackFox.Roslyn.Diagnostics</RootNamespace>
+    <AssemblyName>BlackFox.Roslyn.Diagnostics</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>

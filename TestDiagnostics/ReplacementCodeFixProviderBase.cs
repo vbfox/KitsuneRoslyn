@@ -2,15 +2,15 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
+using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
-using System.Collections.Immutable;
 
-namespace BlackFox.Roslyn.TestDiagnostics
+namespace BlackFox.Roslyn.Diagnostics
 {
     public abstract class ReplacementCodeFixProviderBase : CodeFixProviderBase
     {

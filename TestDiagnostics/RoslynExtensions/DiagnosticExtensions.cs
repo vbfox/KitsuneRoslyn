@@ -2,12 +2,12 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
+using System.Linq;
 
-namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
+namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 {
     static class DiagnosticExtensions
     {

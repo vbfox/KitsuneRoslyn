@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 #pragma warning disable 1998 // This async method lacks 'await' operators and will run synchronously
 
-namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation.CanReplaceConcatOperator
+namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperator
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class ReplaceConcatenationWithStringFormat : ReplacementCodeFixProviderBase

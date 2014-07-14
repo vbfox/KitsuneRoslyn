@@ -2,7 +2,7 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
-using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.SyntaxFactoryAdditions;
+using BlackFox.Roslyn.Diagnostics.RoslynExtensions.SyntaxFactoryAdditions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 #pragma warning disable 1998 // This async method lacks 'await' operators and will run synchronously
 
-namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation.NoStringConcat
+namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class ReplaceStringConcatWithSingleString : ReplacementCodeFixProviderBase

@@ -2,15 +2,15 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
-using System.Collections.Immutable;
+using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
+using BlackFox.Roslyn.Diagnostics.RoslynExtensions.TypeSymbolExtensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Immutable;
 using System.Linq;
-using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions;
-using BlackFox.Roslyn.TestDiagnostics.RoslynExtensions.TypeSymbolExtensions;
 
-namespace BlackFox.Roslyn.TestDiagnostics.StringConcatenation.NoStringConcat
+namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
 {
     static class StringConcatIdentification
     {

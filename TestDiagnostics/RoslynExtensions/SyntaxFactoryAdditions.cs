@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BlackFox.Roslyn.TestDiagnostics.RoslynExtensions
+namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 {
     static class SyntaxFactoryAdditions
     {
