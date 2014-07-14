@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿// Copyright (c) Julien Roncaglia.  All Rights Reserved.
+// Licensed under the BSD 2-Clause License.
+// See LICENSE.txt in the project root for license information.
+
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
