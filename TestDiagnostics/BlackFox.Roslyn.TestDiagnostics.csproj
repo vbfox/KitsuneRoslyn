@@ -97,7 +97,8 @@
   <ItemGroup>
     <Compile Include="CodeFixProviderBase.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\CanReplaceConcatOperatorAnalyzer.cs" />
-    <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceStringConcatWithSingleString.cs" />
+    <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithSingleString.cs" />
+    <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithStringFormat.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\StringConcatOperatorClassification.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\StringConcatOperatorInfo.cs" />
     <Compile Include="StringConcatenation\NoStringConcat\NoStringConcatAnalyzer.cs" />
