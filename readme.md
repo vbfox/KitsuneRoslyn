@@ -38,7 +38,7 @@ of the potential optimization.
 
 **Default level**: Warning
 
-Avoid `String.concat`
+Avoid `string.concat`
 ---------------------
 
 This rule matches calls to `string.Concat` that provide strings or objects directly as argument.
