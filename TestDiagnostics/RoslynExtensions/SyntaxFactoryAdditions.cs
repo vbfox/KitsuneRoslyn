@@ -51,7 +51,7 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
         {
             if (expressions == null)
             {
-                throw new ArgumentNullException("names");
+                throw new ArgumentNullException("expressions");
             }
 
             var arguments = expressions.Select(e => Argument(e));

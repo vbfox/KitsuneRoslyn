@@ -46,15 +46,15 @@ namespace BlackFox.Roslyn.Diagnostics
                 .Add(diagnosticId, fixDescription);
         }
 
-        IEnumerable<string> ICodeFixProvider.GetFixableDiagnosticIds()
+        public IEnumerable<string> GetFixableDiagnosticIds()
         {
             return diagnosticIdsAndDescriptions.Keys;
         }
 
-        protected abstract Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel model,
+        protected abstract Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel semanticModel,
             SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken);
 
-        async Task<IEnumerable<CodeAction>> ICodeFixProvider.GetFixesAsync(Document document, TextSpan span,
+        public async Task<IEnumerable<CodeAction>> GetFixesAsync(Document document, TextSpan span,
             IEnumerable<Diagnostic> diagnostics, CancellationToken cancellationToken)
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);

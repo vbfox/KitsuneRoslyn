@@ -49,6 +49,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -108,7 +110,6 @@
     <Compile Include="StringConcatenation\NoStringConcat\StringConcatInfo.cs" />
     <Compile Include="OverloadDefinition.cs" />
     <Compile Include="ReplacementCodeFixProviderBase.cs" />
-    <Compile Include="RoslynExtensions\DiagnosticExtensions.cs" />
     <Compile Include="RoslynExtensions\DocumentExtensions.cs" />
     <Compile Include="RoslynExtensions\TypeSymbolExtensions.cs" />
     <Compile Include="NoNewGuid\ReplaceNewGuidWithGuidEmpty.cs" />

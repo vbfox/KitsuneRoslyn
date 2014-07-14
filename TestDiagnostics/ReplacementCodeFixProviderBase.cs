@@ -17,7 +17,7 @@ namespace BlackFox.Roslyn.Diagnostics
         protected virtual bool Simplify { get { return false; } }
         protected virtual bool Format { get { return false; } }
 
-        public ReplacementCodeFixProviderBase(string diagnosticId, string fixDescription)
+        protected ReplacementCodeFixProviderBase(string diagnosticId, string fixDescription)
             : base(diagnosticId, fixDescription)
         {
         }
@@ -77,7 +77,7 @@ namespace BlackFox.Roslyn.Diagnostics
             return annotations;
         }
 
-        protected abstract Task<SyntaxNode> GetReplacementNodeAsync(Document document, SemanticModel model,
+        protected abstract Task<SyntaxNode> GetReplacementNodeAsync(Document document, SemanticModel semanticModel,
             SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken);
     }
 }

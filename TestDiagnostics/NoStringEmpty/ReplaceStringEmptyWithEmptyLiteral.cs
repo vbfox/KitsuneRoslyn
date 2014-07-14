@@ -26,8 +26,9 @@ namespace BlackFox.Roslyn.Diagnostics.NoStringEmpty
 
         LiteralExpressionSyntax emptyStringLiteralExpression = StringLiteralExpression("");
 
-        protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document, SemanticModel model,
-            SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken)
+        protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
+            SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,
+            CancellationToken cancellationToken)
         {
             var stringEmptyExpression = (MemberAccessExpressionSyntax)nodeToFix;
             var finalExpression = emptyStringLiteralExpression.WithSameTriviaAs(stringEmptyExpression);

@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 
 namespace BlackFox.Roslyn.Diagnostics.StringConcatenation
@@ -46,7 +47,7 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation
                         return "";
 
                     default:
-                        var message = string.Format(
+                        var message = string.Format(CultureInfo.InvariantCulture,
                             "Unexpected kind: {0} expected string, character or null literal",
                             expression.CSharpKind());
                         throw new ArgumentException(message, "expression");

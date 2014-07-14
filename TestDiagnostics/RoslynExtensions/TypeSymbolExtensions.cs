@@ -63,11 +63,6 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
             return symbol != null && symbol.SpecialType == SpecialType.System_String;
         }
 
-        public static bool IsSystemChar(this ITypeSymbol symbol)
-        {
-            return symbol != null && symbol.SpecialType == SpecialType.System_Char;
-        }
-
         public static bool IsSystemObject(this ITypeSymbol symbol)
         {
             return symbol != null && symbol.SpecialType == SpecialType.System_Object;

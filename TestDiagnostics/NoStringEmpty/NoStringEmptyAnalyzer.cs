@@ -39,7 +39,15 @@ namespace BlackFox.Roslyn.Diagnostics.NoStringEmpty
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)
         {
-            var memberAccess = (MemberAccessExpressionSyntax)node;
+            var memberAccess = node as MemberAccessExpressionSyntax;
+            if (memberAccess == null)
+            {
+                throw new ArgumentException("Node isn't an instance of MemberAccessExpressionSyntax", "node");
+            }
+            if (addDiagnostic == null)
+            {
+                throw new ArgumentNullException("addDiagnostic");
+            }
 
             var symbol = semanticModel.GetSymbolInfo(memberAccess).Symbol;
             if (symbol == null

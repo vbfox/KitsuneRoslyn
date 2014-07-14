@@ -33,8 +33,9 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
 
         ExpressionSyntax guidEmptyExpression = SimpleMemberAccessExpression("System", "Guid", "Empty");
 
-        protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document, SemanticModel model,
-            SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken)
+        protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
+            SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,
+            CancellationToken cancellationToken)
         {
             return guidEmptyExpression;
         }

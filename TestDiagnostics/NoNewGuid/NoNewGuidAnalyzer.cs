@@ -39,8 +39,16 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)
         {
-            var objectCreation = (ObjectCreationExpressionSyntax)node;
-            
+            var objectCreation = node as ObjectCreationExpressionSyntax;
+            if (objectCreation == null)
+            {
+                throw new ArgumentException("Node isn't an instance of ObjectCreationExpressionSyntax", "node");
+            }
+            if (addDiagnostic == null)
+            {
+                throw new ArgumentNullException("addDiagnostic");
+            }
+
             var symbol = semanticModel.GetSymbolInfo(objectCreation).Symbol as IMethodSymbol;
             
             // Non-Static constructor without parameter
