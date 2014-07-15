@@ -65,6 +65,7 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
                 case StringConcatClassification.ReplaceWithSingleString:
                     addDiagnostic(Diagnostic.Create(UseStringDescriptor, node.GetLocation()));
                     break;
+
                 case StringConcatClassification.ReplaceWithStringFormat:
                     addDiagnostic(Diagnostic.Create(UseFormatDescriptor, node.GetLocation()));
                     break;

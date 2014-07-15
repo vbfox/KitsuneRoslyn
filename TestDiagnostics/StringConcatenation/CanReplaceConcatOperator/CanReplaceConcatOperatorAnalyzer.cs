@@ -67,6 +67,7 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperat
                 case StringConcatOperatorClassification.ReplaceWithSingleString:
                     addDiagnostic(Diagnostic.Create(UseStringDescriptor, node.GetLocation()));
                     break;
+
                 case StringConcatOperatorClassification.ReplaceWithStringFormat:
                     addDiagnostic(Diagnostic.Create(UseFormatDescriptor, node.GetLocation()));
                     break;
