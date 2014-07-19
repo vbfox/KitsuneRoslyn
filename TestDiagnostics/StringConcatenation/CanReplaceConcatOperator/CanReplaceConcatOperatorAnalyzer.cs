@@ -20,32 +20,30 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperat
         public const string UseStringId = "BlackFox.CanReplaceConcatOperator_UseString";
 
         // "a" + b -> string.Format("a{0}, b)
-        public static DiagnosticDescriptor UseFormatDescriptor = new DiagnosticDescriptor(
-            UseFormatId,
-            "string.Format can be used instead of concatenation",
-            "string.Format can be used instead of concatenation",
-            "Readability",
-            DiagnosticSeverity.Hidden,
-            isEnabledByDefault: true);
+        public static DiagnosticDescriptor UseFormatDescriptor { get; }
+            = new DiagnosticDescriptor(
+                UseFormatId,
+                "string.Format can be used instead of concatenation",
+                "string.Format can be used instead of concatenation",
+                "Readability",
+                DiagnosticSeverity.Hidden,
+                isEnabledByDefault: true);
 
         // "a" + "b" -> "ab"
-        public static DiagnosticDescriptor UseStringDescriptor = new DiagnosticDescriptor(
-            UseStringId,
-            "A single string can be used instead of concatenation",
-            "A single string can be used instead of concatenation",
-            "Readability",
-            DiagnosticSeverity.Hidden,
-            isEnabledByDefault: true);
+        public static DiagnosticDescriptor UseStringDescriptor { get; }
+            = new DiagnosticDescriptor(
+                UseStringId,
+                "A single string can be used instead of concatenation",
+                "A single string can be used instead of concatenation",
+                "Readability",
+                DiagnosticSeverity.Hidden,
+                isEnabledByDefault: true);
 
-        static readonly ImmutableArray<DiagnosticDescriptor> supportedDiagnostics
+        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(UseFormatDescriptor, UseStringDescriptor);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return supportedDiagnostics; } }
-
-        static readonly ImmutableArray<SyntaxKind> syntaxKindsOfInterest
+        public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
             = ImmutableArray.Create(SyntaxKind.AddExpression);
-
-        public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get { return syntaxKindsOfInterest; } }
 
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)

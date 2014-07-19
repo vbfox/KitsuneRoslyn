@@ -18,21 +18,9 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperat
     {
         public const string Id = "BlackFox.ReplaceConcatenationWithStringFormat";
 
-        protected override bool Simplify
-        {
-            get
-            {
-                return true;
-            }
-        }
+        protected override bool Simplify { get; } = true;
 
-        protected override bool Format
-        {
-            get
-            {
-                return true;
-            }
-        }
+        protected override bool Format { get; } = true;
 
         public ReplaceConcatenationWithStringFormat()
             : base(CanReplaceConcatOperatorAnalyzer.UseFormatId, "Replace with String.Format")

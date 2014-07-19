@@ -19,22 +19,20 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
     {
         public const string Id = "BlackFox.NoNewGuid";
 
-        public static DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
-            Id,
-            "Don't use new Guid()",
-            "Don't use new Guid() prefer Guid.Empty",
-            "Readability",
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true);
+        public static DiagnosticDescriptor Descriptor { get; }
+            = new DiagnosticDescriptor(
+                Id,
+                "Don't use new Guid()",
+                "Don't use new Guid() prefer Guid.Empty",
+                "Readability",
+                DiagnosticSeverity.Warning,
+                isEnabledByDefault: true);
 
-        static readonly ImmutableArray<DiagnosticDescriptor> supportedDiagnostics = ImmutableArray.Create(Descriptor);
+        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+            = ImmutableArray.Create(Descriptor);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return supportedDiagnostics; } }
-
-        static readonly ImmutableArray<SyntaxKind> syntaxKindsOfInterest
+        public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
             = ImmutableArray.Create(SyntaxKind.ObjectCreationExpression);
-
-        public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get { return syntaxKindsOfInterest; } }
 
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)
@@ -67,6 +65,5 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
             
             addDiagnostic(Diagnostic.Create(Descriptor, node.GetLocation()));
         }
-
     }
 }

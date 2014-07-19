@@ -60,28 +60,26 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 
         public static bool IsSystemString(this ITypeSymbol symbol)
         {
-            return symbol != null && symbol.SpecialType == SpecialType.System_String;
+            return symbol?.SpecialType == SpecialType.System_String;
         }
 
         public static bool IsSystemObject(this ITypeSymbol symbol)
         {
-            return symbol != null && symbol.SpecialType == SpecialType.System_Object;
+            return symbol?.SpecialType == SpecialType.System_Object;
         }
 
         public static bool IsArrayOfSystemString(this ITypeSymbol symbol)
         {
             var arraySymbol = symbol as IArrayTypeSymbol;
 
-            return arraySymbol != null
-                && arraySymbol.ElementType.SpecialType == SpecialType.System_String;
+            return arraySymbol?.ElementType?.SpecialType == SpecialType.System_String;
         }
 
         public static bool IsArrayOfSystemObject(this ITypeSymbol symbol)
         {
             var arraySymbol = symbol as IArrayTypeSymbol;
 
-            return arraySymbol != null
-                && arraySymbol.ElementType.SpecialType == SpecialType.System_Object;
+            return arraySymbol?.ElementType?.SpecialType == SpecialType.System_Object;
         }
     }
 }

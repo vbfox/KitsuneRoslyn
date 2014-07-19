@@ -18,23 +18,20 @@ namespace BlackFox.Roslyn.Diagnostics.NoStringEmpty
     {
         public const string Id = "BlackFox.NoStringEmpty";
 
-        public static DiagnosticDescriptor Descriptor = new DiagnosticDescriptor(
-            Id,
-            "Don't use String.Empty",
-            "String.Empty should be replaced by \"\"",
-            "Readability",
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true);
+        public static DiagnosticDescriptor Descriptor { get; }
+            = new DiagnosticDescriptor(
+                Id,
+                "Don't use String.Empty",
+                "String.Empty should be replaced by \"\"",
+                "Readability",
+                DiagnosticSeverity.Warning,
+                isEnabledByDefault: true);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Descriptor); } }
+        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+            = ImmutableArray.Create(Descriptor);
 
-        public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest
-        {
-            get
-            {
-                return ImmutableArray.Create(SyntaxKind.SimpleMemberAccessExpression);
-            }
-        }
+        public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
+            = ImmutableArray.Create(SyntaxKind.SimpleMemberAccessExpression);
 
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)

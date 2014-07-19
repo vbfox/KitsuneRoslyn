@@ -12,7 +12,8 @@ using System.Linq;
 
 namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperator
 {
-    class StringConcatOperatorInfo
+    class StringConcatOperatorInfo(StringConcatOperatorClassification classification,
+        ImmutableList<ExpressionSyntax> expressions)
     {
         public static StringConcatOperatorInfo NoReplacement
         {
@@ -24,15 +25,8 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperat
             }
         }
 
-        public StringConcatOperatorClassification Classification { get; private set; }
-        public ImmutableList<ExpressionSyntax> Expressions { get; private set; }
-
-        private StringConcatOperatorInfo(StringConcatOperatorClassification classification,
-            ImmutableList<ExpressionSyntax> expressions)
-        {
-            Classification = classification;
-            Expressions = expressions;
-        }
+        public StringConcatOperatorClassification Classification { get; } = classification;
+        public ImmutableList<ExpressionSyntax> Expressions { get; } = expressions;
 
         public static StringConcatOperatorInfo Create(BinaryExpressionSyntax binaryExpression,
             SemanticModel semanticModel)

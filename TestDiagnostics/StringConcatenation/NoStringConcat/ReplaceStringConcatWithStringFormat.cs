@@ -18,21 +18,9 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
     {
         public const string Id = "BlackFox.ReplaceStringConcatWithStringFormat";
 
-        protected override bool Simplify
-        {
-            get
-            {
-                return true;
-            }
-        }
+        protected override bool Simplify { get; } = true;
 
-        protected override bool Format
-        {
-            get
-            {
-                return true;
-            }
-        }
+        protected override bool Format { get; } = true;
 
         public ReplaceStringConcatWithStringFormat()
             : base(NoStringConcatAnalyzer.UseFormatId, "Replace with String.Format")

@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
 {
-    class StringConcatInfo
+    class StringConcatInfo(StringConcatClassification classification, ImmutableList<ExpressionSyntax> expressions)
     {
         public static StringConcatInfo NoReplacement
         {
@@ -24,15 +24,8 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
             }
         }
 
-        public StringConcatClassification Classification { get; private set; }
-        public ImmutableList<ExpressionSyntax> Expressions { get; private set; }
-
-        private StringConcatInfo(StringConcatClassification classification,
-            ImmutableList<ExpressionSyntax> expressions)
-        {
-            Classification = classification;
-            Expressions = expressions;
-        }
+        public StringConcatClassification Classification { get; } = classification;
+        public ImmutableList<ExpressionSyntax> Expressions { get; } = expressions;
 
         public static StringConcatInfo Create(InvocationExpressionSyntax invocation, SemanticModel semanticModel)
         {

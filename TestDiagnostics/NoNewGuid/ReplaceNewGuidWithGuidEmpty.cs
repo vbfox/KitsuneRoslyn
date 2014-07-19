@@ -23,15 +23,10 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
         {
         }
 
-        protected override bool Simplify
-        {
-            get
-            {
-                return true;
-            }
-        }
+        protected override bool Simplify { get; } = true;
 
-        ExpressionSyntax guidEmptyExpression = SimpleMemberAccessExpression("System", "Guid", "Empty");
+        static readonly ExpressionSyntax guidEmptyExpression
+            = SimpleMemberAccessExpression("System", "Guid", "Empty");
 
         protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,

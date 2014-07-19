@@ -19,31 +19,29 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
         public const string UseFormatId = "BlackFox.NoStringConcat_UseFormat";
         public const string UseStringId = "BlackFox.NoStringConcat_UseString";
 
-        public static DiagnosticDescriptor UseFormatDescriptor = new DiagnosticDescriptor(
-            UseFormatId,
-            "Don't use string.Concat prefer string.Format",
-            "Don't use string.Concat prefer string.Format",
-            "Readability",
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true);
+        public static DiagnosticDescriptor UseFormatDescriptor { get; }
+            = new DiagnosticDescriptor(
+                UseFormatId,
+                "Don't use string.Concat prefer string.Format",
+                "Don't use string.Concat prefer string.Format",
+                "Readability",
+                DiagnosticSeverity.Warning,
+                isEnabledByDefault: true);
 
-        public static DiagnosticDescriptor UseStringDescriptor = new DiagnosticDescriptor(
-            UseStringId,
-            "Don't use string.Concat prefer a simple string",
-            "Don't use string.Concat prefer a simple string",
-            "Readability",
-            DiagnosticSeverity.Warning,
-            isEnabledByDefault: true);
+        public static DiagnosticDescriptor UseStringDescriptor { get; }
+            = new DiagnosticDescriptor(
+                UseStringId,
+                "Don't use string.Concat prefer a simple string",
+                "Don't use string.Concat prefer a simple string",
+                "Readability",
+                DiagnosticSeverity.Warning,
+                isEnabledByDefault: true);
 
-        static readonly ImmutableArray<DiagnosticDescriptor> supportedDiagnostics
+        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(UseFormatDescriptor, UseStringDescriptor);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return supportedDiagnostics; } }
-
-        static readonly ImmutableArray<SyntaxKind> syntaxKindsOfInterest
+        public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
             = ImmutableArray.Create(SyntaxKind.InvocationExpression);
-
-        public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get { return syntaxKindsOfInterest; } }
 
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)
