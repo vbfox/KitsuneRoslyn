@@ -35,8 +35,9 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
                 "Use implicitly typed local variable declaration",
                 "Use implicitly typed local variable declaration",
                 "Readability",
-                DiagnosticSeverity.Warning,
-                isEnabledByDefault: true);
+                DiagnosticSeverity.Info,
+                isEnabledByDefault: true,
+                customTags: WellKnownDiagnosticTags.Unnecessary);
 
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(Descriptor);
