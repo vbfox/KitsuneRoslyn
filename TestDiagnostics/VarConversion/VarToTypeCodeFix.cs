@@ -22,7 +22,7 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
         protected override bool Simplify { get; } = true;
 
         public VarToTypeCodeFix()
-            :base(VarToTypeAnalyzer.Id, "var can be replaced with specific type")
+            :base(VarToTypeAnalyzer.Id, "Specify type explicitly")
         {
         }
 

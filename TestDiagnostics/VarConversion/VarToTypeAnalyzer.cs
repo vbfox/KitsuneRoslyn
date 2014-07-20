@@ -21,8 +21,8 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
         public static DiagnosticDescriptor Descriptor { get; }
             = new DiagnosticDescriptor(
                 Id,
-                "var can be replaced with specific type",
-                "var can be replaced with '{0}'",
+                "Type can be explicitly specified",
+                "{0} can be explicitly specified",
                 "Readability",
                 DiagnosticSeverity.Hidden,
                 isEnabledByDefault: true);
