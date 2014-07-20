@@ -99,6 +99,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeFixProviderBase.cs" />
+    <Compile Include="FromRoslynOfficialSource\CSharpExtensions\ITypeSymbolExtensions.cs" />
+    <Compile Include="FromRoslynOfficialSource\CSharpExtensions\ITypeSymbolExtensions.TypeSyntaxGeneratorVisitor.cs" />
+    <Compile Include="FromRoslynOfficialSource\CSharpExtensions\StringExtensions.cs" />
+    <Compile Include="FromRoslynOfficialSource\CSharpExtensions\SyntaxListExtensions.cs" />
+    <Compile Include="FromRoslynOfficialSource\CSharpExtensions\SyntaxNodeExtensions.cs" />
+    <Compile Include="FromRoslynOfficialSource\SharedExtensions\ISymbolExtensions.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\CanReplaceConcatOperatorAnalyzer.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithSingleString.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithStringFormat.cs" />
@@ -122,6 +128,8 @@
     <Compile Include="RoslynExtensions\SyntaxNodeExtensions.cs" />
     <Compile Include="StringConcatenation\StringCoalescing.cs" />
     <Compile Include="StringConcatenation\NoStringConcat\StringConcatIdentification.cs" />
+    <Compile Include="VarConversion\VarToTypeCodeFix.cs" />
+    <Compile Include="VarConversion\VarToTypeAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -161,7 +169,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="FromRoslynOfficialSource\License.txt" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
