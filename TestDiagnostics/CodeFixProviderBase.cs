@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -54,16 +55,27 @@ namespace BlackFox.Roslyn.Diagnostics
         protected abstract Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel semanticModel,
             SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken);
 
-        public async Task<IEnumerable<CodeAction>> GetFixesAsync(Document document, TextSpan span,
+        public Task<IEnumerable<CodeAction>> GetFixesAsync(Document document, TextSpan span,
             IEnumerable<Diagnostic> diagnostics, CancellationToken cancellationToken)
         {
-            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var model = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-
-            var actions = ImmutableList<CodeAction>.Empty;
+            var actions = ImmutableList<CodeAction>.Empty.ToBuilder();
             foreach (var diagnostic in diagnostics)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+
+                var codeAction = GetCodeAction(document, diagnostic);
+
+                actions.Add(codeAction);
+            }
+
+            return Task.FromResult(actions.ToImmutable().AsEnumerable());
+        }
+
+        private CodeAction GetCodeAction(Document document, Diagnostic diagnostic)
+        {
+            Func<CancellationToken, Task<Document>> applyFix = async (cancellationToken) => {
+                var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+                var model = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 
                 var nodeToFix = root.FindNode(diagnostic.Location.SourceSpan,
                     getInnermostNodeForTie: GetInnermostNodeForTie);
@@ -71,15 +83,11 @@ namespace BlackFox.Roslyn.Diagnostics
                 var newDocument = await GetUpdatedDocumentAsync(document, model, root, nodeToFix, diagnostic.Id,
                     cancellationToken).ConfigureAwait(false);
 
-                Debug.Assert(newDocument != null);
-                if (newDocument != document)
-                {
-                    var codeFixDescription = diagnosticIdsAndDescriptions[diagnostic.Id];
-                    actions = actions.Add(CodeAction.Create(codeFixDescription, newDocument));
-                }
-            }
+                return newDocument;
+            };
 
-            return actions;
+            var codeFixDescription = diagnosticIdsAndDescriptions[diagnostic.Id];
+            return CodeAction.Create(codeFixDescription, applyFix);
         }
     }
 }
