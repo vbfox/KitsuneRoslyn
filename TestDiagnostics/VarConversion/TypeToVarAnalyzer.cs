@@ -79,7 +79,7 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
             }
 
             var location = variableDeclaration.Type.GetLocation();
-            if (variableInitializer.Value is CastExpressionSyntax)
+            if (IsWithPotentialParentheses<CastExpressionSyntax>(variableInitializer.Value))
             {
                 addDiagnostic(Diagnostic.Create(DescriptorWithCast, location));
             }
@@ -87,6 +87,17 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
             {
                 addDiagnostic(Diagnostic.Create(Descriptor, location));
             }
+        }
+
+        static bool IsWithPotentialParentheses<T>(ExpressionSyntax expression)
+        {
+            var parenthesized = expression as ParenthesizedExpressionSyntax;
+            if (parenthesized != null)
+            {
+                return IsWithPotentialParentheses<T>(parenthesized.Expression);
+            }
+
+            return expression is T;
         }
     }
 }
