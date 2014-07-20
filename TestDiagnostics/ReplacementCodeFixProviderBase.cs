@@ -22,6 +22,11 @@ namespace BlackFox.Roslyn.Diagnostics
         {
         }
 
+        protected ReplacementCodeFixProviderBase(ImmutableDictionary<string, string> diagnosticIdsAndDescriptions)
+            : base(diagnosticIdsAndDescriptions)
+        {
+        }
+
         protected override async Task<Document> GetUpdatedDocumentAsync(Document document,
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,
             CancellationToken cancellationToken)

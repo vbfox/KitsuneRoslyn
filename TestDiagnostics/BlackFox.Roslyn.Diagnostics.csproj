@@ -129,6 +129,7 @@
     <Compile Include="StringConcatenation\StringCoalescing.cs" />
     <Compile Include="StringConcatenation\NoStringConcat\StringConcatIdentification.cs" />
     <Compile Include="VarConversion\TypeToVarAnalyzer.cs" />
+    <Compile Include="VarConversion\TypeToVarCodeFix.cs" />
     <Compile Include="VarConversion\VarToTypeCodeFix.cs" />
     <Compile Include="VarConversion\VarToTypeAnalyzer.cs" />
   </ItemGroup>
