@@ -13,7 +13,7 @@ using System.Threading;
 namespace BlackFox.Roslyn.Diagnostics.VarConversion
 {
     [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer("BlackFox.CanReplaceConcatOperator", LanguageNames.CSharp)]
+    [ExportDiagnosticAnalyzer(Id, LanguageNames.CSharp)]
     public class VarToTypeAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
         public const string Id = "BlackFox.VarToType";
