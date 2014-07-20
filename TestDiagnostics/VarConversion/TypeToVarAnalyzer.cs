@@ -14,18 +14,28 @@ using System.Threading;
 namespace BlackFox.Roslyn.Diagnostics.VarConversion
 {
     [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer(Id, LanguageNames.CSharp)]
+    [ExportDiagnosticAnalyzer("BlackFox.TypeToVar", LanguageNames.CSharp)]
     public class TypeToVarAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        public const string Id = "BlackFox.TypeToVar";
+        public const string Id = "BlackFox.TypeToVar_Normal";
+        public const string IdWithCast = "BlackFox.TypeToVar_WithCast";
 
         public static DiagnosticDescriptor Descriptor { get; }
             = new DiagnosticDescriptor(
                 Id,
-                "'var' can be used",
-                "'var' can be used",
+                "Use implicitly typed local variable declaration",
+                "Use implicitly typed local variable declaration",
                 "Readability",
                 DiagnosticSeverity.Hidden,
+                isEnabledByDefault: true);
+
+        public static DiagnosticDescriptor DescriptorWithCast { get; }
+            = new DiagnosticDescriptor(
+                IdWithCast,
+                "Use implicitly typed local variable declaration",
+                "Use implicitly typed local variable declaration",
+                "Readability",
+                DiagnosticSeverity.Warning,
                 isEnabledByDefault: true);
 
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
@@ -68,7 +78,15 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
                 return;
             }
 
-            addDiagnostic(Diagnostic.Create(Descriptor, variableDeclaration.Type.GetLocation()));
+            var location = variableDeclaration.Type.GetLocation();
+            if (variableInitializer.Value is CastExpressionSyntax)
+            {
+                addDiagnostic(Diagnostic.Create(DescriptorWithCast, location));
+            }
+            else
+            {
+                addDiagnostic(Diagnostic.Create(Descriptor, location));
+            }
         }
     }
 }
