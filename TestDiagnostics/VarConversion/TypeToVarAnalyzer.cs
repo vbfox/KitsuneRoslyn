@@ -79,14 +79,8 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
             }
 
             var location = variableDeclaration.Type.GetLocation();
-            if (IsWithPotentialParentheses<CastExpressionSyntax>(variableInitializer.Value))
-            {
-                addDiagnostic(Diagnostic.Create(DescriptorWithCast, location));
-            }
-            else
-            {
-                addDiagnostic(Diagnostic.Create(Descriptor, location));
-            }
+            var rightIsCast = IsWithPotentialParentheses<CastExpressionSyntax>(variableInitializer.Value);
+            addDiagnostic(Diagnostic.Create(rightIsCast ? DescriptorWithCast : Descriptor, location));
         }
 
         static bool IsWithPotentialParentheses<T>(ExpressionSyntax expression)
