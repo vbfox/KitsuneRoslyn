@@ -48,15 +48,8 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperat
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)
         {
-            var binaryExpression = node as BinaryExpressionSyntax;
-            if (binaryExpression == null)
-            {
-                throw new ArgumentException("Node isn't an instance of BinaryExpressionSyntax", "node");
-            }
-            if (addDiagnostic == null)
-            {
-                throw new ArgumentNullException("addDiagnostic");
-            }
+            Parameter.MustNotBeNull(addDiagnostic, "addDiagnostic");
+            var binaryExpression = Parameter.MustBeOfType<BinaryExpressionSyntax>(node, "node");
 
             var infos = StringConcatOperatorInfo.Create(binaryExpression, semanticModel);
 

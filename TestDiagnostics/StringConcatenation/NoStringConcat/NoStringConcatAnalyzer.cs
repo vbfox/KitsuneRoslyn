@@ -46,15 +46,8 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)
         {
-            var invocation = node as InvocationExpressionSyntax;
-            if (invocation == null)
-            {
-                throw new ArgumentException("Node isn't an instance of InvocationExpressionSyntax", "node");
-            }
-            if (addDiagnostic == null)
-            {
-                throw new ArgumentNullException("addDiagnostic");
-            }
+            Parameter.MustNotBeNull(addDiagnostic, "addDiagnostic");
+            var invocation = Parameter.MustBeOfType<InvocationExpressionSyntax>(node, "node");
 
             var infos = StringConcatInfo.Create(invocation, semanticModel);
 

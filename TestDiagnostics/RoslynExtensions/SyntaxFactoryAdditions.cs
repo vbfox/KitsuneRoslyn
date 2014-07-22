@@ -49,10 +49,7 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 
         public static ArgumentListSyntax ArgumentList(IEnumerable<ExpressionSyntax> expressions)
         {
-            if (expressions == null)
-            {
-                throw new ArgumentNullException("expressions");
-            }
+            Parameter.MustNotBeNull(expressions, "expressions");
 
             var arguments = expressions.Select(e => Argument(e));
 

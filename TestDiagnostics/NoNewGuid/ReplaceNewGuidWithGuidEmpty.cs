@@ -14,14 +14,10 @@ using System.Threading.Tasks;
 namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class ReplaceNewGuidWithGuidEmpty : ReplacementCodeFixProviderBase
+    public class ReplaceNewGuidWithGuidEmpty()
+        : ReplacementCodeFixProviderBase(NoNewGuidAnalyzer.Id, "Replace with Guid.Empty")
     {
         public const string Id = "BlackFox.ReplaceNewGuidWithGuidEmpty";
-
-        public ReplaceNewGuidWithGuidEmpty()
-            : base(NoNewGuidAnalyzer.Id, "Replace with Guid.Empty")
-        {
-        }
 
         protected override bool Simplify { get; } = true;
 

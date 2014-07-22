@@ -28,10 +28,10 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
                 || (argumentType.ConvertedType.IsArrayOfSystemString() && stringArrayOverload.IsOverload(symbol));
         }
 
-        static OverloadDefinition stringArrayOverload = new OverloadDefinition(IsArrayOfSystemString);
-        static OverloadDefinition objectArrayOverload = new OverloadDefinition(IsArrayOfSystemObject);
+        static readonly OverloadDefinition stringArrayOverload = new OverloadDefinition(IsArrayOfSystemString);
+        static readonly OverloadDefinition objectArrayOverload = new OverloadDefinition(IsArrayOfSystemObject);
 
-        static ImmutableArray<OverloadDefinition> concernedOverloads = ImmutableArray.Create(
+        static readonly ImmutableArray<OverloadDefinition> concernedOverloads = ImmutableArray.Create(
             new OverloadDefinition(IsSystemObject),
             stringArrayOverload,
             objectArrayOverload,
@@ -62,8 +62,7 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
         {
             var memberAccessSyntax = invocation.Expression as MemberAccessExpressionSyntax;
 
-            return memberAccessSyntax != null
-                && memberAccessSyntax.Name.Identifier.Text == "Concat";
+            return memberAccessSyntax?.Name.Identifier.Text == "Concat";
         }
     }
 }

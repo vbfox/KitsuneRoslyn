@@ -14,25 +14,21 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
 {
     class StringConcatInfo(StringConcatClassification classification, ImmutableList<ExpressionSyntax> expressions)
     {
-        public static StringConcatInfo NoReplacement
         {
-            get
-            {
-                return new StringConcatInfo(
-                    StringConcatClassification.NoReplacement,
-                    ImmutableList<ExpressionSyntax>.Empty);
-            }
+            Parameter.MustNotBeNull(expressions, "expressions");
         }
+
+        public static StringConcatInfo NoReplacement { get; }
+            = new StringConcatInfo(
+                StringConcatClassification.NoReplacement,
+                ImmutableList<ExpressionSyntax>.Empty);
 
         public StringConcatClassification Classification { get; } = classification;
         public ImmutableList<ExpressionSyntax> Expressions { get; } = expressions;
 
         public static StringConcatInfo Create(InvocationExpressionSyntax invocation, SemanticModel semanticModel)
         {
-            if (semanticModel == null)
-            {
-                throw new ArgumentNullException("semanticModel");
-            }
+            Parameter.MustNotBeNull(semanticModel, "semanticModel");
 
             if (invocation == null)
             {
@@ -60,6 +56,7 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
             SemanticModel semanticModel, IMethodSymbol methodSymbol)
         {
             ImmutableList<ExpressionSyntax> expressions;
+
             if (IsDirectArrayOverloadCall(semanticModel, invocation, methodSymbol))
             {
                 // It is one of the single array overload, called via a non-params call

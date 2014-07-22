@@ -105,6 +105,8 @@
     <Compile Include="FromRoslynOfficialSource\CSharpExtensions\SyntaxListExtensions.cs" />
     <Compile Include="FromRoslynOfficialSource\CSharpExtensions\SyntaxNodeExtensions.cs" />
     <Compile Include="FromRoslynOfficialSource\SharedExtensions\ISymbolExtensions.cs" />
+    <Compile Include="Parameter.cs" />
+    <Compile Include="RoslynExtensions\ExpressionSyntaxExtensions.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\CanReplaceConcatOperatorAnalyzer.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithSingleString.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithStringFormat.cs" />
@@ -128,6 +130,9 @@
     <Compile Include="RoslynExtensions\SyntaxNodeExtensions.cs" />
     <Compile Include="StringConcatenation\StringCoalescing.cs" />
     <Compile Include="StringConcatenation\NoStringConcat\StringConcatIdentification.cs" />
+    <Compile Include="TernaryOperators\PotentialTernaryOperator.cs" />
+    <Compile Include="TernaryOperators\UseTernaryOperatorAnalyzer.cs" />
+    <Compile Include="TernaryOperators\UseTernaryOperatorCodeFix.cs" />
     <Compile Include="VarConversion\TypeToVarAnalyzer.cs" />
     <Compile Include="VarConversion\TypeToVarCodeFix.cs" />
     <Compile Include="VarConversion\VarToTypeCodeFix.cs" />

@@ -13,11 +13,7 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
     {
         public static bool IsEqualTo(this ITypeSymbol type, params string[] names)
         {
-            if (names == null)
-            {
-                throw new ArgumentNullException("names");
-            }
-            Contract.EndContractBlock();
+            Parameter.MustNotBeNull(names, "names");
 
             if (type == null)
             {
@@ -72,14 +68,14 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
         {
             var arraySymbol = symbol as IArrayTypeSymbol;
 
-            return arraySymbol?.ElementType?.SpecialType == SpecialType.System_String;
+            return arraySymbol?.ElementType.SpecialType == SpecialType.System_String;
         }
 
         public static bool IsArrayOfSystemObject(this ITypeSymbol symbol)
         {
             var arraySymbol = symbol as IArrayTypeSymbol;
 
-            return arraySymbol?.ElementType?.SpecialType == SpecialType.System_Object;
+            return arraySymbol?.ElementType.SpecialType == SpecialType.System_Object;
         }
     }
 }

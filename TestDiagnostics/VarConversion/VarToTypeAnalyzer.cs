@@ -36,7 +36,9 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)
         {
-            var declaration = (VariableDeclarationSyntax)node;
+            Parameter.MustNotBeNull(addDiagnostic, "addDiagnostic");
+            var declaration = Parameter.MustBeOfType<VariableDeclarationSyntax>(node, "node");
+
             if (!declaration.Type.IsVar)
             {
                 return;

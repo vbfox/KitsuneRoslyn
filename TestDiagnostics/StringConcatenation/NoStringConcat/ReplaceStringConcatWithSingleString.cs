@@ -15,14 +15,10 @@ using System.Threading.Tasks;
 namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class ReplaceStringConcatWithSingleString : ReplacementCodeFixProviderBase
+    public class ReplaceStringConcatWithSingleString()
+        : ReplacementCodeFixProviderBase(NoStringConcatAnalyzer.UseStringId, "Replace with a single string")
     {
         public const string Id = "BlackFox.ReplaceStringConcatWithSingleString";
-
-        public ReplaceStringConcatWithSingleString()
-            :base(NoStringConcatAnalyzer.UseStringId, "Replace with a single string")
-        {
-        }
 
         protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,

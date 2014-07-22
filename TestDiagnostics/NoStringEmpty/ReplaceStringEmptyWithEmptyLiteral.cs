@@ -15,14 +15,10 @@ using System.Threading.Tasks;
 namespace BlackFox.Roslyn.Diagnostics.NoStringEmpty
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class ReplaceStringEmptyWithEmptyLiteral : ReplacementCodeFixProviderBase
+    public class ReplaceStringEmptyWithEmptyLiteral()
+        : ReplacementCodeFixProviderBase(NoStringEmptyAnalyzer.Id, "Use \"\"")
     {
         public const string Id = "BlackFox.ReplaceStringEmptyWithEmptyLiteral";
-
-        public ReplaceStringEmptyWithEmptyLiteral()
-            : base(NoStringEmptyAnalyzer.Id, "Use \"\"")
-        {
-        }
 
         static readonly LiteralExpressionSyntax emptyStringLiteralExpression
             = StringLiteralExpression("");
@@ -32,9 +28,8 @@ namespace BlackFox.Roslyn.Diagnostics.NoStringEmpty
             CancellationToken cancellationToken)
         {
             var stringEmptyExpression = (MemberAccessExpressionSyntax)nodeToFix;
-            var finalExpression = emptyStringLiteralExpression.WithSameTriviaAs(stringEmptyExpression);
 
-            return finalExpression;
+            return emptyStringLiteralExpression.WithSameTriviaAs(stringEmptyExpression);
         }
     }
 }

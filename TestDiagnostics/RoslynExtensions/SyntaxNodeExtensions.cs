@@ -3,7 +3,6 @@
 // See LICENSE.txt in the project root for license information.
 
 using Microsoft.CodeAnalysis;
-using System;
 
 namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 {
@@ -12,14 +11,8 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
         public static TSyntaxNode WithSameTriviaAs<TSyntaxNode>(this TSyntaxNode target, SyntaxNode source)
             where TSyntaxNode : SyntaxNode
         {
-            if (target == null)
-            {
-                throw new ArgumentNullException("target");
-            }
-            if (source == null)
-            {
-                throw new ArgumentNullException("source");
-            }
+            Parameter.MustNotBeNull(target, "target");
+            Parameter.MustNotBeNull(source, "source");
 
             return target
                 .WithLeadingTrivia(source.GetLeadingTrivia())

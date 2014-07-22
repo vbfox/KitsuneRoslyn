@@ -15,15 +15,14 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperat
     class StringConcatOperatorInfo(StringConcatOperatorClassification classification,
         ImmutableList<ExpressionSyntax> expressions)
     {
-        public static StringConcatOperatorInfo NoReplacement
         {
-            get
-            {
-                return new StringConcatOperatorInfo(
-                    StringConcatOperatorClassification.NoReplacement,
-                    ImmutableList<ExpressionSyntax>.Empty);
-            }
+            Parameter.MustNotBeNull(expressions, "expressions");
         }
+
+        public static StringConcatOperatorInfo NoReplacement { get; }
+            = new StringConcatOperatorInfo(
+                StringConcatOperatorClassification.NoReplacement,
+                ImmutableList<ExpressionSyntax>.Empty);
 
         public StringConcatOperatorClassification Classification { get; } = classification;
         public ImmutableList<ExpressionSyntax> Expressions { get; } = expressions;
@@ -31,10 +30,7 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperat
         public static StringConcatOperatorInfo Create(BinaryExpressionSyntax binaryExpression,
             SemanticModel semanticModel)
         {
-            if (semanticModel == null)
-            {
-                throw new ArgumentNullException("semanticModel");
-            }
+            Parameter.MustNotBeNull(semanticModel, "semanticModel");
 
             if (!IsStringConcatenation(semanticModel, binaryExpression))
             {
