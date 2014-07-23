@@ -1,3 +1,11 @@
+The Parts of the code in the "FromRoslynOfficialSource" folder are licensed
+under the Apache License, Version 2.0.
+The folder contains a "License.txt" file with more details.
+
+For the rest of the code the license is :
+
+-------------------------------------------------------------------------------
+
 Copyright (c) 2014, Julien Roncaglia
 All rights reserved.
 
