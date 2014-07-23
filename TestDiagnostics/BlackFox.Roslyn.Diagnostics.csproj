@@ -105,6 +105,7 @@
     <Compile Include="FromRoslynOfficialSource\CSharpExtensions\SyntaxListExtensions.cs" />
     <Compile Include="FromRoslynOfficialSource\CSharpExtensions\SyntaxNodeExtensions.cs" />
     <Compile Include="FromRoslynOfficialSource\SharedExtensions\ISymbolExtensions.cs" />
+    <Compile Include="FromRoslynOfficialSource\SyntaxEquivalence.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="RoslynExtensions\ExpressionSyntaxExtensions.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\CanReplaceConcatOperatorAnalyzer.cs" />
