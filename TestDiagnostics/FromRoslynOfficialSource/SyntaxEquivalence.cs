@@ -66,8 +66,6 @@ namespace BlackFox.Roslyn.Diagnostics.FromRoslynOfficialSource
                 return AreTokensEquivalent((SyntaxToken)before, (SyntaxToken)after);
             }
 
-            // simple comparison - not ignoring children
-
             var beforeChildren = before.ChildNodesAndTokens();
             var afterChildren = after.ChildNodesAndTokens();
             if (beforeChildren.Count != afterChildren.Count)

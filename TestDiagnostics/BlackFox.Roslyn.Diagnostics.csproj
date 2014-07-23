@@ -132,6 +132,7 @@
     <Compile Include="StringConcatenation\StringCoalescing.cs" />
     <Compile Include="StringConcatenation\NoStringConcat\StringConcatIdentification.cs" />
     <Compile Include="TernaryOperators\PotentialTernaryOperator.cs" />
+    <Compile Include="TernaryOperators\PotentialTernaryOperatorClassification.cs" />
     <Compile Include="TernaryOperators\UseTernaryOperatorAnalyzer.cs" />
     <Compile Include="TernaryOperators\UseTernaryOperatorCodeFix.cs" />
     <Compile Include="VarConversion\TypeToVarAnalyzer.cs" />
