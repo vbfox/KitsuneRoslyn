@@ -37,7 +37,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 
             var potentialTernary = PotentialTernaryOperator.Create(ifStatement);
 
-            return potentialTernary.Value.GetFullReplacement();
+            return potentialTernary.GetFullReplacement();
         }
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
+using BlackFox.Roslyn.Diagnostics.FromRoslynOfficialSource;
 using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -15,14 +16,22 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {
     class PotentialTernaryOperator
     {
+        public static PotentialTernaryOperator NoReplacement { get; }
+            = new PotentialTernaryOperator(
+                PotentialTernaryOperatorClassification.NoReplacement,
+                null, null, null, null);
+
+        public PotentialTernaryOperatorClassification Classification { get; private set; }
         public ExpressionSyntax Condition { get; private set; }
         public ExpressionSyntax WhenTrue { get; private set; }
         public ExpressionSyntax WhenFalse { get; private set; }
         public Func<ConditionalExpressionSyntax, SyntaxNode> Replacement { get; private set; }
 
-        PotentialTernaryOperator(ExpressionSyntax condition, ExpressionSyntax whenTrue, ExpressionSyntax whenFalse,
+        PotentialTernaryOperator(PotentialTernaryOperatorClassification classification,
+            ExpressionSyntax condition, ExpressionSyntax whenTrue, ExpressionSyntax whenFalse,
             Func<ConditionalExpressionSyntax, SyntaxNode> useTernaryExpression)
         {
+            Classification = classification;
             Condition = condition;
             WhenTrue = whenTrue;
             WhenFalse = whenFalse;
@@ -47,45 +56,97 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
                 : expression;
         }
 
-        public static Optional<PotentialTernaryOperator> Create(IfStatementSyntax ifStatement)
+        public static PotentialTernaryOperator Create(IfStatementSyntax ifStatement)
         {
-            var trueReturn = GetSingleElementFromBlockOrDefault(ifStatement.Statement) as ReturnStatementSyntax;
+            var isReturn = ExtractIfSingleElementsAs<ReturnStatementSyntax>(ifStatement,
+                out var whenTrueReturn, out var whenFalseReturn);
 
-            if (trueReturn == null || trueReturn.Expression == null)
+            if (isReturn)
             {
-                return null;
+                return CreateForReturn(ifStatement, whenTrueReturn, whenFalseReturn);
             }
 
-            ReturnStatementSyntax falseReturn = null;
+            var isBinaryExpression = ExtractIfSingleElementsAs<BinaryExpressionSyntax>(ifStatement,
+                out var whenTrueBinaryExpression, out var whenFalseBinaryExpression);
+
+            if (isBinaryExpression)
+            {
+                return CreateForAssignment(ifStatement, whenTrueBinaryExpression, whenFalseBinaryExpression);
+            }
+
+            return NoReplacement;
+        }
+
+        private static PotentialTernaryOperator CreateForAssignment(IfStatementSyntax ifStatement,
+            BinaryExpressionSyntax whenTrue, BinaryExpressionSyntax whenFalse)
+        {
+            if (!whenTrue.IsKind(SyntaxKind.SimpleAssignmentExpression)
+                || !whenFalse.IsKind(SyntaxKind.SimpleAssignmentExpression))
+            {
+                return NoReplacement;
+            }
+
+            var equivalent = SyntaxEquivalence.AreTokensEquivalent(whenTrue.Left, whenFalse.Left);
+            if (!equivalent)
+            {
+                return NoReplacement;
+            }
+            Func<ConditionalExpressionSyntax, SyntaxNode> usage =
+                ternary => ExpressionStatement(
+                    BinaryExpression(SyntaxKind.SimpleAssignmentExpression, whenTrue.Left,
+                        ternary.WithLeadingTrivia(ElasticMarker)));
+
+            return new PotentialTernaryOperator(PotentialTernaryOperatorClassification.Assignment,
+                ifStatement.Condition, whenTrue.Right, whenFalse.Right, usage);
+        }
+
+        private static PotentialTernaryOperator CreateForReturn(IfStatementSyntax ifStatement,
+            ReturnStatementSyntax whenTrue, ReturnStatementSyntax whenFalse)
+        {
+            if (whenTrue.Expression == null || whenFalse.Expression == null)
+            {
+                return NoReplacement;
+            }
+
+            Func<ConditionalExpressionSyntax, SyntaxNode> usage =
+                ternary => ReturnStatement(ternary.WithLeadingTrivia(ElasticMarker));
+
+            return new PotentialTernaryOperator(PotentialTernaryOperatorClassification.Return,
+                ifStatement.Condition, whenTrue.Expression, whenFalse.Expression, usage);
+        }
+
+        static bool ExtractIfSingleElementsAs<TSyntaxNode>(IfStatementSyntax ifStatement,
+            out TSyntaxNode whenTrue, out TSyntaxNode whenFalse)
+            where TSyntaxNode : SyntaxNode
+        {
+            whenTrue = GetSingleElementOrDefault(ifStatement.Statement) as TSyntaxNode;
+
+            if (whenTrue == null)
+            {
+                whenFalse = null;
+                return false;
+            }
 
             if (ifStatement.Else != null)
             {
-                falseReturn = GetSingleElementFromBlockOrDefault(ifStatement.Else.Statement)
-                    as ReturnStatementSyntax;
+                whenFalse = GetSingleElementOrDefault(ifStatement.Else.Statement)
+                    as TSyntaxNode;
             }
             else
             {
                 var sibilings = ifStatement.Parent.ChildNodes();
                 var nextNode = sibilings.SkipWhile(n => n != ifStatement).Skip(1).FirstOrDefault();
-                falseReturn = GetSingleElementFromBlockOrDefault(nextNode) as ReturnStatementSyntax;
+                whenFalse = GetSingleElementOrDefault(nextNode) as TSyntaxNode;
             }
 
-            if (falseReturn == null || falseReturn.Expression == null)
-            {
-                return null;
-            }
-
-            Func<ConditionalExpressionSyntax, SyntaxNode> createCall = ternary => ReturnStatement(ternary.WithLeadingTrivia(ElasticMarker));
-
-            return new PotentialTernaryOperator(ifStatement.Condition, trueReturn.Expression,
-                falseReturn.Expression, createCall);
+            return whenFalse != null;
         }
 
-        static SyntaxNode GetSingleElementFromBlockOrDefault(SyntaxNode node)
+        static SyntaxNode GetSingleElementOrDefault(SyntaxNode node)
         {
-            var block = node as BlockSyntax;
+            var isSupported = node is BlockSyntax || node is ExpressionStatementSyntax;
 
-            if (block != null)
+            if (isSupported)
             {
                 var childNodes = node.ChildNodes();
                 if (childNodes.Count() != 1)
@@ -94,7 +155,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
                 }
 
 
-                return GetSingleElementFromBlockOrDefault(childNodes.Single());
+                return GetSingleElementOrDefault(childNodes.Single());
             }
 
             return node;

@@ -50,7 +50,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             var ifStatement = (IfStatementSyntax)node;
 
             var potentialTernary = PotentialTernaryOperator.Create(ifStatement);
-            if (!potentialTernary.HasValue)
+            if (potentialTernary == PotentialTernaryOperator.NoReplacement)
             {
                 return;
             }
