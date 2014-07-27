@@ -16,7 +16,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
     public static class TernaryReplacable
     {
         public static bool TryFind(SyntaxNodeOrToken before,
-            SyntaxNodeOrToken after, out ImmutableList<Tuple<SyntaxNode, SyntaxNode>> differences)
+            SyntaxNodeOrToken after, out ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> differences)
         {
             var rawDifferences = SyntaxDifferences.Find(before, after);
             var manageableDifferences = rawDifferences
@@ -33,7 +33,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             return true;
         }
 
-        private static Tuple<SyntaxNode, SyntaxNode> NearestReplacableByTernary(
+        private static Tuple<ExpressionSyntax, ExpressionSyntax> NearestReplacableByTernary(
             SyntaxNode item1, SyntaxNode item2,
             SyntaxNodeOrToken before, SyntaxNodeOrToken after)
         {
@@ -44,7 +44,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 
             if (IsReplacableByTernary(item1) && IsReplacableByTernary(item2))
             {
-                return Tuple.Create(item1, item2);
+                return Tuple.Create((ExpressionSyntax)item1, (ExpressionSyntax)item2);
             }
 
             return NearestReplacableByTernary(item1.Parent, item2.Parent, before, after);
@@ -54,6 +54,9 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
         {
             SyntaxKind.Argument,
             SyntaxKind.EqualsValueClause,
+            SyntaxKind.ReturnStatement,
+            SyntaxKind.YieldReturnStatement,
+
             SyntaxKind.AddExpression,
             SyntaxKind.SubtractExpression,
             SyntaxKind.MultiplyExpression,
@@ -91,6 +94,11 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 
         private static bool IsReplacableByTernary(SyntaxNode node)
         {
+            if (!(node is ExpressionSyntax))
+            {
+                return false;
+            }
+
             var parentKind = node.Parent.CSharpKind();
             if (okParents.Contains(parentKind))
             {
@@ -99,6 +107,10 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             if (rightBinaryOkParents.Contains(parentKind))
             {
                 return ((BinaryExpressionSyntax)node.Parent).Right == node;
+            }
+            if (parentKind == SyntaxKind.IfStatement)
+            {
+                return ((IfStatementSyntax)node.Parent).Condition == node;
             }
             return false;
         }

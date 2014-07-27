@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Microsoft.CodeAnalysis.Formatting;
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
@@ -165,5 +166,88 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 
             return node;
         }
+    }
+
+    class PotentialTernaryOperator2
+    {
+        public static PotentialTernaryOperator2 NoReplacement
+        { get; }
+        = new PotentialTernaryOperator2(
+                PotentialTernaryOperatorClassification.NoReplacement,
+                null);
+
+        public PotentialTernaryOperatorClassification Classification { get; private set; }
+        public Optional<SyntaxNode> NodeToRemove { get; private set; }
+        public ImmutableList<StatementSyntax> Replacements { get; private set; }
+
+        PotentialTernaryOperator2(PotentialTernaryOperatorClassification classification,
+            ImmutableList<StatementSyntax> replacements)
+        {
+            Classification = classification;
+            NodeToRemove = new Optional<SyntaxNode>();
+            Replacements = replacements;
+        }
+
+
+        static ExpressionSyntax ParenthesesAroundConditionalExpression(ExpressionSyntax expression)
+        {
+            var conditional = expression as ConditionalExpressionSyntax;
+            return conditional != null
+                ? conditional.WithParentheses()
+                : expression;
+        }
+
+        public static ConditionalExpressionSyntax BuildReplacement(ExpressionSyntax condition, ExpressionSyntax whenTrue,
+            ExpressionSyntax whenFalse)
+        {
+            var conditional = ConditionalExpression(
+                condition,
+                ParenthesesAroundConditionalExpression(whenTrue),
+                ParenthesesAroundConditionalExpression(whenFalse));
+
+            return conditional
+                .WithAdditionalAnnotations(SyntaxAnnotation.ElasticAnnotation, Formatter.Annotation);
+        }
+
+        public static PotentialTernaryOperator2 Create(IfStatementSyntax ifStatement)
+        {
+            if (ifStatement.Else == null)
+            {
+                return NoReplacement;
+            }
+
+            var ternaryReplacable = TernaryReplacable.TryFind(ifStatement.Statement, ifStatement.Else.Statement,
+                out var differences);
+
+            if (!ternaryReplacable)
+            {
+                return NoReplacement;
+            }
+
+            var toTrack = differences.Select(t => t.Item1);
+            var replacement = ifStatement.Statement.TrackNodes(toTrack);
+
+            foreach (var diff in differences)
+            {
+                var conditionalReplacement = BuildReplacement(ifStatement.Condition, diff.Item1, diff.Item2);
+                replacement = replacement.ReplaceNode(replacement.GetCurrentNode(diff.Item1), conditionalReplacement);
+            }
+
+            return new PotentialTernaryOperator2(PotentialTernaryOperatorClassification.Assignment,
+                BlockContent(replacement));
+        }
+
+        static ImmutableList<StatementSyntax> BlockContent(StatementSyntax node)
+        {
+            var block = node as BlockSyntax;
+            if (block != null)
+            {
+                return block.Statements.ToImmutableList();
+            }
+            else
+            {
+                return ImmutableList<StatementSyntax>.Empty.Add(node);
+            }
+        } 
     }
 }

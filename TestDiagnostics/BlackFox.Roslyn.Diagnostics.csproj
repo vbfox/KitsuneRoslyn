@@ -134,7 +134,9 @@
     <Compile Include="StringConcatenation\NoStringConcat\StringConcatIdentification.cs" />
     <Compile Include="TernaryOperators\PotentialTernaryOperator.cs" />
     <Compile Include="TernaryOperators\PotentialTernaryOperatorClassification.cs" />
+    <Compile Include="TernaryOperators\UseTernaryOperatorAnalyzer - Copy.cs" />
     <Compile Include="TernaryOperators\UseTernaryOperatorAnalyzer.cs" />
+    <Compile Include="TernaryOperators\UseTernaryOperatorCodeFix - Copy.cs" />
     <Compile Include="TernaryOperators\UseTernaryOperatorCodeFix.cs" />
     <Compile Include="TernaryOperators\TernaryReplacable.cs" />
     <Compile Include="VarConversion\TypeToVarAnalyzer.cs" />
