@@ -74,16 +74,23 @@ namespace BlackFox.Roslyn.Diagnostics
         private CodeAction GetCodeAction(Document document, Diagnostic diagnostic)
         {
             Func<CancellationToken, Task<Document>> applyFix = async (cancellationToken) => {
-                var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-                var model = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+                    var model = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 
-                var nodeToFix = root.FindNode(diagnostic.Location.SourceSpan,
-                    getInnermostNodeForTie: GetInnermostNodeForTie);
+                    var nodeToFix = root.FindNode(diagnostic.Location.SourceSpan,
+                        getInnermostNodeForTie: GetInnermostNodeForTie);
 
-                var newDocument = await GetUpdatedDocumentAsync(document, model, root, nodeToFix, diagnostic.Id,
-                    cancellationToken).ConfigureAwait(false);
+                    var newDocument = await GetUpdatedDocumentAsync(document, model, root, nodeToFix, diagnostic.Id,
+                        cancellationToken).ConfigureAwait(false);
 
-                return newDocument;
+                    return newDocument;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             };
 
             var codeFixDescription = diagnosticIdsAndDescriptions[diagnostic.Id];

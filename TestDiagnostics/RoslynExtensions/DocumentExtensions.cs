@@ -3,6 +3,7 @@
 // See LICENSE.txt in the project root for license information.
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,8 +17,18 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var newRoot = root.ReplaceNode(oldNode, newNode);
-
             return document.WithSyntaxRoot(newRoot);
+        }
+
+        public static async Task<Document> FormatAsync(this Document document, SyntaxNode newRoot,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var newDocument = document.WithSyntaxRoot(newRoot);
+            var formattingTask = Formatter.FormatAsync(
+                newDocument,
+                Formatter.Annotation,
+                cancellationToken: cancellationToken);
+            return await formattingTask.ConfigureAwait(false);
         }
     }
 }
