@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 {
-    static class SyntaxFactoryAdditions
+    public static class SyntaxFactoryAdditions
     {
         public static ExpressionSyntax SimpleMemberAccessExpression(params string[] names)
         {

@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Diagnostics;
 
-namespace BlackFox.Roslyn.Diagnostics.FromRoslynOfficialSource
+namespace BlackFox.Roslyn.Diagnostics
 {
     static class SyntaxEquivalence
     {

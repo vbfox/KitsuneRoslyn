@@ -43,7 +43,6 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
             var compilation = CreateCompilation(code);
             var tree = compilation.SyntaxTrees.Single();
             var root = tree.GetRoot();
-
             var diagnostics = ImmutableList<Diagnostic>.Empty;
             AnalyzeTree(analyzer, tree, compilation, d => diagnostics = diagnostics.Add(d));
             return diagnostics;
