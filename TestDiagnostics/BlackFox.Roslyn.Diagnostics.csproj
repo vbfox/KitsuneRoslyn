@@ -99,7 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeFixProviderBase.cs" />
-    <Compile Include="DifferenceFinder.cs" />
+    <Compile Include="SyntaxDifferences.cs" />
     <Compile Include="FromRoslynOfficialSource\CSharpExtensions\ITypeSymbolExtensions.cs" />
     <Compile Include="FromRoslynOfficialSource\CSharpExtensions\ITypeSymbolExtensions.TypeSyntaxGeneratorVisitor.cs" />
     <Compile Include="FromRoslynOfficialSource\CSharpExtensions\StringExtensions.cs" />
@@ -136,6 +136,7 @@
     <Compile Include="TernaryOperators\PotentialTernaryOperatorClassification.cs" />
     <Compile Include="TernaryOperators\UseTernaryOperatorAnalyzer.cs" />
     <Compile Include="TernaryOperators\UseTernaryOperatorCodeFix.cs" />
+    <Compile Include="TernaryOperators\TernaryReplacable.cs" />
     <Compile Include="VarConversion\TypeToVarAnalyzer.cs" />
     <Compile Include="VarConversion\TypeToVarCodeFix.cs" />
     <Compile Include="VarConversion\VarToTypeCodeFix.cs" />
