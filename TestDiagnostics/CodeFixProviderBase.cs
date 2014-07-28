@@ -9,8 +9,6 @@ using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,42 +18,49 @@ namespace BlackFox.Roslyn.Diagnostics
     {
         protected virtual bool GetInnermostNodeForTie { get { return true; } }
 
-        ImmutableDictionary<string, string> diagnosticIdsAndDescriptions;
+        ImmutableList<string> diagnosticIds;
 
-        protected CodeFixProviderBase(ImmutableDictionary<string, string> diagnosticIdsAndDescriptions)
+        protected CodeFixProviderBase(ImmutableList<string> diagnosticIds)
         {
-            if (diagnosticIdsAndDescriptions == null)
+            if (diagnosticIds == null)
             {
-                throw new ArgumentNullException("diagnosticIdsAndDescriptions");
+                throw new ArgumentNullException("diagnosticIds");
             }
 
-            this.diagnosticIdsAndDescriptions = diagnosticIdsAndDescriptions;
+            this.diagnosticIds = diagnosticIds;
         }
 
-        protected CodeFixProviderBase(string diagnosticId, string fixDescription)
+        protected CodeFixProviderBase(IEnumerable<string> diagnosticIds)
+        {
+            if (diagnosticIds == null)
+            {
+                throw new ArgumentNullException("diagnosticIds");
+            }
+
+            this.diagnosticIds = diagnosticIds.ToImmutableList();
+        }
+
+        protected CodeFixProviderBase(string diagnosticId)
         {
             if (diagnosticId == null)
             {
                 throw new ArgumentNullException("diagnosticId");
             }
-            if (fixDescription == null)
-            {
-                throw new ArgumentNullException("fixDescription");
-            }
 
-            diagnosticIdsAndDescriptions = ImmutableDictionary<string, string>.Empty
-                .Add(diagnosticId, fixDescription);
+            diagnosticIds = ImmutableList<string>.Empty
+                .Add(diagnosticId);
         }
 
         public IEnumerable<string> GetFixableDiagnosticIds()
         {
-            return diagnosticIdsAndDescriptions.Keys;
+            return diagnosticIds;
         }
 
-        protected abstract Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel semanticModel,
-            SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken);
+        protected abstract Task<CodeAction> GetCodeAction(Document document,
+            SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,
+            CancellationToken cancellationToken);
 
-        public Task<IEnumerable<CodeAction>> GetFixesAsync(Document document, TextSpan span,
+        public async Task<IEnumerable<CodeAction>> GetFixesAsync(Document document, TextSpan span,
             IEnumerable<Diagnostic> diagnostics, CancellationToken cancellationToken)
         {
             var actions = ImmutableList<CodeAction>.Empty.ToBuilder();
@@ -63,38 +68,34 @@ namespace BlackFox.Roslyn.Diagnostics
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var codeAction = GetCodeAction(document, diagnostic);
+                var codeAction = await GetCodeActionX(document, diagnostic, cancellationToken);
 
                 actions.Add(codeAction);
             }
 
-            return Task.FromResult(actions.ToImmutable().AsEnumerable());
+            return actions.ToImmutable();
         }
 
-        private CodeAction GetCodeAction(Document document, Diagnostic diagnostic)
+        private async Task<CodeAction> GetCodeActionX(Document document, Diagnostic diagnostic,
+            CancellationToken cancellationToken)
         {
-            Func<CancellationToken, Task<Document>> applyFix = async (cancellationToken) => {
-                try
-                {
-                    var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-                    var model = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+                var model = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 
-                    var nodeToFix = root.FindNode(diagnostic.Location.SourceSpan,
-                        getInnermostNodeForTie: GetInnermostNodeForTie);
+                var nodeToFix = root.FindNode(diagnostic.Location.SourceSpan,
+                    getInnermostNodeForTie: GetInnermostNodeForTie);
 
-                    var newDocument = await GetUpdatedDocumentAsync(document, model, root, nodeToFix, diagnostic.Id,
-                        cancellationToken).ConfigureAwait(false);
-
-                    return newDocument;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            };
-
-            var codeFixDescription = diagnosticIdsAndDescriptions[diagnostic.Id];
-            return CodeAction.Create(codeFixDescription, applyFix);
+                return await GetCodeAction(document, model, root,
+                    nodeToFix, diagnostic.Id, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
+
+
 }

@@ -12,44 +12,65 @@ using System;
 using Microsoft.CodeAnalysis.Formatting;
 using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using System.Linq;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.Text;
+using System.Collections.Generic;
 
 #pragma warning disable 1998 // This async method lacks 'await' operators and will run synchronously
 
 namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {
     [ExportCodeFixProvider("BlackFox.UseTernaryOperatorCodeFix2", LanguageNames.CSharp)]
-    public class UseTernaryOperatorCodeFix2
-    : CodeFixProviderBase
+    public class UseTernaryOperatorCodeFix2 : CodeFixProviderBase
     {
+        static readonly ImmutableList<string> fixableDiagnosticIds
+            = ImmutableList<string>.Empty
+            .Add(UseTernaryOperatorAnalyzer2.IdSimple)
+            .Add(UseTernaryOperatorAnalyzer2.IdComplex);
         static readonly ImmutableDictionary<string, string> diagnostics
             = ImmutableDictionary<string, string>.Empty
                 .Add(UseTernaryOperatorAnalyzer2.IdSimple, "X-Convert to return statement")
                 .Add(UseTernaryOperatorAnalyzer2.IdComplex, "X-Convert to ':?' operator");
 
-        public UseTernaryOperatorCodeFix2()
-            : base(diagnostics)
+        public UseTernaryOperatorCodeFix2() : base(fixableDiagnosticIds)
         {
         }
 
-        protected async override Task<Document> GetUpdatedDocumentAsync(Document document,
-            SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,
-            CancellationToken cancellationToken)
+        protected override Task<CodeAction> GetCodeAction(Document document, SemanticModel semanticModel,
+            SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken)
         {
             var ifStatement = (IfStatementSyntax)nodeToFix;
 
-            var potentialTernary = PotentialTernaryOperator2.Create(ifStatement);
+            var potentialTernary = PotentialTernaryOperator.Create(ifStatement);
 
+            string description = diagnosticId == UseTernaryOperatorAnalyzer2.IdSimple
+                ? "Convert to ':?' operator"
+                : string.Format("Convert {0} usages of ':?' operator", potentialTernary.TernaryOperatorCount);
+
+            var codeAction = CodeAction.Create(description,
+                token => GetUpdatedDocumentAsync(potentialTernary, ifStatement, document, root, token));
+
+            return Task.FromResult(codeAction);
+        }
+
+        async Task<Document> GetUpdatedDocumentAsync(PotentialTernaryOperator potentialTernary,
+            IfStatementSyntax ifStatement, Document document, SyntaxNode root, CancellationToken cancellationToken)
+        {
             // As we will apply multiple operations we need to enable tracking for the nodes we will replace/remove.
             var nodesToTrack = ImmutableList<SyntaxNode>.Empty.Add(ifStatement);
             if (potentialTernary.NodeToRemove.HasValue)
             {
                 nodesToTrack = nodesToTrack.Add(potentialTernary.NodeToRemove.Value);
             }
+
             var wipRoot = root.TrackNodes(nodesToTrack);
 
+            var replacements = potentialTernary.Replacements
+                .Cast<SyntaxNode>()
+                .Select(n => n.WithAdditionalAnnotations(Formatter.Annotation));
+
             // Replace the if with the ternary operator
-            wipRoot = wipRoot.ReplaceNode(wipRoot.GetCurrentNode(ifStatement),
-                potentialTernary.Replacements.Cast<SyntaxNode>().Select(n => n.WithAdditionalAnnotations(Formatter.Annotation)));
+            wipRoot = wipRoot.ReplaceNode(wipRoot.GetCurrentNode(ifStatement), replacements);
 
             // Remove the potential next node (For when there is no 'else')
             if (potentialTernary.NodeToRemove.HasValue)
@@ -62,5 +83,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             // Format to replace ElasticAnnotation
             return await document.FormatAsync(wipRoot, cancellationToken);
         }
+
+
     }
 }

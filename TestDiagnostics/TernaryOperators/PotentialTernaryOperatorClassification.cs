@@ -7,7 +7,6 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
     enum PotentialTernaryOperatorClassification
     {
         NoReplacement,
-        Return,
-        Assignment
+        ReplacementPossible
     }
 }

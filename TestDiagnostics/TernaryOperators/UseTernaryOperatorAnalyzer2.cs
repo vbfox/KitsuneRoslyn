@@ -13,26 +13,26 @@ using System.Threading;
 namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {
     [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer("BlackFox.UseTernaryOperatorAnalyzer", LanguageNames.CSharp)]
-    public class UseTernaryOperatorAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
+    [ExportDiagnosticAnalyzer("BlackFox.UseTernaryOperatorAnalyzer2", LanguageNames.CSharp)]
+    public class UseTernaryOperatorAnalyzer2 : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        public const string IdSimple = "BlackFox.UseTernaryOperator.Simple";
-        public const string IdComplex = "BlackFox.UseTernaryOperator.Complex";
+        public const string IdSimple = "BlackFox.UseTernaryOperator2.Simple";
+        public const string IdComplex = "BlackFox.UseTernaryOperator2.Complex";
 
         public static DiagnosticDescriptor DescriptorSimple { get; }
             = new DiagnosticDescriptor(
                 IdSimple,
-                "Convert to return statement",
-                "Convert to return statement",
+                "'if' can be converted to ':?' operator",
+                "'if' can be converted to ':?' operator",
                 "Readability",
-                DiagnosticSeverity.Warning,
+                DiagnosticSeverity.Info,
                 isEnabledByDefault: true);
 
         public static DiagnosticDescriptor DescriptorComplex { get; }
             = new DiagnosticDescriptor(
                 IdComplex,
-                "Convert to ':?' operator",
-                "Convert to ':?' operator",
+                "'if' can be converted to ':?' operator",
+                "'if' can be converted to {0} usage{1} of ':?' operator",
                 "Readability",
                 DiagnosticSeverity.Hidden,
                 isEnabledByDefault: true,
@@ -55,7 +55,13 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
                 return;
             }
 
-            addDiagnostic(Diagnostic.Create(DescriptorSimple, ifStatement.IfKeyword.GetLocation()));
+            var descriptor = potentialTernary.TernaryOperatorCount == 1 && potentialTernary.Replacements.Count == 1
+                ? DescriptorSimple
+                : DescriptorComplex;
+
+            addDiagnostic(Diagnostic.Create(descriptor, ifStatement.IfKeyword.GetLocation(),
+                potentialTernary.TernaryOperatorCount,
+                potentialTernary.TernaryOperatorCount > 1 ? "s" : ""));
         }
     }
 }

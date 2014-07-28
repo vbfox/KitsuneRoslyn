@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BlackFox.Roslyn.Diagnostics
 {
-    public abstract class ReplacementCodeFixProviderBase : CodeFixProviderBase
+    public abstract class ReplacementCodeFixProviderBase : SimpleCodeFixProviderBase
     {
         protected virtual bool Simplify { get { return false; } }
         protected virtual bool Format { get { return false; } }
