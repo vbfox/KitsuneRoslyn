@@ -8,31 +8,24 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
-using System;
 using Microsoft.CodeAnalysis.Formatting;
 using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using System.Linq;
 using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.Text;
-using System.Collections.Generic;
 
 #pragma warning disable 1998 // This async method lacks 'await' operators and will run synchronously
 
 namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {
     [ExportCodeFixProvider("BlackFox.UseTernaryOperatorCodeFix2", LanguageNames.CSharp)]
-    public class UseTernaryOperatorCodeFix2 : CodeFixProviderBase
+    public class UseTernaryOperatorCodeFix : CodeFixProviderBase
     {
         static readonly ImmutableList<string> fixableDiagnosticIds
             = ImmutableList<string>.Empty
-            .Add(UseTernaryOperatorAnalyzer2.IdSimple)
-            .Add(UseTernaryOperatorAnalyzer2.IdComplex);
-        static readonly ImmutableDictionary<string, string> diagnostics
-            = ImmutableDictionary<string, string>.Empty
-                .Add(UseTernaryOperatorAnalyzer2.IdSimple, "X-Convert to return statement")
-                .Add(UseTernaryOperatorAnalyzer2.IdComplex, "X-Convert to ':?' operator");
+            .Add(UseTernaryOperatorAnalyzer.IdSimple)
+            .Add(UseTernaryOperatorAnalyzer.IdComplex);
 
-        public UseTernaryOperatorCodeFix2() : base(fixableDiagnosticIds)
+        public UseTernaryOperatorCodeFix() : base(fixableDiagnosticIds)
         {
         }
 
@@ -43,7 +36,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 
             var potentialTernary = PotentialTernaryOperator.Create(ifStatement);
 
-            string description = diagnosticId == UseTernaryOperatorAnalyzer2.IdSimple
+            string description = diagnosticId == UseTernaryOperatorAnalyzer.IdSimple
                 ? "Convert to ':?' operator"
                 : string.Format("Convert {0} usages of ':?' operator", potentialTernary.TernaryOperatorCount);
 

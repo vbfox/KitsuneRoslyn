@@ -14,7 +14,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {
     [DiagnosticAnalyzer]
     [ExportDiagnosticAnalyzer("BlackFox.UseTernaryOperatorAnalyzer2", LanguageNames.CSharp)]
-    public class UseTernaryOperatorAnalyzer2 : ISyntaxNodeAnalyzer<SyntaxKind>
+    public class UseTernaryOperatorAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
         public const string IdSimple = "BlackFox.UseTernaryOperator2.Simple";
         public const string IdComplex = "BlackFox.UseTernaryOperator2.Complex";
@@ -35,8 +35,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
                 "'if' can be converted to {0} usage{1} of ':?' operator",
                 "Readability",
                 DiagnosticSeverity.Hidden,
-                isEnabledByDefault: true,
-                customTags: WellKnownDiagnosticTags.Unnecessary);
+                isEnabledByDefault: true);
 
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(DescriptorSimple);
