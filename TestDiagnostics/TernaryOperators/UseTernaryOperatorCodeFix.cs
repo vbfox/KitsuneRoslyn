@@ -38,7 +38,9 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 
             string description = diagnosticId == UseTernaryOperatorAnalyzer.IdSimple
                 ? "Convert to ':?' operator"
-                : string.Format("Convert {0} usages of ':?' operator", potentialTernary.TernaryOperatorCount);
+                : string.Format("Convert to {0} usage{1} of ':?' operator",
+                    potentialTernary.TernaryOperatorCount,
+                    potentialTernary.TernaryOperatorCount > 1 ? "s" : "");
 
             var codeAction = CodeAction.Create(description,
                 token => GetUpdatedDocumentAsync(potentialTernary, ifStatement, document, root, token));
