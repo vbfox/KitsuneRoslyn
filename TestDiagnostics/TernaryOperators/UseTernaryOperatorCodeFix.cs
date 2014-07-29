@@ -17,7 +17,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 
 namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {
-    [ExportCodeFixProvider("BlackFox.UseTernaryOperatorCodeFix2", LanguageNames.CSharp)]
+    [ExportCodeFixProvider("BlackFox.UseTernaryOperatorCodeFix", LanguageNames.CSharp)]
     public class UseTernaryOperatorCodeFix : CodeFixProviderBase
     {
         static readonly ImmutableList<string> fixableDiagnosticIds

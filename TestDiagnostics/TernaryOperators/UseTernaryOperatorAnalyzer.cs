@@ -13,11 +13,11 @@ using System.Threading;
 namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {
     [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer("BlackFox.UseTernaryOperatorAnalyzer2", LanguageNames.CSharp)]
+    [ExportDiagnosticAnalyzer("BlackFox.UseTernaryOperatorAnalyzer", LanguageNames.CSharp)]
     public class UseTernaryOperatorAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        public const string IdSimple = "BlackFox.UseTernaryOperator2.Simple";
-        public const string IdComplex = "BlackFox.UseTernaryOperator2.Complex";
+        public const string IdSimple = "BlackFox.UseTernaryOperator.Simple";
+        public const string IdComplex = "BlackFox.UseTernaryOperator.Complex";
 
         public static DiagnosticDescriptor DescriptorSimple { get; }
             = new DiagnosticDescriptor(
