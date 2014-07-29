@@ -38,7 +38,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
                 isEnabledByDefault: true);
 
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
-            = ImmutableArray.Create(DescriptorSimple);
+            = ImmutableArray.Create(DescriptorSimple, DescriptorComplex);
 
         public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
             = ImmutableArray.Create(SyntaxKind.IfStatement);
