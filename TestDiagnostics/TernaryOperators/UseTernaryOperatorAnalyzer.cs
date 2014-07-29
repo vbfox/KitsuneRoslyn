@@ -41,7 +41,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             = ImmutableArray.Create(DescriptorSimple);
 
         public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
-        = ImmutableArray.Create(SyntaxKind.IfStatement);
+            = ImmutableArray.Create(SyntaxKind.IfStatement);
 
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)
