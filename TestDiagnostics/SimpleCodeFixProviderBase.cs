@@ -12,7 +12,7 @@ namespace BlackFox.Roslyn.Diagnostics
         ImmutableDictionary<string, string> diagnosticIdsAndDescriptions;
 
         protected SimpleCodeFixProviderBase(ImmutableDictionary<string, string> diagnosticIdsAndDescriptions)
-            : base(diagnosticIdsAndDescriptions.Values)
+            : base(diagnosticIdsAndDescriptions.Keys)
         {
             if (diagnosticIdsAndDescriptions == null)
             {
