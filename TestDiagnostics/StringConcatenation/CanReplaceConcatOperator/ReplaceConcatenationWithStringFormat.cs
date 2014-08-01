@@ -15,7 +15,7 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperat
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class ReplaceConcatenationWithStringFormat()
-        : ReplacementCodeFixProviderBase(
+        : ReplacementNodeCodeFixProviderBase(
             CanReplaceConcatOperatorAnalyzer.UseFormatId,
             "Replace with String.Format")
     {

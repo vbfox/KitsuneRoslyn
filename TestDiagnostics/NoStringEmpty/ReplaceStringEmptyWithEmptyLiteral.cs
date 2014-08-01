@@ -16,7 +16,7 @@ namespace BlackFox.Roslyn.Diagnostics.NoStringEmpty
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class ReplaceStringEmptyWithEmptyLiteral()
-        : ReplacementCodeFixProviderBase(NoStringEmptyAnalyzer.Id, "Use \"\"")
+        : ReplacementNodeCodeFixProviderBase(NoStringEmptyAnalyzer.Id, "Use \"\"")
     {
         public const string Id = "BlackFox.ReplaceStringEmptyWithEmptyLiteral";
 

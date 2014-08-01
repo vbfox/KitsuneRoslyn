@@ -16,7 +16,7 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class VarToTypeCodeFix()
-        : ReplacementCodeFixProviderBase(VarToTypeAnalyzer.Id, "Specify type explicitly")
+        : ReplacementNodeCodeFixProviderBase(VarToTypeAnalyzer.Id, "Specify type explicitly")
     {
         public const string Id = "BlackFox.VarToTypeCodeFix";
 

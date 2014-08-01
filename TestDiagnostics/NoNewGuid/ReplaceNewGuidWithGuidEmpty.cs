@@ -15,7 +15,7 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class ReplaceNewGuidWithGuidEmpty()
-        : ReplacementCodeFixProviderBase(NoNewGuidAnalyzer.Id, "Replace with Guid.Empty")
+        : ReplacementNodeCodeFixProviderBase(NoNewGuidAnalyzer.Id, "Replace with Guid.Empty")
     {
         public const string Id = "BlackFox.ReplaceNewGuidWithGuidEmpty";
 

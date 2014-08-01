@@ -16,7 +16,7 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class ReplaceStringConcatWithSingleString()
-        : ReplacementCodeFixProviderBase(NoStringConcatAnalyzer.UseStringId, "Replace with a single string")
+        : ReplacementNodeCodeFixProviderBase(NoStringConcatAnalyzer.UseStringId, "Replace with a single string")
     {
         public const string Id = "BlackFox.ReplaceStringConcatWithSingleString";
 

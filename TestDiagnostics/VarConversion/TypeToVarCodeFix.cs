@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace BlackFox.Roslyn.Diagnostics.VarConversion
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class TypeToVarCodeFix : ReplacementCodeFixProviderBase
+    public class TypeToVarCodeFix : ReplacementNodeCodeFixProviderBase
     {
         public const string Id = "BlackFox.TypeToVarCodeFix";
 

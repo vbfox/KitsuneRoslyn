@@ -15,7 +15,7 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class ReplaceStringConcatWithStringFormat()
-        : ReplacementCodeFixProviderBase(NoStringConcatAnalyzer.UseFormatId, "Replace with String.Format")
+        : ReplacementNodeCodeFixProviderBase(NoStringConcatAnalyzer.UseFormatId, "Replace with String.Format")
     {
         public const string Id = "BlackFox.ReplaceStringConcatWithStringFormat";
 

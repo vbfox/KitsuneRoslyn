@@ -31,18 +31,24 @@ namespace BlackFox.Roslyn.Diagnostics
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,
             CancellationToken cancellationToken)
         {
-            var replacementNode = await GetReplacementNodeAsync(document, semanticModel, root, nodeToFix,
+            var replacement = await GetReplacementAsync(document, semanticModel, root, nodeToFix,
                 diagnosticId, cancellationToken).ConfigureAwait(false);
 
-            if (replacementNode == nodeToFix)
+            if (replacement.From == replacement.To)
             {
                 return document;
             }
 
-            replacementNode = replacementNode.WithAdditionalAnnotations(GetAnnotations());
+            var annotatedTo = replacement.To.WithAdditionalAnnotations(GetAnnotations());
 
-            document = await document.ReplaceNodeAsync(nodeToFix, replacementNode);
+            var replacedDocument = await document.ReplaceNodeAsync(replacement.From, annotatedTo);
+            var finalDocument = await ApplyAdditionalActions(replacedDocument, cancellationToken);
 
+            return finalDocument;
+        }
+
+        private async Task<Document> ApplyAdditionalActions(Document document, CancellationToken cancellationToken)
+        {
             if (Simplify != AdditionalAction.DoNotRun)
             {
                 var simplificationTask = Simplifier.ReduceAsync(
@@ -82,7 +88,7 @@ namespace BlackFox.Roslyn.Diagnostics
             return annotations;
         }
 
-        protected abstract Task<SyntaxNode> GetReplacementNodeAsync(Document document, SemanticModel semanticModel,
+        protected abstract Task<Replacement> GetReplacementAsync(Document document, SemanticModel semanticModel,
             SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken);
     }
 }

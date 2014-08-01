@@ -16,7 +16,7 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperat
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class ReplaceConcatenationWithSingleString()
-        : ReplacementCodeFixProviderBase(
+        : ReplacementNodeCodeFixProviderBase(
             CanReplaceConcatOperatorAnalyzer.UseStringId,
             "Replace with a single string")
     {
