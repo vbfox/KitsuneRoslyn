@@ -36,6 +36,7 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
         public static CSharpCompilation CreateCompilation(string code)
         {
             var options = new CSharpParseOptions(LanguageVersion.Experimental);
+
             var tree = SyntaxFactory.ParseSyntaxTree(code, options);
             var compilation = CSharpCompilation.Create(null,
                 syntaxTrees: ImmutableArray.Create(tree),
@@ -63,6 +64,7 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
             var tree = compilation.SyntaxTrees.Single();
             var root = tree.GetRoot();
             var diagnostics = ImmutableList<Diagnostic>.Empty;
+
             AnalyzeTree(analyzer, tree, compilation, d => diagnostics = diagnostics.Add(d));
             return diagnostics;
         }
@@ -70,6 +72,15 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
         public static void AnalyzeTree(this ISyntaxNodeAnalyzer<SyntaxKind> analyzer,
             SyntaxTree tree, Compilation compilation, Action<Diagnostic> addDiagnostic)
         {
+            var startAnalysis = analyzer as ICompilationStartedAnalyzer;
+            ICompilationEndedAnalyzer endAnalysis = null;
+
+            if (startAnalysis != null)
+            {
+                endAnalysis = startAnalysis.OnCompilationStarted(compilation, addDiagnostic,
+                    CancellationToken.None);
+            }
+
             var kinds = analyzer.SyntaxKindsOfInterest;
 
             var matchingNodes =
@@ -83,6 +94,12 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
                     node,
                     compilation.GetSemanticModel(tree),
                     addDiagnostic,
+                    CancellationToken.None);
+            }
+
+            if (endAnalysis != null)
+            {
+                endAnalysis.OnCompilationEnded(compilation, addDiagnostic,
                     CancellationToken.None);
             }
         }

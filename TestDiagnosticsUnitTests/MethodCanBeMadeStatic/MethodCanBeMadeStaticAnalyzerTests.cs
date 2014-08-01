@@ -19,6 +19,15 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
         }
 
         [TestMethod]
+        public void Parameter_references_function()
+        {
+            var analyzer = new MethodCanBeMadeStaticAnalyzer();
+            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X(int answer) { return answer;}");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).ContainExactlyAnyOrder(MethodCanBeMadeStaticAnalyzer.Id);
+        }
+
+        [TestMethod]
         public void Static_outside_reference()
         {
             var analyzer = new MethodCanBeMadeStaticAnalyzer();
@@ -119,8 +128,13 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
         }
 
         [TestMethod]
+        //[Ignore]
         public void Interface_implementation_for_derived_class()
         {
+            // Ignored for now
+            // Can't work without some compilation related analyzer and the only one in the current code base
+            // "ICompilationEndedAnalyzer" is never invoked by VS. 
+
             var analyzer = new MethodCanBeMadeStaticAnalyzer();
             var diagnostics = GetDiagnostics(analyzer,
                 "interface IFoo { void X(); } class Base {public void X(){}}; class Foo : Base, IFoo {}");

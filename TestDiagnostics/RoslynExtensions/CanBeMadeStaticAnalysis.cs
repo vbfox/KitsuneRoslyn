@@ -2,19 +2,13 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
 namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 {
-
-    class Foo : IDisposable
-    {
-        public void Dispose()
-        {
-        }
-    }
     static class CanBeMadeStaticAnalysis
     {
         /// <summary>
@@ -51,7 +45,100 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
             }
 
             var type = symbol.ContainingType;
-            return CanBeMadeStatic(semanticModel, method, type);
+            var contentCanBeMadeStatic = CanBeMadeStatic(semanticModel, method, type);
+
+            if (!contentCanBeMadeStatic)
+            {
+                return false;
+            }
+
+            var implementInterfaceSymbol = GetImplementedInterfacesSymbols(symbol).Any();
+            return !implementInterfaceSymbol;
+        }
+
+        public static bool CanBeMadeStatic(this SemanticModel semanticModel, MethodDeclarationSyntax method,
+            Compilation compilation, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (!CanBeMadeStatic(semanticModel, method, cancellationToken))
+            {
+                return false;
+            }
+
+            var symbol = semanticModel.GetDeclaredSymbol(method, cancellationToken);
+
+            var derivatedTypes = GetTypeDerivingFrom(compilation, symbol.ContainingType);
+
+            bool isDerivedInterfaceImplementation = derivatedTypes
+                .Any(d => GetImplementedInterfacesSymbols(symbol, d).Any());
+
+            return !isDerivedInterfaceImplementation;
+        }
+
+        private static IEnumerable<INamedTypeSymbol> GetTypeDerivingFrom(Compilation compilation, ITypeSymbol type)
+        {
+            return EnumerateTypes(compilation).Where(t => DerivateFrom(t, type));
+        }
+
+        private static bool DerivateFrom(INamedTypeSymbol type, ITypeSymbol potentialBaseType)
+        {
+            return EnumerateBaseTypes(type).Contains(potentialBaseType);
+        }
+
+        private static IEnumerable<ITypeSymbol> EnumerateBaseTypes(ITypeSymbol type)
+        {
+            Parameter.MustNotBeNull(type, "type");
+
+            var currentType = type;
+            while (currentType.BaseType != null)
+            {
+                yield return currentType.BaseType;
+                currentType = currentType.BaseType;
+            }
+        }
+
+        private static IEnumerable<INamedTypeSymbol> EnumerateTypes(Compilation compilation)
+        {
+            Queue<INamespaceSymbol> namespacesToExplore = new Queue<INamespaceSymbol>();
+            namespacesToExplore.Enqueue(compilation.GlobalNamespace);
+            while(namespacesToExplore.Count != 0)
+            {
+                var ns = namespacesToExplore.Dequeue();
+                foreach (var member in ns.GetMembers())
+                {
+                    if (member.Kind == SymbolKind.Namespace)
+                    {
+                        namespacesToExplore.Enqueue((INamespaceSymbol)member);
+                    }
+                    else if (member.Kind == SymbolKind.NamedType)
+                    {
+                        yield return (INamedTypeSymbol)member;
+                    }
+                }
+            }
+        }
+
+        private static ImmutableList<ISymbol> GetImplementedInterfacesSymbols(ISymbol symbol)
+        {
+            return GetImplementedInterfacesSymbols(symbol, symbol.ContainingType);
+        }
+
+        private static ImmutableList<ISymbol> GetImplementedInterfacesSymbols(ISymbol symbol,
+            ITypeSymbol inType)
+        {
+            var interfaceMembers = inType.AllInterfaces
+                .SelectMany(i => i.GetMembers());
+            
+            var builder = ImmutableList<ISymbol>.Empty.ToBuilder();
+            foreach (var interfaceMember in interfaceMembers)
+            {
+                var impl = inType.FindImplementationForInterfaceMember(interfaceMember);
+                if (impl != null && symbol.Equals(impl))
+                {
+                    builder.Add(impl);
+                }
+            }
+
+            return builder.ToImmutable();
         }
 
         private static bool CanBeMadeStatic(SemanticModel semanticModel, SyntaxNode node,
