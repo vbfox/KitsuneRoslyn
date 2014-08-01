@@ -63,20 +63,22 @@ namespace BlackFox.Roslyn.Diagnostics
 
             if (property.Initializer != null)
             {
-                //var location = property.Initializer.EqualsToken.GetLocation();
-                addDiagnostic(Diagnostic.Create(DescriptorToExpression, location));
-                addDiagnostic(Diagnostic.Create(DescriptorToStatement, location));
+                var referencesToCtor = ContainReferencesToConstructor(property.Initializer.Value, semanticModel,
+                    cancellationToken);
+                if (!referencesToCtor)
+                {
+                    addDiagnostic(Diagnostic.Create(DescriptorToExpression, location));
+                    addDiagnostic(Diagnostic.Create(DescriptorToStatement, location));
+                }
             }
 
             if (property.ExpressionBody != null)
             {
                 //var location = property.ExpressionBody.ArrowToken.GetLocation();
 
-                //FIXME: Shouldn't be possible in case of primary constructor variable capture
-                // semanticModel.AnalyzeControlFlow should be able to give the info
                 addDiagnostic(Diagnostic.Create(DescriptorToStatement, location));
 
-                if (semanticModel.GetConstantValue(property.ExpressionBody.Expression).HasValue)
+                if(semanticModel.GetConstantValue(property.ExpressionBody.Expression).HasValue)
                 {
                     // All conversions should be legal but the semantic isn't the same when the expression isn't a
                     // constant. Should it be suggested as a code fix at all ?
@@ -100,6 +102,16 @@ namespace BlackFox.Roslyn.Diagnostics
                     }
                 }
             }
+        }
+
+        static bool ContainReferencesToConstructor(ExpressionSyntax expression, SemanticModel semanticModel,
+            CancellationToken cancellationToken)
+        {
+            return expression.DescendantNodesAndSelf()
+                .Select(n => semanticModel.GetSymbolInfo(n, cancellationToken))
+                .Any(s => s.Symbol != null
+                    && s.Symbol.Kind == SymbolKind.Parameter
+                    && s.Symbol.ContainingSymbol.Name == ".ctor");
         }
     }
 

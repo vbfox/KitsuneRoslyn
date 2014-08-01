@@ -127,5 +127,23 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToExpression);
         }
+
+        [TestMethod]
+        public void Initializer_primary_constructor_argument()
+        {
+            var analyzer = new PropertyAnalyzer();
+            var diagnostics = GetDiagnostics(analyzer,
+                "class Foo(int x) { public int X {get;} = x;}");
+            Check.That(diagnostics).IsEmpty();
+        }
+
+        [TestMethod]
+        public void Initializer_primary_constructor_argument_deep()
+        {
+            var analyzer = new PropertyAnalyzer();
+            var diagnostics = GetDiagnostics(analyzer,
+                "class Foo(int x) { public int X {get;} = (int)System.Math.Sin(x+1);}");
+            Check.That(diagnostics).IsEmpty();
+        }
     }
 }
