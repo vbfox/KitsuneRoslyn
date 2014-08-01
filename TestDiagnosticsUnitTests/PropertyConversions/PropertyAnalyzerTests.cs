@@ -19,8 +19,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var analyzer = new PropertyAnalyzer();
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X { get { return 42; } }");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer)
-                .And.Not.IsEmpty();
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer);
         }
 
         [TestMethod]

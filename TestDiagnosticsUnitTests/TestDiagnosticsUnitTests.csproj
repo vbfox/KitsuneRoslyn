@@ -78,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticAnalyzerTests.cs" />
     <Compile Include="PropertyConversions\PropertyAnalyzerTests.cs" />
     <Compile Include="TernaryOperators\TernaryReplacableTests.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithSingleStringTests.cs" />
