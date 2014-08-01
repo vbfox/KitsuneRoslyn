@@ -39,6 +39,36 @@ namespace BlackFox.Roslyn.Diagnostics
             SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken)
         {
             var property = nodeToFix.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
+
+            var replacement = GetReplacement(diagnosticId, property);
+
+            if (replacement != null)
+            {
+                return await ReplaceAndFormat(document, root, cancellationToken, property, replacement);
+            }
+            else
+            {
+                return document;
+            }
+        }
+
+        private static async Task<Document> ReplaceAndFormat(Document document, SyntaxNode root,
+            CancellationToken cancellationToken, PropertyDeclarationSyntax from,
+            PropertyDeclarationSyntax to)
+        {
+            var newRoot = root.ReplaceNode(from, to.WithAdditionalAnnotations(Formatter.Annotation));
+            var newDocument = document.WithSyntaxRoot(newRoot);
+
+            var formattingTask = Formatter.FormatAsync(
+                newDocument,
+                Formatter.Annotation,
+                cancellationToken: cancellationToken);
+
+            return await formattingTask.ConfigureAwait(false);
+        }
+
+        private static PropertyDeclarationSyntax GetReplacement(string diagnosticId, PropertyDeclarationSyntax property)
+        {
             PropertyDeclarationSyntax replacement = null;
 
             if (diagnosticId == PropertyAnalyzer.IdToStatement)
@@ -58,23 +88,8 @@ namespace BlackFox.Roslyn.Diagnostics
                         .WithGet(property.ExpressionBody.Expression);
                 }
             }
-            
-            if (replacement != null)
-            {
-                var newRoot = root.ReplaceNode(property, replacement.WithAdditionalAnnotations(Formatter.Annotation));
-                var newDocument = document.WithSyntaxRoot(newRoot);
 
-                var formattingTask = Formatter.FormatAsync(
-                    newDocument,
-                    Formatter.Annotation,
-                    cancellationToken: cancellationToken);
-
-                return await formattingTask.ConfigureAwait(false);
-            }
-            else
-            {
-                return document;
-            }
+            return replacement;
         }
     }
 }
