@@ -93,6 +93,7 @@
     <Compile Include="NoStringEmpty\NoStringEmptyCodeFixTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringConcatenation\NoStringConcat\ReplaceStringConcatWithStringFormatTests.cs" />
+    <Compile Include="TestHelpers\NFluentExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

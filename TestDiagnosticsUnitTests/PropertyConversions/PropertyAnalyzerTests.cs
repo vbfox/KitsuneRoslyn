@@ -2,14 +2,11 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BlackFox.Roslyn.Diagnostics.TestHelpers;
 using BlackFox.Roslyn.Diagnostics.TestHelpers.DiagnosticTestHelpers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NFluent;
+using System.Linq;
 
 namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
 {
@@ -22,7 +19,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var analyzer = new PropertyAnalyzer();
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X { get { return 42; } }");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer)
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer)
                 .And.Not.IsEmpty();
         }
 
@@ -33,8 +30,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
                 "public int X { get { return Math.Sin(42); } }");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer)
-                .And.Not.IsEmpty();
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer);
         }
 
         [TestMethod]
@@ -44,8 +40,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
                 "public static int x = 42; public int X { get { return Math.Sin(x); } }");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer)
-                .And.Not.IsEmpty();
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer);
         }
 
         [TestMethod]
@@ -55,8 +50,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
                 "public int x = 42; public int X { get { return Math.Sin(x); } }");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToExpression)
-                .And.Not.IsEmpty();
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToExpression);
         }
 
         [TestMethod]
@@ -81,8 +75,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var analyzer = new PropertyAnalyzer();
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X => 42;");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToInitializer)
-                .And.Not.IsEmpty();
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToInitializer);
         }
 
         [TestMethod]
@@ -91,8 +84,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var analyzer = new PropertyAnalyzer();
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X => Math.Sin(42);");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToInitializer)
-                .And.Not.IsEmpty();
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToInitializer);
         }
 
         [TestMethod]
@@ -102,8 +94,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
                 "public static int x = 42; public int SinX => Math.Sin(x);");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToInitializer)
-                .And.Not.IsEmpty();
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToInitializer);
         }
 
         [TestMethod]
@@ -115,8 +106,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var ids = diagnostics.Select(d => d.Id);
 
             // Intializer is impossible as no instance reference can exist in their scope
-            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToStatement)
-                .And.Not.IsEmpty();
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement);
         }
 
         [TestMethod]
@@ -125,8 +115,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var analyzer = new PropertyAnalyzer();
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X {get;} = 42;");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToExpression)
-                .And.Not.IsEmpty();
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToExpression);
         }
 
         [TestMethod]
@@ -136,8 +125,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
                 "public int X {get;} = Math.Sin(42);");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToExpression)
-                .And.Not.IsEmpty();
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToExpression);
         }
     }
 }

@@ -75,8 +75,8 @@ namespace BlackFox.Roslyn.Diagnostics
                 //FIXME: Shouldn't be possible in case of primary constructor variable capture
                 // semanticModel.AnalyzeControlFlow should be able to give the info
                 addDiagnostic(Diagnostic.Create(DescriptorToStatement, location));
-                
-                if (semanticModel.GetConstantValue(property.ExpressionBody).HasValue)
+
+                if (semanticModel.GetConstantValue(property.ExpressionBody.Expression).HasValue)
                 {
                     // All conversions should be legal but the semantic isn't the same when the expression isn't a
                     // constant. Should it be suggested as a code fix at all ?
