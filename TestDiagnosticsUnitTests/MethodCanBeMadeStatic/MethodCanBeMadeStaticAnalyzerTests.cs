@@ -59,6 +59,16 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
         }
 
         [TestMethod]
+        public void This()
+        {
+            var analyzer = new MethodCanBeMadeStaticAnalyzer();
+            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+                "public object X() { return this;}");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).IsEmpty();
+        }
+
+        [TestMethod]
         public void Already_static()
         {
             var analyzer = new MethodCanBeMadeStaticAnalyzer();
@@ -68,6 +78,65 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
             Check.That(ids).IsEmpty();
         }
 
+        [TestMethod]
+        public void Virtual()
+        {
+            var analyzer = new MethodCanBeMadeStaticAnalyzer();
+            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+                "public virtual void X() { }");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).IsEmpty();
+        }
+
+        [TestMethod]
+        public void Abstract()
+        {
+            var analyzer = new MethodCanBeMadeStaticAnalyzer();
+            var diagnostics = GetDiagnostics(analyzer,
+                "abstract class Foo{public abstract void X();}");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).IsEmpty();
+        }
+
+        [TestMethod]
+        public void Override()
+        {
+            var analyzer = new MethodCanBeMadeStaticAnalyzer();
+            var diagnostics = GetDiagnostics(analyzer,
+                "class Base{public virtual void X() {}} class Foo : Base {public override void X();}");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).IsEmpty();
+        }
+
+        [TestMethod]
+        public void Interface_implementation()
+        {
+            var analyzer = new MethodCanBeMadeStaticAnalyzer();
+            var diagnostics = GetDiagnostics(analyzer,
+                "interface IFoo { void X(); } class Foo : IFoo {public void X(){}}");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).IsEmpty();
+        }
+
+        [TestMethod]
+        public void Interface_implementation_for_derived_class()
+        {
+            var analyzer = new MethodCanBeMadeStaticAnalyzer();
+            var diagnostics = GetDiagnostics(analyzer,
+                "interface IFoo { void X(); } class Base {public void X(){}}; class Foo : Base, IFoo {}");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).IsEmpty();
+        }
+
+        [TestMethod]
+        public void Interface_explicit_implementation()
+        {
+            var analyzer = new MethodCanBeMadeStaticAnalyzer();
+            var diagnostics = GetDiagnostics(analyzer,
+                "interface IFoo { void X(); } class Foo : IFoo {void IFoo.X(){}}");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).IsEmpty();
+        }
 
         [TestMethod]
         public void Internal_instance_method()
