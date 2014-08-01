@@ -27,7 +27,7 @@ namespace BlackFox.Roslyn.Diagnostics
         {
         }
 
-        protected override async Task<Document> GetUpdatedDocumentAsync(Document document,
+        protected sealed override async Task<Document> GetUpdatedDocumentAsync(Document document,
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,
             CancellationToken cancellationToken)
         {

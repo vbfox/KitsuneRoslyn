@@ -6,35 +6,30 @@ using Microsoft.CodeAnalysis.Formatting;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
 
 namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class MethodCanBeMadeStaticCodeFix : SimpleCodeFixProviderBase
+    public class MethodCanBeMadeStaticCodeFix : ReplacementCodeFixProviderBase
     {
         public const string Id = "BlackFox.MethodCanBeMadeStaticCodeFix";
+
+        protected override AdditionalAction Format { get; } = AdditionalAction.Run;
 
         public MethodCanBeMadeStaticCodeFix()
             : base(MethodCanBeMadeStaticAnalyzer.Id, "Make method static")
         {
         }
 
-        protected override async Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel semanticModel,
+        protected override Task<Replacement> GetReplacementAsync(Document document, SemanticModel semanticModel,
             SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken)
         {
             var method = nodeToFix.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
             MethodDeclarationSyntax fixedMethod = GetFixedMethod(method);
 
-            var newRoot = root.ReplaceNode(method, fixedMethod);
-            var newDocument = document.WithSyntaxRoot(newRoot);
-
-            var formattingTask = Formatter.FormatAsync(
-                newDocument,
-                Formatter.Annotation,
-                cancellationToken: cancellationToken);
-
-            return await formattingTask.ConfigureAwait(false);
+            return Task.FromResult(Replacement.Create(method, fixedMethod));
         }
 
         private static MethodDeclarationSyntax GetFixedMethod(MethodDeclarationSyntax method)
