@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 
 namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 {
@@ -11,9 +12,10 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
         /// <summary>
         /// Return true if the method currently isn't static but can be made static.
         /// </summary>
-        public static bool CanBeMadeStatic(this SemanticModel semanticModel, MethodDeclarationSyntax method)
+        public static bool CanBeMadeStatic(this SemanticModel semanticModel, MethodDeclarationSyntax method,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            var symbol = semanticModel.GetDeclaredSymbol(method);
+            var symbol = semanticModel.GetDeclaredSymbol(method, cancellationToken);
             if (symbol == null || symbol.IsStatic)
             {
                 return false;

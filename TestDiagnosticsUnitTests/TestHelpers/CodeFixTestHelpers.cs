@@ -43,6 +43,14 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
             Check.That(fix.Item2).IsEqualTo(expectedCode);
         }
 
+        public static void CheckSingleFix(string code, string spanText, string expectedCode,
+            string expectedDescription, ICodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
+        {
+            var task = CheckSingleFixAsync(code, spanText, expectedCode, expectedDescription, codeFixProvider,
+                diagnosticDescriptor);
+            task.Wait();
+        }
+
         public static async Task CheckSingleFixAsync(string code, string spanText, string expectedCode,
             ICodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
         {
@@ -51,6 +59,14 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
             Check.That(fixes).HasSize(1);
             var fix = fixes.Single();
             Check.That(fix.Item2).IsEqualTo(expectedCode);
+        }
+
+        public static void CheckSingleFix(string code, string spanText, string expectedCode,
+            ICodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
+        {
+            var task = CheckSingleFixAsync(code, spanText, expectedCode, codeFixProvider,
+                diagnosticDescriptor);
+            task.Wait();
         }
 
         class SingleDocumentTestSolution

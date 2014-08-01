@@ -59,6 +59,17 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
         }
 
         [TestMethod]
+        public void Already_static()
+        {
+            var analyzer = new MethodCanBeMadeStaticAnalyzer();
+            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+                "public static void X() { }");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).IsEmpty();
+        }
+
+
+        [TestMethod]
         public void Internal_instance_method()
         {
             var analyzer = new MethodCanBeMadeStaticAnalyzer();

@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeFixProviderBase.cs" />
+    <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticCodeFix.cs" />
     <Compile Include="RoslynExtensions\CanBeMadeStaticAnalysis.cs" />
     <Compile Include="PropertyConversions\PropertyCodeFix.cs" />
     <Compile Include="RoslynExtensions\PropertyDeclarationSyntaxExtensions.cs" />

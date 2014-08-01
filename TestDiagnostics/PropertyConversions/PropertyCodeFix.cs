@@ -21,7 +21,7 @@ namespace BlackFox.Roslyn.Diagnostics
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
     public class PropertyCodeFix : SimpleCodeFixProviderBase
     {
-        public const string Id = "BlackFox.PropertyCodeFixes";
+        public const string Id = "BlackFox.PropertyCodeFix";
 
         public int Prop { get; set; }
 
