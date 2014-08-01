@@ -35,13 +35,23 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
 
         public static CSharpCompilation CreateCompilation(string code)
         {
-            var tree = SyntaxFactory.ParseSyntaxTree(code);
+            var options = new CSharpParseOptions(LanguageVersion.Experimental);
+            var tree = SyntaxFactory.ParseSyntaxTree(code, options);
             var compilation = CSharpCompilation.Create(null,
                 syntaxTrees: ImmutableArray.Create(tree),
                 references: new[]
                 {
                     new MetadataFileReference(typeof(object).Assembly.Location),
                 });
+            var errors = tree.GetDiagnostics()
+                .Where(d => d.Severity == DiagnosticSeverity.Error)
+                .ToImmutableArray();
+
+            if (!errors.IsEmpty)
+            {
+                throw new InvalidOperationException("Compiled invalid program: " +
+                    string.Join(", ", errors.Select(e => e.GetMessage())));
+            }
 
             return compilation;
         }
@@ -63,7 +73,7 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
             var kinds = analyzer.SyntaxKindsOfInterest;
 
             var matchingNodes =
-                from node in RecursiveGetChild(tree.GetRoot())
+                from node in tree.GetRoot().DescendantNodesAndSelf()
                 where kinds.Any(k => node.CSharpKind() == k)
                 select node;
 
