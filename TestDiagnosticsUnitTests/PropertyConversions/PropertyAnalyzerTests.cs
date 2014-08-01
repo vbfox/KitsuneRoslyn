@@ -27,10 +27,33 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         }
 
         [TestMethod]
-        public void Get_return_expression()
+        public void Get_return_expression_static_1()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X { get { return Math.Sin(42); } }");
+            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+                "public int X { get { return Math.Sin(42); } }");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer)
+                .And.Not.IsEmpty();
+        }
+
+        [TestMethod]
+        public void Get_return_expression_static_2()
+        {
+            var analyzer = new PropertyAnalyzer();
+            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+                "public static int x = 42; public int X { get { return Math.Sin(x); } }");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer)
+                .And.Not.IsEmpty();
+        }
+
+        [TestMethod]
+        public void Get_return_expression_instance()
+        {
+            var analyzer = new PropertyAnalyzer();
+            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+                "public int x = 42; public int X { get { return Math.Sin(x); } }");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToExpression)
                 .And.Not.IsEmpty();
@@ -95,8 +118,6 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             Check.That(ids).IsOnlyMadeOf(PropertyAnalyzer.IdToStatement)
                 .And.Not.IsEmpty();
         }
-
-        public double X { get; } = Math.Sin(42);
 
         [TestMethod]
         public void Initializer_constant()
