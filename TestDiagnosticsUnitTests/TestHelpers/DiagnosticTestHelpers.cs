@@ -24,6 +24,15 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
             return GetDiagnostics(analyzer, fullCode);
         }
 
+        public static ImmutableList<Diagnostic> GetDiagnosticsInClassLevelCode(
+            this ISyntaxNodeAnalyzer<SyntaxKind> analyzer, string code)
+        {
+            var fullCode = string.Format("using System; namespace TestNamespace {{ public class TestClass {{ "
+                + "{0} }} }}", code);
+
+            return GetDiagnostics(analyzer, fullCode);
+        }
+
         public static CSharpCompilation CreateCompilation(string code)
         {
             var tree = SyntaxFactory.ParseSyntaxTree(code);

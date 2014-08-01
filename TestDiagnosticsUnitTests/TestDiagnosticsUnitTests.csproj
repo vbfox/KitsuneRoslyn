@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PropertyConversions\PropertyAnalyzerTests.cs" />
     <Compile Include="TernaryOperators\TernaryReplacableTests.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithSingleStringTests.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithStringFormatTests.cs" />
