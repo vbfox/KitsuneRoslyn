@@ -59,52 +59,76 @@ namespace BlackFox.Roslyn.Diagnostics
         {
             var property = (PropertyDeclarationSyntax)node;
 
-            var location = property.GetLocation();
-
             if (property.Initializer != null)
             {
-                var referencesToCtor = ContainReferencesToConstructor(property.Initializer.Value, semanticModel,
-                    cancellationToken);
-                if (!referencesToCtor)
+                AnalyzeWithInitializer(semanticModel, addDiagnostic, cancellationToken, property);
+            }
+            else if (property.ExpressionBody != null)
+            {
+                AnalyzeWithExpressionBody(semanticModel, addDiagnostic, property);
+            }
+            else
+            {
+                AnalyzeStandardProperty(addDiagnostic, property);
+            }
+        }
+
+        private static void AnalyzeStandardProperty(Action<Diagnostic> addDiagnostic, PropertyDeclarationSyntax property)
+        {
+            if (property.AccessorList == null || property.AccessorList.Accessors.Count != 1)
+            {
+                // Only single accessor properties are matched
+                return;
+            }
+
+            var accessor = property.AccessorList.Accessors.Single();
+
+            if (accessor.IsKind(SyntaxKind.GetAccessorDeclaration))
+            {
+                if (accessor.Body != null && accessor.Body.Statements.Count == 1
+                    && accessor.Body.Statements.Single().IsKind(SyntaxKind.ReturnStatement))
                 {
+                    var location = property.GetLocation();
                     addDiagnostic(Diagnostic.Create(DescriptorToExpression, location));
-                    addDiagnostic(Diagnostic.Create(DescriptorToStatement, location));
-                }
-            }
 
-            if (property.ExpressionBody != null)
-            {
-                //var location = property.ExpressionBody.ArrowToken.GetLocation();
-
-                addDiagnostic(Diagnostic.Create(DescriptorToStatement, location));
-
-                if(semanticModel.GetConstantValue(property.ExpressionBody.Expression).HasValue)
-                {
-                    // All conversions should be legal but the semantic isn't the same when the expression isn't a
-                    // constant. Should it be suggested as a code fix at all ?
+                    // ??? When is it possible ???
                     addDiagnostic(Diagnostic.Create(DescriptorToInitializer, location));
-                }
-            }
-
-            if (property.AccessorList != null && property.AccessorList.Accessors.Count == 1)
-            {
-                var accessor = property.AccessorList.Accessors.Single();
-
-                if (accessor.IsKind(SyntaxKind.GetAccessorDeclaration))
-                {
-                    if (accessor.Body != null && accessor.Body.Statements.Count == 1
-                        && accessor.Body.Statements.Single().IsKind(SyntaxKind.ReturnStatement))
-                    {
-                        addDiagnostic(Diagnostic.Create(DescriptorToExpression, location));
-
-                        // ??? When is it possible ???
-                        addDiagnostic(Diagnostic.Create(DescriptorToInitializer, location));
-                    }
                 }
             }
         }
 
-        static bool ContainReferencesToConstructor(ExpressionSyntax expression, SemanticModel semanticModel,
+        private static void AnalyzeWithExpressionBody(SemanticModel semanticModel, Action<Diagnostic> addDiagnostic, PropertyDeclarationSyntax property)
+        {
+            var location = property.GetLocation();
+            addDiagnostic(Diagnostic.Create(DescriptorToStatement, location));
+
+            if (semanticModel.GetConstantValue(property.ExpressionBody.Expression).HasValue)
+            {
+                // All conversions should be legal but the semantic isn't the same when the expression isn't a
+                // constant. Should it be suggested as a code fix at all ?
+                addDiagnostic(Diagnostic.Create(DescriptorToInitializer, location));
+            }
+        }
+
+        private static void AnalyzeWithInitializer(SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
+            CancellationToken cancellationToken, PropertyDeclarationSyntax property)
+        {
+            var referencesToCtor = ReferenceConstructorArgument(property.Initializer.Value, semanticModel,
+                cancellationToken);
+
+            if (referencesToCtor)
+            {
+                // The only potential references to a constructor argument are to a primary constructor argument.
+                // And they can only be referenced from initializers, never from other forms of properties.
+                return;
+            }
+
+            var location = property.GetLocation();
+            addDiagnostic(Diagnostic.Create(DescriptorToExpression, location));
+            addDiagnostic(Diagnostic.Create(DescriptorToStatement, location));
+        }
+
+        static bool ReferenceConstructorArgument(ExpressionSyntax expression, SemanticModel semanticModel,
             CancellationToken cancellationToken)
         {
             return expression.DescendantNodesAndSelf()
