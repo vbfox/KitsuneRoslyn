@@ -7,6 +7,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -21,6 +23,8 @@ namespace BlackFox.Roslyn.Diagnostics
     {
         public const string Id = "BlackFox.PropertyCodeFixes";
 
+        public int Prop { get; set; }
+
         private static readonly ImmutableDictionary<string, string> supported
             = ImmutableDictionary<string, string>.Empty
             .Add(PropertyAnalyzer.IdToStatement, "Convert to statement body")
@@ -31,7 +35,7 @@ namespace BlackFox.Roslyn.Diagnostics
         {
         }
 
-        protected override Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel semanticModel,
+        protected override async Task<Document> GetUpdatedDocumentAsync(Document document, SemanticModel semanticModel,
             SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId, CancellationToken cancellationToken)
         {
             var property = nodeToFix.AncestorsAndSelf().OfType<PropertyDeclarationSyntax>().First();
@@ -41,22 +45,35 @@ namespace BlackFox.Roslyn.Diagnostics
             {
                 if (property.Initializer != null)
                 {
-                    replacement = property.WithInitializer(null).WithGet(property.Initializer.Value);
+                    replacement = property
+                        .WithInitializer(null)
+                        .WithSemicolon(Token(SyntaxKind.None))
+                        .WithGet(property.Initializer.Value);
                 }
                 if (property.ExpressionBody != null)
                 {
-                    replacement = property.WithExpressionBody(null).WithGet(property.ExpressionBody.Expression);
+                    replacement = property
+                        .WithExpressionBody(null)
+                        .WithSemicolon(Token(SyntaxKind.None))
+                        .WithGet(property.ExpressionBody.Expression);
                 }
             }
-
+            
             if (replacement != null)
             {
-                var newRoot = root.ReplaceNode(property, replacement);
-                return Task.FromResult(document.WithSyntaxRoot(newRoot));
+                var newRoot = root.ReplaceNode(property, replacement.WithAdditionalAnnotations(Formatter.Annotation));
+                var newDocument = document.WithSyntaxRoot(newRoot);
+
+                var formattingTask = Formatter.FormatAsync(
+                    newDocument,
+                    Formatter.Annotation,
+                    cancellationToken: cancellationToken);
+
+                return await formattingTask.ConfigureAwait(false);
             }
             else
             {
-                return Task.FromResult(document);
+                return document;
             }
         }
     }

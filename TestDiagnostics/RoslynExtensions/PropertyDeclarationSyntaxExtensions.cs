@@ -35,7 +35,7 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
         public static PropertyDeclarationSyntax WithGet(this PropertyDeclarationSyntax property,
             ExpressionSyntax getResult)
         {
-            var block = Block(SingletonList<StatementSyntax>(ReturnStatement(getResult)));
+            var block = Block(SingletonList<StatementSyntax>(ReturnStatement(getResult.WithLeadingTrivia(ElasticMarker))));
             return WithGet(property, block);
         }
     }
