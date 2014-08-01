@@ -19,7 +19,7 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
     {
         public const string Id = "BlackFox.ReplaceNewGuidWithGuidEmpty";
 
-        protected override bool Simplify { get; } = true;
+        protected override AdditionalAction Simplify { get; } = AdditionalAction.AddAnnotationAndRun;
 
         static readonly ExpressionSyntax guidEmptyExpression
             = SimpleMemberAccessExpression("System", "Guid", "Empty");

@@ -14,8 +14,8 @@ namespace BlackFox.Roslyn.Diagnostics
 {
     public abstract class ReplacementCodeFixProviderBase : SimpleCodeFixProviderBase
     {
-        protected virtual bool Simplify { get { return false; } }
-        protected virtual bool Format { get { return false; } }
+        protected virtual AdditionalAction Simplify { get; } = AdditionalAction.DoNotRun;
+        protected virtual AdditionalAction Format { get; } = AdditionalAction.DoNotRun;
 
         protected ReplacementCodeFixProviderBase(string diagnosticId, string fixDescription)
             : base(diagnosticId, fixDescription)
@@ -42,8 +42,8 @@ namespace BlackFox.Roslyn.Diagnostics
             replacementNode = replacementNode.WithAdditionalAnnotations(GetAnnotations());
 
             document = await document.ReplaceNodeAsync(nodeToFix, replacementNode);
-            
-            if (Simplify)
+
+            if (Simplify != AdditionalAction.DoNotRun)
             {
                 var simplificationTask = Simplifier.ReduceAsync(
                     document,
@@ -53,7 +53,7 @@ namespace BlackFox.Roslyn.Diagnostics
                 document = await simplificationTask.ConfigureAwait(false);
             }
 
-            if (Format)
+            if (Format != AdditionalAction.DoNotRun)
             {
                 var formattingTask = Formatter.FormatAsync(
                     document,
@@ -70,11 +70,11 @@ namespace BlackFox.Roslyn.Diagnostics
         {
             var annotations = ImmutableList<SyntaxAnnotation>.Empty;
 
-            if (Simplify)
+            if (Simplify == AdditionalAction.AddAnnotationAndRun)
             {
                 annotations = annotations.Add(Simplifier.Annotation);
             }
-            if (Format)
+            if (Format == AdditionalAction.AddAnnotationAndRun)
             {
                 annotations = annotations.Add(Formatter.Annotation);
             }

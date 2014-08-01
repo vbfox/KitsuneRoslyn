@@ -101,6 +101,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdditionalAction.cs" />
     <Compile Include="CodeFixProviderBase.cs" />
     <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticCodeFix.cs" />
     <Compile Include="RoslynExtensions\CanBeMadeStaticAnalysis.cs" />

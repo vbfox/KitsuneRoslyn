@@ -20,7 +20,7 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
     {
         public const string Id = "BlackFox.VarToTypeCodeFix";
 
-        protected override bool Simplify { get; } = true;
+        protected override AdditionalAction Simplify { get; } = AdditionalAction.AddAnnotationAndRun;
 
         protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,

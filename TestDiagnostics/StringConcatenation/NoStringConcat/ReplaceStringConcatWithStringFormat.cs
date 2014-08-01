@@ -19,9 +19,8 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
     {
         public const string Id = "BlackFox.ReplaceStringConcatWithStringFormat";
 
-        protected override bool Simplify { get; } = true;
-
-        protected override bool Format { get; } = true;
+        protected override AdditionalAction Simplify { get; } = AdditionalAction.AddAnnotationAndRun;
+        protected override AdditionalAction Format { get; } = AdditionalAction.AddAnnotationAndRun;
 
         protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,
