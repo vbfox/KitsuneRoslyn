@@ -98,7 +98,7 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
             return builder.ToImmutable();
         }
 
-        private static bool CanBeMadeStatic(SemanticModel semanticModel, SyntaxNode node,
+        public static bool CanBeMadeStatic(this SemanticModel semanticModel, SyntaxNode node,
             INamedTypeSymbol type)
         {
             return !semanticModel.EnumerateSymbols(node)

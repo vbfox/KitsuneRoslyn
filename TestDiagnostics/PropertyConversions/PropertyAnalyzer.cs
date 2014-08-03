@@ -2,6 +2,7 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
+using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -69,11 +70,11 @@ namespace BlackFox.Roslyn.Diagnostics
             }
             else
             {
-                AnalyzeStandardProperty(addDiagnostic, property);
+                AnalyzeStandardProperty(semanticModel, addDiagnostic, property);
             }
         }
 
-        private static void AnalyzeStandardProperty(Action<Diagnostic> addDiagnostic, PropertyDeclarationSyntax property)
+        private static void AnalyzeStandardProperty(SemanticModel semanticModel, Action<Diagnostic> addDiagnostic, PropertyDeclarationSyntax property)
         {
             if (property.AccessorList == null || property.AccessorList.Accessors.Count != 1)
             {
@@ -81,19 +82,28 @@ namespace BlackFox.Roslyn.Diagnostics
                 return;
             }
 
-            var accessor = property.AccessorList.Accessors.Single();
+            var getAccessor = property.AccessorList.Accessors
+                .FirstOrDefault(a => a.IsKind(SyntaxKind.GetAccessorDeclaration) && a.Body != null);
 
-            if (accessor.IsKind(SyntaxKind.GetAccessorDeclaration))
+            if (getAccessor == null)
             {
-                if (accessor.Body != null && accessor.Body.Statements.Count == 1
-                    && accessor.Body.Statements.Single().IsKind(SyntaxKind.ReturnStatement))
-                {
-                    var location = property.GetLocation();
-                    addDiagnostic(Diagnostic.Create(DescriptorToExpression, location));
+                return;
+            }
 
-                    // ??? When is it possible ???
-                    addDiagnostic(Diagnostic.Create(DescriptorToInitializer, location));
-                }
+            var returnStatement = getAccessor.Body.Statements.OfType<ReturnStatementSyntax>()
+                .FirstOrDefault();
+            if (getAccessor.Body.Statements.Count != 1 || returnStatement == null)
+            {
+                return;
+            }
+
+            var location = property.GetLocation();
+            addDiagnostic(Diagnostic.Create(DescriptorToExpression, location));
+
+            var type = semanticModel.GetDeclaredSymbol(property).ContainingType;
+            if (semanticModel.CanBeMadeStatic(returnStatement.Expression, type))
+            {
+                addDiagnostic(Diagnostic.Create(DescriptorToInitializer, location));
             }
         }
 
@@ -102,10 +112,9 @@ namespace BlackFox.Roslyn.Diagnostics
             var location = property.GetLocation();
             addDiagnostic(Diagnostic.Create(DescriptorToStatement, location));
 
-            if (semanticModel.GetConstantValue(property.ExpressionBody.Expression).HasValue)
+            var type = semanticModel.GetDeclaredSymbol(property).ContainingType;
+            if (semanticModel.CanBeMadeStatic(property.ExpressionBody.Expression, type))
             {
-                // All conversions should be legal but the semantic isn't the same when the expression isn't a
-                // constant. Should it be suggested as a code fix at all ?
                 addDiagnostic(Diagnostic.Create(DescriptorToInitializer, location));
             }
         }

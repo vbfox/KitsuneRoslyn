@@ -81,7 +81,8 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         public void Expression_expression_static_1()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X => Math.Sin(42);");
+            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+                "public int X => Math.Sin(42);");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToInitializer);
         }
