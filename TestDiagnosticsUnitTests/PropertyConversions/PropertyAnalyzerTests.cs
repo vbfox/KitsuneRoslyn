@@ -19,7 +19,9 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var analyzer = new PropertyAnalyzer();
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X { get { return 42; } }");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer);
+            Check.That(ids).ContainExactlyAnyOrder(
+                PropertyAnalyzer.IdStatementToExpression,
+                PropertyAnalyzer.IdStatementToInitializer);
         }
 
         [TestMethod]
@@ -29,7 +31,9 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
                 "public int X { get { return Math.Sin(42); } }");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer);
+            Check.That(ids).ContainExactlyAnyOrder(
+                PropertyAnalyzer.IdStatementToExpression,
+                PropertyAnalyzer.IdStatementToInitializer);
         }
 
         [TestMethod]
@@ -39,7 +43,9 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
                 "public static int x = 42; public int X { get { return Math.Sin(x); } }");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToExpression, PropertyAnalyzer.IdToInitializer);
+            Check.That(ids).ContainExactlyAnyOrder(
+                PropertyAnalyzer.IdStatementToExpression, 
+                PropertyAnalyzer.IdStatementToInitializer);
         }
 
         [TestMethod]
@@ -49,7 +55,8 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
                 "public int x = 42; public int X { get { return Math.Sin(x); } }");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToExpression);
+            Check.That(ids).ContainExactlyAnyOrder(
+                PropertyAnalyzer.IdStatementToExpression);
         }
 
         [TestMethod]
@@ -74,7 +81,9 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var analyzer = new PropertyAnalyzer();
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X => 42;");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToInitializer);
+            Check.That(ids).ContainExactlyAnyOrder(
+                PropertyAnalyzer.IdExpressionToStatement, 
+                PropertyAnalyzer.IdExpressionToInitializer);
         }
 
         [TestMethod]
@@ -84,7 +93,9 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
                 "public int X => Math.Sin(42);");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToInitializer);
+            Check.That(ids).ContainExactlyAnyOrder(
+                PropertyAnalyzer.IdExpressionToStatement, 
+                PropertyAnalyzer.IdExpressionToInitializer);
         }
 
         [TestMethod]
@@ -94,7 +105,9 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
                 "public static int x = 42; public int SinX => Math.Sin(x);");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToInitializer);
+            Check.That(ids).ContainExactlyAnyOrder(
+                PropertyAnalyzer.IdExpressionToStatement, 
+                PropertyAnalyzer.IdExpressionToInitializer);
         }
 
         [TestMethod]
@@ -105,8 +118,8 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
                 "public int x = 42; public int SinX => Math.Sin(x);");
             var ids = diagnostics.Select(d => d.Id);
 
-            // Intializer is impossible as no instance reference can exist in their scope
-            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement);
+            // Initializer is impossible as no instance reference can exist in their scope
+            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdExpressionToStatement);
         }
 
         [TestMethod]
@@ -115,7 +128,9 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var analyzer = new PropertyAnalyzer();
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X {get;} = 42;");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToExpression);
+            Check.That(ids).ContainExactlyAnyOrder(
+                PropertyAnalyzer.IdInitializerToStatement, 
+                PropertyAnalyzer.IdInitializerToExpression);
         }
 
         [TestMethod]
@@ -125,7 +140,9 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
                 "public int X {get;} = Math.Sin(42);");
             var ids = diagnostics.Select(d => d.Id);
-            Check.That(ids).ContainExactlyAnyOrder(PropertyAnalyzer.IdToStatement, PropertyAnalyzer.IdToExpression);
+            Check.That(ids).ContainExactlyAnyOrder(
+                PropertyAnalyzer.IdInitializerToStatement, 
+                PropertyAnalyzer.IdInitializerToExpression);
         }
 
         [TestMethod]

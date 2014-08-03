@@ -18,31 +18,61 @@ namespace BlackFox.Roslyn.Diagnostics
     [ExportDiagnosticAnalyzer("BlackFox.PropertyAnalyzer", LanguageNames.CSharp)]
     public class PropertyAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
     {
-        public const string IdToStatement = "BlackFox.Property.CanBeConvertedToStatement";
-        public const string IdToInitializer = "BlackFox.Property.CanBeConvertedToInitializer";
-        public const string IdToExpression = "BlackFox.Property.CanBeConvertedToExpression";
+        public const string IdExpressionToStatement = "BlackFox.Property.ExpressionCanBeConvertedToStatement";
+        public const string IdExpressionToInitializer = "BlackFox.Property.ExpressionCanBeConvertedToInitializer";
+        public const string IdStatementToInitializer = "BlackFox.Property.StatementCanBeConvertedToInitializer";
+        public const string IdStatementToExpression = "BlackFox.Property.StatementCanBeConvertedToExpression";
+        public const string IdInitializerToStatement = "BlackFox.Property.InitializerCanBeConvertedToStatement";
+        public const string IdInitializerToExpression = "BlackFox.Property.InitializerCanBeConvertedToExpression";
 
-        public static DiagnosticDescriptor DescriptorToStatement { get; }
+        public static DiagnosticDescriptor DescriptorExpressionToStatement { get; }
             = new DiagnosticDescriptor(
-                IdToStatement,
+                IdExpressionToStatement,
                 "Can be converted to statement body",
                 "Can be converted to statement body",
                 "Readability",
                 DiagnosticSeverity.Warning,
                 isEnabledByDefault: true);
 
-        public static DiagnosticDescriptor DescriptorToInitializer { get; }
+        public static DiagnosticDescriptor DescriptorInitializerToStatement { get; }
             = new DiagnosticDescriptor(
-                    IdToInitializer,
+                IdInitializerToStatement,
+                "Can be converted to statement body",
+                "Can be converted to statement body",
+                "Readability",
+                DiagnosticSeverity.Warning,
+                isEnabledByDefault: true);
+
+        public static DiagnosticDescriptor DescriptorExpressionToInitializer { get; }
+            = new DiagnosticDescriptor(
+                    IdExpressionToInitializer,
                     "Can be converted to initializer",
                     "Can be converted to initializer",
                     "Readability",
                     DiagnosticSeverity.Warning,
                     isEnabledByDefault: true);
 
-        public static DiagnosticDescriptor DescriptorToExpression { get; }
-        = new DiagnosticDescriptor(
-                    IdToExpression,
+        public static DiagnosticDescriptor DescriptorStatementToInitializer { get; }
+            = new DiagnosticDescriptor(
+                    IdStatementToInitializer,
+                    "Can be converted to initializer",
+                    "Can be converted to initializer",
+                    "Readability",
+                    DiagnosticSeverity.Warning,
+                    isEnabledByDefault: true);
+
+        public static DiagnosticDescriptor DescriptorStatementToExpression { get; }
+            = new DiagnosticDescriptor(
+                    IdStatementToExpression,
+                    "Can be converted to expression",
+                    "Can be converted to expression",
+                    "Readability",
+                    DiagnosticSeverity.Warning,
+                    isEnabledByDefault: true);
+
+        public static DiagnosticDescriptor DescriptorInitializerToExpression { get; }
+            = new DiagnosticDescriptor(
+                    IdInitializerToExpression,
                     "Can be converted to expression",
                     "Can be converted to expression",
                     "Readability",
@@ -50,7 +80,13 @@ namespace BlackFox.Roslyn.Diagnostics
                     isEnabledByDefault: true);
 
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
-            = ImmutableArray.Create(DescriptorToStatement, DescriptorToInitializer, DescriptorToExpression);
+            = ImmutableArray.Create(
+                DescriptorExpressionToStatement,
+                DescriptorInitializerToStatement,
+                DescriptorExpressionToInitializer,
+                DescriptorStatementToInitializer,
+                DescriptorStatementToExpression,
+                DescriptorInitializerToExpression);
 
         public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
             = ImmutableArray.Create(SyntaxKind.PropertyDeclaration);
@@ -98,24 +134,24 @@ namespace BlackFox.Roslyn.Diagnostics
             }
 
             var location = property.GetLocation();
-            addDiagnostic(Diagnostic.Create(DescriptorToExpression, location));
+            addDiagnostic(Diagnostic.Create(DescriptorStatementToExpression, location));
 
             var type = semanticModel.GetDeclaredSymbol(property).ContainingType;
             if (semanticModel.CanBeMadeStatic(returnStatement.Expression, type))
             {
-                addDiagnostic(Diagnostic.Create(DescriptorToInitializer, location));
+                addDiagnostic(Diagnostic.Create(DescriptorStatementToInitializer, location));
             }
         }
 
         private static void AnalyzeWithExpressionBody(SemanticModel semanticModel, Action<Diagnostic> addDiagnostic, PropertyDeclarationSyntax property)
         {
             var location = property.GetLocation();
-            addDiagnostic(Diagnostic.Create(DescriptorToStatement, location));
+            addDiagnostic(Diagnostic.Create(DescriptorExpressionToStatement, location));
 
             var type = semanticModel.GetDeclaredSymbol(property).ContainingType;
             if (semanticModel.CanBeMadeStatic(property.ExpressionBody.Expression, type))
             {
-                addDiagnostic(Diagnostic.Create(DescriptorToInitializer, location));
+                addDiagnostic(Diagnostic.Create(DescriptorExpressionToInitializer, location));
             }
         }
 
@@ -133,8 +169,8 @@ namespace BlackFox.Roslyn.Diagnostics
             }
 
             var location = property.GetLocation();
-            addDiagnostic(Diagnostic.Create(DescriptorToExpression, location));
-            addDiagnostic(Diagnostic.Create(DescriptorToStatement, location));
+            addDiagnostic(Diagnostic.Create(DescriptorInitializerToExpression, location));
+            addDiagnostic(Diagnostic.Create(DescriptorInitializerToStatement, location));
         }
 
         static bool ReferenceConstructorArgument(ExpressionSyntax expression, SemanticModel semanticModel,
@@ -147,6 +183,4 @@ namespace BlackFox.Roslyn.Diagnostics
                     && s.Symbol.ContainingSymbol.Name == ".ctor");
         }
     }
-
-
 }

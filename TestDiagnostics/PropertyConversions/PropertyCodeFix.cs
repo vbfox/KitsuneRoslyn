@@ -27,9 +27,12 @@ namespace BlackFox.Roslyn.Diagnostics
 
         private static readonly ImmutableDictionary<string, string> supported
             = ImmutableDictionary<string, string>.Empty
-            .Add(PropertyAnalyzer.IdToStatement, "Convert to statement body")
-            .Add(PropertyAnalyzer.IdToExpression, "Convert to expression")
-            .Add(PropertyAnalyzer.IdToInitializer, "Convert to initializer");
+            .Add(PropertyAnalyzer.IdExpressionToStatement, "Convert to statement body")
+            .Add(PropertyAnalyzer.IdExpressionToInitializer, "Convert to initializer")
+            .Add(PropertyAnalyzer.IdInitializerToExpression, "Convert to expression")
+            .Add(PropertyAnalyzer.IdInitializerToStatement, "Convert to statement body")
+            .Add(PropertyAnalyzer.IdStatementToExpression, "Convert to expression")
+            .Add(PropertyAnalyzer.IdStatementToInitializer, "Convert to initializer");
 
         public PropertyCodeFix() : base(supported)
         {
@@ -71,22 +74,19 @@ namespace BlackFox.Roslyn.Diagnostics
         {
             PropertyDeclarationSyntax replacement = null;
 
-            if (diagnosticId == PropertyAnalyzer.IdToStatement)
+            if (diagnosticId == PropertyAnalyzer.IdInitializerToStatement)
             {
-                if (property.Initializer != null)
-                {
                     replacement = property
                         .WithInitializer(null)
                         .WithSemicolon(Token(SyntaxKind.None))
                         .WithGet(property.Initializer.Value);
-                }
-                if (property.ExpressionBody != null)
-                {
-                    replacement = property
-                        .WithExpressionBody(null)
-                        .WithSemicolon(Token(SyntaxKind.None))
-                        .WithGet(property.ExpressionBody.Expression);
-                }
+            }
+            else if(diagnosticId == PropertyAnalyzer.IdExpressionToStatement)
+            {
+                replacement = property
+                    .WithExpressionBody(null)
+                    .WithSemicolon(Token(SyntaxKind.None))
+                    .WithGet(property.ExpressionBody.Expression);
             }
 
             return replacement;
