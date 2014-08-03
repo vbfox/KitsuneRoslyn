@@ -78,6 +78,17 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
         }
 
         [TestMethod]
+        public void Base()
+        {
+            var analyzer = new MethodCanBeMadeStaticAnalyzer();
+            var diagnostics = GetDiagnostics(analyzer,
+                "class FooBase { public object X() { return this; }} "
+                + "class Foo : FooBase { public object Y() { return base.X();}}");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).IsEmpty();
+        }
+
+        [TestMethod]
         public void Already_static()
         {
             var analyzer = new MethodCanBeMadeStaticAnalyzer();
@@ -118,6 +129,16 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
         }
 
         [TestMethod]
+        public void Potential_name_confusion()
+        {
+            var analyzer = new MethodCanBeMadeStaticAnalyzer();
+            var diagnostics = GetDiagnostics(analyzer,
+                "class A { public static int X() { return 42; } } class B { public object X() { return this;} public int Y() { return A.X(); }}");
+            var ids = diagnostics.Select(d => d.Id);
+            Check.That(ids).ContainExactlyAnyOrder(MethodCanBeMadeStaticAnalyzer.Id);
+        }
+
+        [TestMethod]
         public void Interface_implementation()
         {
             var analyzer = new MethodCanBeMadeStaticAnalyzer();
@@ -131,10 +152,6 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
         //[Ignore]
         public void Interface_implementation_for_derived_class()
         {
-            // Ignored for now
-            // Can't work without some compilation related analyzer and the only one in the current code base
-            // "ICompilationEndedAnalyzer" is never invoked by VS. 
-
             var analyzer = new MethodCanBeMadeStaticAnalyzer();
             var diagnostics = GetDiagnostics(analyzer,
                 "interface IFoo { void X(); } class Base {public void X(){}}; class Foo : Base, IFoo {}");
@@ -180,5 +197,7 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(MethodCanBeMadeStaticAnalyzer.Id);
         }
+
+
     }
 }

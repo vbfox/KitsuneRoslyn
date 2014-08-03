@@ -102,6 +102,7 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
             INamedTypeSymbol type)
         {
             return !semanticModel.EnumerateSymbols(node)
+                .Distinct()
                 .Any(s => IsInstanceReference(type, s));
         }
 
@@ -118,15 +119,21 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
         }
 
         static ImmutableHashSet<SymbolKind> potentialInstanceReferenceSymbolKinds
-            = ImmutableHashSet.Create(SymbolKind.Event, SymbolKind.Field, SymbolKind.Method, SymbolKind.Property,
-                /*this*/ SymbolKind.Parameter);
+            = ImmutableHashSet.Create(SymbolKind.Event, SymbolKind.Field, SymbolKind.Method, SymbolKind.Property);
 
         static bool IsInstanceReference(INamedTypeSymbol type, ISymbol symbol)
         {
             return !symbol.IsStatic
-                && potentialInstanceReferenceSymbolKinds.Contains(symbol.Kind)
+                && (potentialInstanceReferenceSymbolKinds.Contains(symbol.Kind) || IsThis(symbol))
                 && symbol.ContainingType != null
                 && symbol.ContainingType.Equals(type);
+        }
+
+        static bool IsThis(ISymbol symbol)
+        {
+            return symbol.Kind == SymbolKind.Parameter
+                && symbol.Name == "this"
+                && symbol.IsImplicitlyDeclared;
         }
     }
 }
