@@ -78,9 +78,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticAnalyzerTests.cs" />
     <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticCodeFixTests.cs" />
     <Compile Include="PropertyConversions\PropertyAnalyzerTests.cs" />
+    <Compile Include="PropertyConversions\PropertyCodeFixTests.cs" />
     <Compile Include="TernaryOperators\TernaryReplacableTests.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithSingleStringTests.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithStringFormatTests.cs" />

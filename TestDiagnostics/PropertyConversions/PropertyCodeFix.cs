@@ -76,10 +76,10 @@ namespace BlackFox.Roslyn.Diagnostics
 
             if (diagnosticId == PropertyAnalyzer.IdInitializerToStatement)
             {
-                    replacement = property
-                        .WithInitializer(null)
-                        .WithSemicolon(Token(SyntaxKind.None))
-                        .WithGet(property.Initializer.Value);
+                replacement = property
+                    .WithInitializer(null)
+                    .WithSemicolon(Token(SyntaxKind.None))
+                    .WithGet(property.Initializer.Value);
             }
             else if(diagnosticId == PropertyAnalyzer.IdExpressionToStatement)
             {

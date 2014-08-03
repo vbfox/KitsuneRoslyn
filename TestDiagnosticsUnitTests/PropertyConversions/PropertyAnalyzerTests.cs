@@ -126,7 +126,8 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         public void Initializer_constant()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X {get;} = 42;");
+            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+                "public int X {get;} = 42;");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(
                 PropertyAnalyzer.IdInitializerToStatement, 

@@ -85,15 +85,29 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
                     ProjectId = ProjectId.CreateNewId()
                 };
 
+                var parseOptions = new CSharpParseOptions(LanguageVersion.Experimental);
+                ProjectInfo projectInfo = ProjectInfo.Create(result.ProjectId, VersionStamp.Default, "TestProject",
+                    "TestAssembly", LanguageNames.CSharp, parseOptions: parseOptions);
+
                 result.DocumentId = DocumentId.CreateNewId(result.ProjectId);
                 result.Solution = new CustomWorkspace().CurrentSolution
-                  .AddProject(result.ProjectId, "TestProject", "TestAssembly", LanguageNames.CSharp)
+                  .AddProject(projectInfo)
                   .AddMetadataReference(result.ProjectId,
                     new MetadataFileReference(typeof(object).Assembly.Location))
                   .AddDocument(result.DocumentId, "TestDocument.cs", code);
                 result.Document = result.Solution.GetDocument(result.DocumentId);
                 result.DocumentSyntaxTree = await result.Document.GetSyntaxTreeAsync();
                 result.SolutionCompilation = await result.Solution.Projects.Single().GetCompilationAsync();
+
+                var errors = result.DocumentSyntaxTree.GetDiagnostics()
+                    .Where(d => d.Severity == DiagnosticSeverity.Error)
+                    .ToImmutableArray();
+
+                if (!errors.IsEmpty)
+                {
+                    throw new InvalidOperationException("Compiled invalid program: " +
+                        string.Join(", ", errors.Select(e => e.GetMessage())));
+                }
 
                 return result;
             }
