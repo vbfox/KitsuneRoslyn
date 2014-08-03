@@ -66,55 +66,12 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 
             var symbol = semanticModel.GetDeclaredSymbol(method, cancellationToken);
 
-            var derivatedTypes = GetTypeDerivingFrom(compilation, symbol.ContainingType);
+            var derivatedTypes = compilation.GetTypesDerivingFrom(symbol.ContainingType);
 
             bool isDerivedInterfaceImplementation = derivatedTypes
                 .Any(d => GetImplementedInterfacesSymbols(symbol, d).Any());
 
             return !isDerivedInterfaceImplementation;
-        }
-
-        private static IEnumerable<INamedTypeSymbol> GetTypeDerivingFrom(Compilation compilation, ITypeSymbol type)
-        {
-            return EnumerateTypes(compilation).Where(t => DerivateFrom(t, type));
-        }
-
-        private static bool DerivateFrom(INamedTypeSymbol type, ITypeSymbol potentialBaseType)
-        {
-            return EnumerateBaseTypes(type).Contains(potentialBaseType);
-        }
-
-        private static IEnumerable<ITypeSymbol> EnumerateBaseTypes(ITypeSymbol type)
-        {
-            Parameter.MustNotBeNull(type, "type");
-
-            var currentType = type;
-            while (currentType.BaseType != null)
-            {
-                yield return currentType.BaseType;
-                currentType = currentType.BaseType;
-            }
-        }
-
-        private static IEnumerable<INamedTypeSymbol> EnumerateTypes(Compilation compilation)
-        {
-            Queue<INamespaceSymbol> namespacesToExplore = new Queue<INamespaceSymbol>();
-            namespacesToExplore.Enqueue(compilation.GlobalNamespace);
-            while(namespacesToExplore.Count != 0)
-            {
-                var ns = namespacesToExplore.Dequeue();
-                foreach (var member in ns.GetMembers())
-                {
-                    if (member.Kind == SymbolKind.Namespace)
-                    {
-                        namespacesToExplore.Enqueue((INamespaceSymbol)member);
-                    }
-                    else if (member.Kind == SymbolKind.NamedType)
-                    {
-                        yield return (INamedTypeSymbol)member;
-                    }
-                }
-            }
         }
 
         private static ImmutableList<ISymbol> GetImplementedInterfacesSymbols(ISymbol symbol)

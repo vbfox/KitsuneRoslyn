@@ -51,7 +51,7 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
                 return;
             }
 
-            if (!symbol.ContainingType.IsEqualTo("System", "Guid"))
+            if (!symbol.ContainingType.FullyQualifiedNameIs("System", "Guid"))
             {
                 return;
             }

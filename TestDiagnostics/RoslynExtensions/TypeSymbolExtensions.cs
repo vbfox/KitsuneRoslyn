@@ -4,6 +4,7 @@
 
 using Microsoft.CodeAnalysis;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -11,7 +12,12 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 {
     static class TypeSymbolExtensions
     {
-        public static bool IsEqualTo(this ITypeSymbol type, params string[] names)
+        /// <summary>
+        /// Return true if the fully qualified (with namespaces, without global::) name of <paramref name="type"/>
+        /// is <see cref="names"/>.
+        /// </summary>
+        /// <remarks>Comparison is case sensitive.</remarks>
+        public static bool FullyQualifiedNameIs(this ITypeSymbol type, params string[] names)
         {
             Parameter.MustNotBeNull(names, "names");
 
@@ -76,6 +82,23 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
             var arraySymbol = symbol as IArrayTypeSymbol;
 
             return arraySymbol?.ElementType.SpecialType == SpecialType.System_Object;
+        }
+
+        public static bool DerivateFrom(this INamedTypeSymbol type, ITypeSymbol potentialBaseType)
+        {
+            return type.BaseTypes().Contains(potentialBaseType);
+        }
+
+        public static IEnumerable<ITypeSymbol> BaseTypes(this ITypeSymbol type)
+        {
+            Parameter.MustNotBeNull(type, "type");
+
+            var currentType = type;
+            while (currentType.BaseType != null)
+            {
+                yield return currentType.BaseType;
+                currentType = currentType.BaseType;
+            }
         }
     }
 }
