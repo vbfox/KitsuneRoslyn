@@ -2,17 +2,15 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
-using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Threading;
 
-namespace BlackFox.Roslyn.Diagnostics
+namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
 {
     [DiagnosticAnalyzer]
     [ExportDiagnosticAnalyzer("BlackFox.PropertyAnalyzer", LanguageNames.CSharp)]
@@ -91,96 +89,51 @@ namespace BlackFox.Roslyn.Diagnostics
         public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
             = ImmutableArray.Create(SyntaxKind.PropertyDeclaration);
 
+        private static readonly ImmutableDictionary<Tuple<PropertyConversionClassification, PropertyConversionClassification>, DiagnosticDescriptor> descriptors
+            = ImmutableDictionary<Tuple<PropertyConversionClassification, PropertyConversionClassification>, DiagnosticDescriptor>.Empty
+            .Add(Tuple.Create(PropertyConversionClassification.Initializer, PropertyConversionClassification.GetWithReturn), DescriptorInitializerToStatement)
+            .Add(Tuple.Create(PropertyConversionClassification.Expression, PropertyConversionClassification.GetWithReturn), DescriptorExpressionToStatement)
+            .Add(Tuple.Create(PropertyConversionClassification.Expression, PropertyConversionClassification.Initializer), DescriptorExpressionToInitializer)
+            .Add(Tuple.Create(PropertyConversionClassification.Initializer, PropertyConversionClassification.Expression), DescriptorInitializerToExpression)
+            .Add(Tuple.Create(PropertyConversionClassification.GetWithReturn, PropertyConversionClassification.Expression), DescriptorStatementToExpression)
+            .Add(Tuple.Create(PropertyConversionClassification.GetWithReturn, PropertyConversionClassification.Initializer), DescriptorStatementToInitializer);
+
+
         public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
             CancellationToken cancellationToken)
         {
             var property = (PropertyDeclarationSyntax)node;
 
-            if (property.Initializer != null)
-            {
-                AnalyzeWithInitializer(semanticModel, addDiagnostic, cancellationToken, property);
-            }
-            else if (property.ExpressionBody != null)
-            {
-                AnalyzeWithExpressionBody(semanticModel, addDiagnostic, property);
-            }
-            else
-            {
-                AnalyzeStandardProperty(semanticModel, addDiagnostic, property);
-            }
-        }
-
-        private static void AnalyzeStandardProperty(SemanticModel semanticModel, Action<Diagnostic> addDiagnostic, PropertyDeclarationSyntax property)
-        {
-            if (property.AccessorList == null || property.AccessorList.Accessors.Count != 1)
-            {
-                // Only single accessor properties are matched
-                return;
-            }
-
-            var getAccessor = property.AccessorList.Accessors
-                .FirstOrDefault(a => a.IsKind(SyntaxKind.GetAccessorDeclaration) && a.Body != null);
-
-            if (getAccessor == null)
+            var analysis = PropertyConversionAnalysis.Create(semanticModel, property, cancellationToken);
+            if (analysis.Classification == PropertyConversionClassification.NotSupported)
             {
                 return;
             }
 
-            var returnStatement = getAccessor.Body.Statements.OfType<ReturnStatementSyntax>()
-                .FirstOrDefault();
-            if (getAccessor.Body.Statements.Count != 1 || returnStatement == null)
+            AddIfPossible(analysis, PropertyConversionClassification.Expression, addDiagnostic);
+            AddIfPossible(analysis, PropertyConversionClassification.Initializer, addDiagnostic);
+            AddIfPossible(analysis, PropertyConversionClassification.GetWithReturn, addDiagnostic);
+        }
+
+        private void AddIfPossible(PropertyConversionAnalysis analysis,
+            PropertyConversionClassification to, Action<Diagnostic> addDiagnostic)
+        {
+            if (to == PropertyConversionClassification.Expression && !analysis.CanBeConvertedToExpression)
+            {
+                return;
+            }
+            if (to == PropertyConversionClassification.Initializer && !analysis.CanBeConvertedToInitializer)
+            {
+                return;
+            }
+            if (to == PropertyConversionClassification.GetWithReturn && !analysis.CanBeConvertedToGetWithReturn)
             {
                 return;
             }
 
-            var location = property.GetLocation();
-            addDiagnostic(Diagnostic.Create(DescriptorStatementToExpression, location));
+            var descriptor = descriptors[Tuple.Create(analysis.Classification, to)];
 
-            var type = semanticModel.GetDeclaredSymbol(property).ContainingType;
-            if (semanticModel.CanBeMadeStatic(returnStatement.Expression, type))
-            {
-                addDiagnostic(Diagnostic.Create(DescriptorStatementToInitializer, location));
-            }
-        }
-
-        private static void AnalyzeWithExpressionBody(SemanticModel semanticModel, Action<Diagnostic> addDiagnostic, PropertyDeclarationSyntax property)
-        {
-            var location = property.GetLocation();
-            addDiagnostic(Diagnostic.Create(DescriptorExpressionToStatement, location));
-
-            var type = semanticModel.GetDeclaredSymbol(property).ContainingType;
-            if (semanticModel.CanBeMadeStatic(property.ExpressionBody.Expression, type))
-            {
-                addDiagnostic(Diagnostic.Create(DescriptorExpressionToInitializer, location));
-            }
-        }
-
-        private static void AnalyzeWithInitializer(SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
-            CancellationToken cancellationToken, PropertyDeclarationSyntax property)
-        {
-            var referencesToCtor = ReferenceConstructorArgument(property.Initializer.Value, semanticModel,
-                cancellationToken);
-
-            if (referencesToCtor)
-            {
-                // The only potential references to a constructor argument are to a primary constructor argument.
-                // And they can only be referenced from initializers, never from other forms of properties.
-                return;
-            }
-
-            var location = property.GetLocation();
-            addDiagnostic(Diagnostic.Create(DescriptorInitializerToExpression, location));
-            addDiagnostic(Diagnostic.Create(DescriptorInitializerToStatement, location));
-        }
-
-        static bool ReferenceConstructorArgument(ExpressionSyntax expression, SemanticModel semanticModel,
-            CancellationToken cancellationToken)
-        {
-            return expression.DescendantNodesAndSelf()
-                .Select(n => semanticModel.GetSymbolInfo(n, cancellationToken))
-                .Any(s => s.Symbol != null
-                    && s.Symbol.Kind == SymbolKind.Parameter
-                    && s.Symbol.ContainingSymbol.Name == ".ctor");
+            addDiagnostic(Diagnostic.Create(descriptor, analysis.Property.GetLocation()));
         }
     }
 }

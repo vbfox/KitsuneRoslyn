@@ -30,10 +30,8 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
             return new MethodCanBeMadeStaticAnalysis(true, method);
         }
 
-        private static MethodCanBeMadeStaticAnalysis False(MethodDeclarationSyntax method)
-        {
-            return new MethodCanBeMadeStaticAnalysis(false, method);
-        }
+        private static MethodCanBeMadeStaticAnalysis False { get; }
+            = new MethodCanBeMadeStaticAnalysis(false, null);
 
         public MethodDeclarationSyntax GetFixedMethod()
         {
@@ -62,29 +60,29 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
         {
             if (ContainsNeverStaticModifiers(method.Modifiers))
             {
-                return False(method);
+                return False;
             }
 
             if (method.ExplicitInterfaceSpecifier != null)
             {
-                return False(method); // Same test is done later on the symbol
+                return False; // Same test is done later on the symbol
             }
 
             var symbol = semanticModel.GetDeclaredSymbol(method, cancellationToken);
             if (symbol == null || symbol.IsStatic || symbol.IsAbstract || symbol.IsOverride || symbol.IsVirtual)
             {
-                return False(method);
+                return False;
             }
 
             if (symbol.ContainingType == null
                 || !allowedTypeKinds.Contains(symbol.ContainingType.TypeKind))
             {
-                return False(method);
+                return False;
             }
 
             if (symbol.MethodKind == MethodKind.ExplicitInterfaceImplementation)
             {
-                return False(method);
+                return False;
             }
 
             var type = symbol.ContainingType;
@@ -92,11 +90,11 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 
             if (!contentCanBeMadeStatic)
             {
-                return False(method);
+                return False;
             }
 
             var implementInterfaceSymbol = GetImplementedInterfacesSymbols(symbol).Any();
-            return implementInterfaceSymbol ? False(method) : True(method);
+            return implementInterfaceSymbol ? False : True(method);
         }
 
         public static MethodCanBeMadeStaticAnalysis Create(SemanticModel semanticModel, MethodDeclarationSyntax method,
@@ -115,7 +113,7 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
             bool isDerivedInterfaceImplementation = derivatedTypes
                 .Any(d => GetImplementedInterfacesSymbols(symbol, d).Any());
 
-            return isDerivedInterfaceImplementation ? False(method) : True(method);
+            return isDerivedInterfaceImplementation ? False : True(method);
         }
 
         static ImmutableHashSet<TypeKind> allowedTypeKinds

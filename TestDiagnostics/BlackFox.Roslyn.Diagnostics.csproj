@@ -103,7 +103,11 @@
   <ItemGroup>
     <Compile Include="AdditionalAction.cs" />
     <Compile Include="CodeFixProviderBase.cs" />
+    <Compile Include="CodeRefactoringProviderBase.cs" />
     <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticCodeFix.cs" />
+    <Compile Include="PropertyConversions\PropertyConversionAnalysis.cs" />
+    <Compile Include="PropertyConversions\PropertyConversionClassification.cs" />
+    <Compile Include="PropertyConversions\PropertyRefactoring.cs" />
     <Compile Include="Replacement.cs" />
     <Compile Include="ReplacementNodeCodeFixProviderBase.cs" />
     <Compile Include="RoslynExtensions\SyntaxNodeCanBeMadeStaticAnalysis.cs" />
@@ -113,6 +117,7 @@
     <Compile Include="RoslynExtensions\MethodCanBeMadeStaticAnalysisExtensions.cs" />
     <Compile Include="RoslynExtensions\PropertyDeclarationSyntaxExtensions.cs" />
     <Compile Include="RoslynExtensions\SemanticModelExtensions.cs" />
+    <Compile Include="RoslynExtensions\SyntaxNodeOrTokenExtensions.cs" />
     <Compile Include="SimpleCodeFixProviderBase.cs" />
     <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticAnalyzer.cs" />
     <Compile Include="SyntaxDifferences.cs" />
