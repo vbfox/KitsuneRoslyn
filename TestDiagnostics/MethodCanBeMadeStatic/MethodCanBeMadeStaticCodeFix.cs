@@ -1,12 +1,11 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System;
 
 namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
 {
@@ -27,19 +26,9 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
         {
             var method = nodeToFix.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
-            MethodDeclarationSyntax fixedMethod = GetFixedMethod(method);
+            MethodDeclarationSyntax fixedMethod = MethodCanBeMadeStaticAnalysis.GetFixedMethod(method);
 
             return Task.FromResult(Replacement.Create(method, fixedMethod));
-        }
-
-        private static MethodDeclarationSyntax GetFixedMethod(MethodDeclarationSyntax method)
-        {
-            var token = SyntaxFactory.Token(SyntaxKind.StaticKeyword)
-                .WithLeadingTrivia(SyntaxFactory.ElasticMarker)
-                .WithTrailingTrivia(SyntaxFactory.ElasticMarker)
-                .WithAdditionalAnnotations(Formatter.Annotation);
-
-            return method.AddModifiers(token);
         }
     }
 }

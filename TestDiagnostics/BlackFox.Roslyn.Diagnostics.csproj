@@ -106,9 +106,11 @@
     <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticCodeFix.cs" />
     <Compile Include="Replacement.cs" />
     <Compile Include="ReplacementNodeCodeFixProviderBase.cs" />
-    <Compile Include="RoslynExtensions\CanBeMadeStaticAnalysis.cs" />
+    <Compile Include="RoslynExtensions\SyntaxNodeCanBeMadeStaticAnalysis.cs" />
     <Compile Include="PropertyConversions\PropertyCodeFix.cs" />
     <Compile Include="RoslynExtensions\CompilationExtensions.cs" />
+    <Compile Include="RoslynExtensions\MethodCanBeMadeStaticAnalysis.cs" />
+    <Compile Include="RoslynExtensions\MethodCanBeMadeStaticAnalysisExtensions.cs" />
     <Compile Include="RoslynExtensions\PropertyDeclarationSyntaxExtensions.cs" />
     <Compile Include="RoslynExtensions\SemanticModelExtensions.cs" />
     <Compile Include="SimpleCodeFixProviderBase.cs" />

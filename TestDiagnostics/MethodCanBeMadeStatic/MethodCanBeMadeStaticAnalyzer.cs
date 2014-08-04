@@ -43,7 +43,9 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
             
             var method = (MethodDeclarationSyntax)node;
 
-            if (semanticModel.CanBeMadeStatic(method, currentCompilation, cancellationToken))
+            var analysis = semanticModel.AnalyzeIfMethodCanBeMadeStatic(method, currentCompilation, cancellationToken);
+
+            if (analysis.CanBeMadeStatic)
             {
                 addDiagnostic(Diagnostic.Create(Descriptor, method.Identifier.GetLocation()));
             }
