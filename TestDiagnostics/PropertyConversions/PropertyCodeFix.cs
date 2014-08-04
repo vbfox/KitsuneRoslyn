@@ -63,64 +63,86 @@ namespace BlackFox.Roslyn.Diagnostics
             }
         }
 
+        delegate PropertyDeclarationSyntax PropertyReplacement(PropertyDeclarationSyntax property);
+
+        private static readonly ImmutableDictionary<string, PropertyReplacement> replacements
+            = ImmutableDictionary<string, PropertyReplacement>.Empty
+            .Add(PropertyAnalyzer.IdInitializerToStatement, InitializerToStatement)
+            .Add(PropertyAnalyzer.IdExpressionToStatement, ExpressionToStatement)
+            .Add(PropertyAnalyzer.IdExpressionToInitializer, ExpressionToInitializer)
+            .Add(PropertyAnalyzer.IdInitializerToExpression, InitializerToExpression)
+            .Add(PropertyAnalyzer.IdStatementToExpression, StatementToExpression)
+            .Add(PropertyAnalyzer.IdStatementToInitializer, StatementToInitializer);
+
         private static PropertyDeclarationSyntax GetReplacement(string diagnosticId, PropertyDeclarationSyntax property)
         {
-            PropertyDeclarationSyntax replacement = null;
+            return replacements[diagnosticId](property);
+        }
 
-            if (diagnosticId == PropertyAnalyzer.IdInitializerToStatement)
-            {
-                replacement = property
-                    .WithInitializer(null)
-                    .WithSemicolon(Token(SyntaxKind.None))
-                    .WithGet(property.Initializer.Value);
-            }
-            else if(diagnosticId == PropertyAnalyzer.IdExpressionToStatement)
-            {
-                replacement = property
-                    .WithExpressionBody(null)
-                    .WithSemicolon(Token(SyntaxKind.None))
-                    .WithGet(property.ExpressionBody.Expression);
-            }
-            else if (diagnosticId == PropertyAnalyzer.IdExpressionToInitializer)
-            {
-                replacement = property
-                    .WithExpressionBody(null)
-                    .WithAccessor(SyntaxKind.GetAccessorDeclaration, null)
-                    .WithInitializer(EqualsValueClause(property.ExpressionBody.Expression));
-            }
-            else if (diagnosticId == PropertyAnalyzer.IdInitializerToExpression)
-            {
-                replacement = property
-                    .WithInitializer(null)
-                    .WithAccessorList(null)
-                    .WithExpressionBody(ArrowExpressionClause(property.Initializer.Value));
-            }
-            else if (diagnosticId == PropertyAnalyzer.IdStatementToExpression
-                || diagnosticId == PropertyAnalyzer.IdStatementToInitializer)
-            {
-                var getAccessor = property.AccessorList.Accessors
-                    .Single(a => a.IsKind(SyntaxKind.GetAccessorDeclaration));
+        private static PropertyDeclarationSyntax StatementToInitializer(PropertyDeclarationSyntax property)
+        {
+            PropertyDeclarationSyntax replacement;
+            var expression = GetPropertyGetterExpression(property);
 
-                var returnStatement = (ReturnStatementSyntax)getAccessor.Body.Statements.Single();
-
-                if (diagnosticId == PropertyAnalyzer.IdStatementToExpression)
-                {
-                    replacement = property
-                        .WithAccessorList(null)
-                        .WithSemicolon(Token(SyntaxKind.SemicolonToken))
-                        .WithExpressionBody(ArrowExpressionClause(returnStatement.Expression));
-                }
-                else if (diagnosticId == PropertyAnalyzer.IdStatementToInitializer)
-                {
-                    replacement = property
-                        .WithAccessorList(null)
-                        .WithSemicolon(Token(SyntaxKind.SemicolonToken))
-                        .WithAccessor(SyntaxKind.GetAccessorDeclaration, null)
-                        .WithInitializer(EqualsValueClause(returnStatement.Expression));
-                }
-            }
-
+            replacement = property
+                .WithAccessorList(null)
+                .WithSemicolon(Token(SyntaxKind.SemicolonToken))
+                .WithAccessor(SyntaxKind.GetAccessorDeclaration, null)
+                .WithInitializer(EqualsValueClause(expression));
             return replacement;
+        }
+
+        private static PropertyDeclarationSyntax StatementToExpression(PropertyDeclarationSyntax property)
+        {
+            PropertyDeclarationSyntax replacement;
+            var expression = GetPropertyGetterExpression(property);
+
+            replacement = property
+                .WithAccessorList(null)
+                .WithSemicolon(Token(SyntaxKind.SemicolonToken))
+                .WithExpressionBody(ArrowExpressionClause(expression));
+            return replacement;
+        }
+
+        private static PropertyDeclarationSyntax InitializerToExpression(PropertyDeclarationSyntax property)
+        {
+            return property
+                .WithInitializer(null)
+                .WithAccessorList(null)
+                .WithExpressionBody(ArrowExpressionClause(property.Initializer.Value));
+        }
+
+        private static PropertyDeclarationSyntax ExpressionToInitializer(PropertyDeclarationSyntax property)
+        {
+            return property
+                .WithExpressionBody(null)
+                .WithAccessor(SyntaxKind.GetAccessorDeclaration, null)
+                .WithInitializer(EqualsValueClause(property.ExpressionBody.Expression));
+        }
+
+        private static PropertyDeclarationSyntax ExpressionToStatement(PropertyDeclarationSyntax property)
+        {
+            return property
+                .WithExpressionBody(null)
+                .WithSemicolon(Token(SyntaxKind.None))
+                .WithGet(property.ExpressionBody.Expression);
+        }
+
+        private static PropertyDeclarationSyntax InitializerToStatement(PropertyDeclarationSyntax property)
+        {
+            return property
+                .WithInitializer(null)
+                .WithSemicolon(Token(SyntaxKind.None))
+                .WithGet(property.Initializer.Value);
+        }
+
+        private static ExpressionSyntax GetPropertyGetterExpression(PropertyDeclarationSyntax property)
+        {
+            var getAccessor = property.AccessorList.Accessors
+                .Single(a => a.IsKind(SyntaxKind.GetAccessorDeclaration));
+
+            var returnStatement = (ReturnStatementSyntax)getAccessor.Body.Statements.Single();
+            return returnStatement.Expression;
         }
     }
 }
