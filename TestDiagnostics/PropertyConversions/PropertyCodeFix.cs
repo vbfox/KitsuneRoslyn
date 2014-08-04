@@ -7,8 +7,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -94,6 +94,30 @@ namespace BlackFox.Roslyn.Diagnostics
                     .WithInitializer(null)
                     .WithAccessorList(null)
                     .WithExpressionBody(ArrowExpressionClause(property.Initializer.Value));
+            }
+            else if (diagnosticId == PropertyAnalyzer.IdStatementToExpression
+                || diagnosticId == PropertyAnalyzer.IdStatementToInitializer)
+            {
+                var getAccessor = property.AccessorList.Accessors
+                    .Single(a => a.IsKind(SyntaxKind.GetAccessorDeclaration));
+
+                var returnStatement = (ReturnStatementSyntax)getAccessor.Body.Statements.Single();
+
+                if (diagnosticId == PropertyAnalyzer.IdStatementToExpression)
+                {
+                    replacement = property
+                        .WithAccessorList(null)
+                        .WithSemicolon(Token(SyntaxKind.SemicolonToken))
+                        .WithExpressionBody(ArrowExpressionClause(returnStatement.Expression));
+                }
+                else if (diagnosticId == PropertyAnalyzer.IdStatementToInitializer)
+                {
+                    replacement = property
+                        .WithAccessorList(null)
+                        .WithSemicolon(Token(SyntaxKind.SemicolonToken))
+                        .WithAccessor(SyntaxKind.GetAccessorDeclaration, null)
+                        .WithInitializer(EqualsValueClause(returnStatement.Expression));
+                }
             }
 
             return replacement;

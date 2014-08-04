@@ -2,11 +2,6 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BlackFox.Roslyn.Diagnostics.TestHelpers.CodeFixTestHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,7 +16,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             CheckSingleFix(
                 @"class Foo{public int X { get { return 42; } }}",
                 @"public int X { get { return 42; } }",
-                @"class Foo{public int X => 42;}",
+                @"class Foo{public int X =>42;}",
                 new PropertyCodeFix(),
                 PropertyAnalyzer.DescriptorStatementToExpression);
         }
@@ -32,7 +27,9 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             CheckSingleFix(
                 @"class Foo{public int X { get { return 42; } }}",
                 @"public int X { get { return 42; } }",
-                @"class Foo{public int X {get;} = 42;}",
+                @"class Foo{
+    public int X { get; } = 42;
+}",
                 new PropertyCodeFix(),
                 PropertyAnalyzer.DescriptorStatementToInitializer);
         }
@@ -43,7 +40,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             CheckSingleFix(
                 @"class Foo{public static int x = 42; public int X { get { return System.Math.Sin(x); } }}",
                 @"public int X { get { return System.Math.Sin(x); }",
-                @"class Foo{public static int x = 42; public int X => System.Math.Sin(x); }}",
+                @"class Foo{public static int x = 42; public int X =>System.Math.Sin(x);}",
                 new PropertyCodeFix(),
                 PropertyAnalyzer.DescriptorStatementToExpression);
         }
@@ -54,7 +51,8 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             CheckSingleFix(
                 @"class Foo{public static int x = 42; public int X { get { return System.Math.Sin(x); } }}",
                 @"public int X { get { return System.Math.Sin(x); }",
-                @"class Foo{public static int x = 42; public int X {get;} = System.Math.Sin(x); }}",
+                @"class Foo{public static int x = 42; public int X { get; } = System.Math.Sin(x);
+}",
                 new PropertyCodeFix(),
                 PropertyAnalyzer.DescriptorStatementToInitializer);
         }
@@ -65,7 +63,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             CheckSingleFix(
                 @"class Foo{public int x = 42; public int X { get { return System.Math.Sin(x); } }}",
                 @"public int X { get { return System.Math.Sin(x); }",
-                @"class Foo{public int x = 42; public int X => System.Math.Sin(x);}",
+                @"class Foo{public int x = 42; public int X =>System.Math.Sin(x);}",
                 new PropertyCodeFix(),
                 PropertyAnalyzer.DescriptorStatementToExpression);
         }
