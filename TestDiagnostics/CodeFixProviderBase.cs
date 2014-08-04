@@ -68,7 +68,7 @@ namespace BlackFox.Roslyn.Diagnostics
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var codeAction = await GetCodeActionX(document, diagnostic, cancellationToken);
+                var codeAction = await GetCodeAction(document, diagnostic, cancellationToken);
 
                 actions.Add(codeAction);
             }
@@ -76,7 +76,7 @@ namespace BlackFox.Roslyn.Diagnostics
             return actions.ToImmutable();
         }
 
-        private async Task<CodeAction> GetCodeActionX(Document document, Diagnostic diagnostic,
+        private async Task<CodeAction> GetCodeAction(Document document, Diagnostic diagnostic,
             CancellationToken cancellationToken)
         {
             try
@@ -96,6 +96,4 @@ namespace BlackFox.Roslyn.Diagnostics
             }
         }
     }
-
-
 }

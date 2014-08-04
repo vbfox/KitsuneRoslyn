@@ -22,6 +22,11 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
 
             var newAccessor = AccessorDeclaration(accessorKind, block);
 
+            if (block == null)
+            {
+                newAccessor = newAccessor.WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+            }
+
             var accessors = otherAccessors.Concat(new[] { newAccessor });
 
             return property.WithAccessorList(AccessorList(List(accessors)));

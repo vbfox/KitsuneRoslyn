@@ -93,9 +93,9 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         public void Expression_constant_to_initializer()
         {
             CheckSingleFix(
-                @"class Foo{public int X => 42;}",
+                @"class Foo{public int X => 42; }",
                 @"public int X => 42;",
-                @"class Foo{public int X { get; } = 42;}",
+                @"class Foo{ public int X { get; } = 42; }",
                 new PropertyCodeFix(),
                 PropertyAnalyzer.DescriptorExpressionToInitializer);
         }
@@ -123,8 +123,8 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         {
             CheckSingleFix(
                 @"class Foo{public static int x = 42; public int SinX => System.Math.Sin(x);}",
-                @"public int SinX => Math.Sin(x);",
-                @"class Foo{public static int x = 42; public int SinX {get;} = System.Math.Sin(x);}",
+                @"public int SinX => System.Math.Sin(x);",
+                @"class Foo{public static int x = 42; public int SinX { get; } = System.Math.Sin(x); }",
                 new PropertyCodeFix(),
                 PropertyAnalyzer.DescriptorExpressionToInitializer);
         }
@@ -172,7 +172,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             CheckSingleFix(
                 @"class Foo{public int X {get;} = 42;}",
                 @"public int X {get;} = 42;",
-                @"class Foo{public int X => 42;}",
+                @"class Foo{public int X =>42;}",
                 new PropertyCodeFix(),
                 PropertyAnalyzer.DescriptorInitializerToExpression);
         }
@@ -202,7 +202,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             CheckSingleFix(
                 @"class Foo{public int X {get;} = System.Math.Sin(42);}",
                 @"public int X {get;} = System.Math.Sin(42);",
-                @"class Foo{public int X => System.Math.Sin(42);}",
+                @"class Foo{public int X =>System.Math.Sin(42);}",
                 new PropertyCodeFix(),
                 PropertyAnalyzer.DescriptorInitializerToExpression);
         }

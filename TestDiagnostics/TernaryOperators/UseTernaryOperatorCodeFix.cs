@@ -78,7 +78,5 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             // Format to replace ElasticAnnotation
             return await document.FormatAsync(wipRoot, cancellationToken);
         }
-
-
     }
 }

@@ -24,10 +24,20 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var newDocument = document.WithSyntaxRoot(newRoot);
+
+            return await newDocument
+                .FormatAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        public static async Task<Document> FormatAsync(this Document document,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
             var formattingTask = Formatter.FormatAsync(
-                newDocument,
+                document,
                 Formatter.Annotation,
                 cancellationToken: cancellationToken);
+
             return await formattingTask.ConfigureAwait(false);
         }
     }

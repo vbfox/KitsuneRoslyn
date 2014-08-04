@@ -47,27 +47,20 @@ namespace BlackFox.Roslyn.Diagnostics
 
             if (replacement != null)
             {
-                return await ReplaceAndFormat(document, root, cancellationToken, property, replacement);
+                var annotatedReplacement = replacement.WithAdditionalAnnotations(Formatter.Annotation);
+                var newDocument = await document.ReplaceNodeAsync(property, annotatedReplacement, cancellationToken);
+
+                // Avoid a roslyn bug
+                // See RoslynBugs.Property_with_expression_formating in test project for a repro
+                bool format = diagnosticId != PropertyAnalyzer.IdInitializerToExpression
+                    && diagnosticId != PropertyAnalyzer.IdStatementToExpression;
+
+                return format ? await newDocument.FormatAsync(cancellationToken) : newDocument;
             }
             else
             {
                 return document;
             }
-        }
-
-        private static async Task<Document> ReplaceAndFormat(Document document, SyntaxNode root,
-            CancellationToken cancellationToken, PropertyDeclarationSyntax from,
-            PropertyDeclarationSyntax to)
-        {
-            var newRoot = root.ReplaceNode(from, to.WithAdditionalAnnotations(Formatter.Annotation));
-            var newDocument = document.WithSyntaxRoot(newRoot);
-
-            var formattingTask = Formatter.FormatAsync(
-                newDocument,
-                Formatter.Annotation,
-                cancellationToken: cancellationToken);
-
-            return await formattingTask.ConfigureAwait(false);
         }
 
         private static PropertyDeclarationSyntax GetReplacement(string diagnosticId, PropertyDeclarationSyntax property)
@@ -87,6 +80,20 @@ namespace BlackFox.Roslyn.Diagnostics
                     .WithExpressionBody(null)
                     .WithSemicolon(Token(SyntaxKind.None))
                     .WithGet(property.ExpressionBody.Expression);
+            }
+            else if (diagnosticId == PropertyAnalyzer.IdExpressionToInitializer)
+            {
+                replacement = property
+                    .WithExpressionBody(null)
+                    .WithAccessor(SyntaxKind.GetAccessorDeclaration, null)
+                    .WithInitializer(EqualsValueClause(property.ExpressionBody.Expression));
+            }
+            else if (diagnosticId == PropertyAnalyzer.IdInitializerToExpression)
+            {
+                replacement = property
+                    .WithInitializer(null)
+                    .WithAccessorList(null)
+                    .WithExpressionBody(ArrowExpressionClause(property.Initializer.Value));
             }
 
             return replacement;
