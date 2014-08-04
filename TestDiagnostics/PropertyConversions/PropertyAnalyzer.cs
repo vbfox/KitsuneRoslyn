@@ -31,7 +31,7 @@ namespace BlackFox.Roslyn.Diagnostics
                 "Can be converted to statement body",
                 "Can be converted to statement body",
                 "Readability",
-                DiagnosticSeverity.Warning,
+                DiagnosticSeverity.Hidden,
                 isEnabledByDefault: true);
 
         public static DiagnosticDescriptor DescriptorInitializerToStatement { get; }
@@ -40,7 +40,7 @@ namespace BlackFox.Roslyn.Diagnostics
                 "Can be converted to statement body",
                 "Can be converted to statement body",
                 "Readability",
-                DiagnosticSeverity.Warning,
+                DiagnosticSeverity.Hidden,
                 isEnabledByDefault: true);
 
         public static DiagnosticDescriptor DescriptorExpressionToInitializer { get; }
@@ -49,7 +49,7 @@ namespace BlackFox.Roslyn.Diagnostics
                     "Can be converted to initializer",
                     "Can be converted to initializer",
                     "Readability",
-                    DiagnosticSeverity.Warning,
+                    DiagnosticSeverity.Hidden,
                     isEnabledByDefault: true);
 
         public static DiagnosticDescriptor DescriptorStatementToInitializer { get; }
@@ -58,7 +58,7 @@ namespace BlackFox.Roslyn.Diagnostics
                     "Can be converted to initializer",
                     "Can be converted to initializer",
                     "Readability",
-                    DiagnosticSeverity.Warning,
+                    DiagnosticSeverity.Hidden,
                     isEnabledByDefault: true);
 
         public static DiagnosticDescriptor DescriptorStatementToExpression { get; }
@@ -67,7 +67,7 @@ namespace BlackFox.Roslyn.Diagnostics
                     "Can be converted to expression",
                     "Can be converted to expression",
                     "Readability",
-                    DiagnosticSeverity.Warning,
+                    DiagnosticSeverity.Hidden,
                     isEnabledByDefault: true);
 
         public static DiagnosticDescriptor DescriptorInitializerToExpression { get; }
@@ -76,7 +76,7 @@ namespace BlackFox.Roslyn.Diagnostics
                     "Can be converted to expression",
                     "Can be converted to expression",
                     "Readability",
-                    DiagnosticSeverity.Warning,
+                    DiagnosticSeverity.Hidden,
                     isEnabledByDefault: true);
 
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
