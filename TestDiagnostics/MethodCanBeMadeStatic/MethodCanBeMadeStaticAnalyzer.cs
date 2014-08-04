@@ -23,7 +23,7 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
                 "Method can be made static",
                 "Method can be made static",
                 "Readability",
-                DiagnosticSeverity.Error,
+                DiagnosticSeverity.Info,
                 isEnabledByDefault: true);
 
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
