@@ -81,7 +81,8 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
                 throw new InvalidOperationException("This property can't be converted to expression syntax");
             }
 
-            var supported = replacements.TryGetValue(Tuple.Create(Classification, to), out var replacement);
+            PropertyReplacement replacement;
+            var supported = replacements.TryGetValue(Tuple.Create(Classification, to), out replacement);
             if (!supported)
             {
                 throw new InvalidOperationException(string.Format("Replacement not supported {0} -> {1}",

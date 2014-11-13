@@ -12,9 +12,8 @@ using System.Threading;
 
 namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
 {
-    [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer("BlackFox.PropertyAnalyzer", LanguageNames.CSharp)]
-    public class PropertyAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class PropertyAnalyzer : DiagnosticAnalyzer
     {
         public const string IdExpressionToStatement = "BlackFox.Property.ExpressionCanBeConvertedToStatement";
         public const string IdExpressionToInitializer = "BlackFox.Property.ExpressionCanBeConvertedToInitializer";
@@ -77,7 +76,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
                     DiagnosticSeverity.Hidden,
                     isEnabledByDefault: true);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(
                 DescriptorExpressionToStatement,
                 DescriptorInitializerToStatement,
@@ -99,24 +98,23 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             .Add(Tuple.Create(PropertyConversionClassification.GetWithReturn, PropertyConversionClassification.Initializer), DescriptorStatementToInitializer);
 
 
-        public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
-            CancellationToken cancellationToken)
+        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var property = (PropertyDeclarationSyntax)node;
+            var property = (PropertyDeclarationSyntax)context.Node;
 
-            var analysis = PropertyConversionAnalysis.Create(semanticModel, property, cancellationToken);
+            var analysis = PropertyConversionAnalysis.Create(context.SemanticModel, property, context.CancellationToken);
             if (analysis.Classification == PropertyConversionClassification.NotSupported)
             {
                 return;
             }
 
-            AddIfPossible(analysis, PropertyConversionClassification.Expression, addDiagnostic);
-            AddIfPossible(analysis, PropertyConversionClassification.Initializer, addDiagnostic);
-            AddIfPossible(analysis, PropertyConversionClassification.GetWithReturn, addDiagnostic);
+            AddIfPossible(analysis, PropertyConversionClassification.Expression, context.ReportDiagnostic);
+            AddIfPossible(analysis, PropertyConversionClassification.Initializer, context.ReportDiagnostic);
+            AddIfPossible(analysis, PropertyConversionClassification.GetWithReturn, context.ReportDiagnostic);
         }
 
         private void AddIfPossible(PropertyConversionAnalysis analysis,
-            PropertyConversionClassification to, Action<Diagnostic> addDiagnostic)
+            PropertyConversionClassification to, Action<Diagnostic> reportDiagnostic)
         {
             if (to == PropertyConversionClassification.Expression && !analysis.CanBeConvertedToExpression)
             {
@@ -133,7 +131,12 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
 
             var descriptor = descriptors[Tuple.Create(analysis.Classification, to)];
 
-            addDiagnostic(Diagnostic.Create(descriptor, analysis.Property.GetLocation()));
+            reportDiagnostic(Diagnostic.Create(descriptor, analysis.Property.GetLocation()));
+        }
+
+        public override void Initialize(AnalysisContext context)
+        {
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.PropertyDeclaration);
         }
     }
 }

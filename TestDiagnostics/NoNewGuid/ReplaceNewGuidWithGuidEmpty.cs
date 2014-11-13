@@ -14,8 +14,7 @@ using System.Threading.Tasks;
 namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class ReplaceNewGuidWithGuidEmpty()
-        : ReplacementNodeCodeFixProviderBase(NoNewGuidAnalyzer.Id, "Replace with Guid.Empty")
+    public class ReplaceNewGuidWithGuidEmpty : ReplacementNodeCodeFixProviderBase
     {
         public const string Id = "BlackFox.ReplaceNewGuidWithGuidEmpty";
 
@@ -23,6 +22,11 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
 
         static readonly ExpressionSyntax guidEmptyExpression
             = SimpleMemberAccessExpression("System", "Guid", "Empty");
+
+        public ReplaceNewGuidWithGuidEmpty()
+            : base(NoNewGuidAnalyzer.Id, "Replace with Guid.Empty")
+        {
+        }
 
         protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,

@@ -15,12 +15,17 @@ using System.Threading.Tasks;
 namespace BlackFox.Roslyn.Diagnostics.VarConversion
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class VarToTypeCodeFix()
-        : ReplacementNodeCodeFixProviderBase(VarToTypeAnalyzer.Id, "Specify type explicitly")
+    public class VarToTypeCodeFix : ReplacementNodeCodeFixProviderBase
     {
         public const string Id = "BlackFox.VarToTypeCodeFix";
 
         protected override AdditionalAction Simplify { get; } = AdditionalAction.AddAnnotationAndRun;
+
+        public VarToTypeCodeFix()
+            : base(VarToTypeAnalyzer.Id, "Specify type explicitly")
+        {
+
+        }
 
         protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,

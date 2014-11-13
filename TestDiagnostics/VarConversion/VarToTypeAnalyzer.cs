@@ -12,9 +12,8 @@ using System.Threading;
 
 namespace BlackFox.Roslyn.Diagnostics.VarConversion
 {
-    [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer(Id, LanguageNames.CSharp)]
-    public class VarToTypeAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class VarToTypeAnalyzer : DiagnosticAnalyzer
     {
         public const string Id = "BlackFox.VarToType";
 
@@ -27,27 +26,30 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
                 DiagnosticSeverity.Hidden,
                 isEnabledByDefault: true);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(Descriptor);
 
         public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
         = ImmutableArray.Create(SyntaxKind.VariableDeclaration);
 
-        public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
-            CancellationToken cancellationToken)
+        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            Parameter.MustNotBeNull(addDiagnostic, "addDiagnostic");
-            var declaration = Parameter.MustBeOfType<VariableDeclarationSyntax>(node, "node");
-
+            var declaration = Parameter.MustBeOfType<VariableDeclarationSyntax>(context.Node, "node");
+            
             if (!declaration.Type.IsVar)
             {
                 return;
             }
 
-            var type = semanticModel.GetTypeInfo(declaration.Type, cancellationToken);
-            cancellationToken.ThrowIfCancellationRequested();
+            var type = context.SemanticModel.GetTypeInfo(declaration.Type, context.CancellationToken);
+            context.CancellationToken.ThrowIfCancellationRequested();
 
-            addDiagnostic(Diagnostic.Create(Descriptor, declaration.Type.GetLocation(), type.Type));
+            context.ReportDiagnostic(Diagnostic.Create(Descriptor, declaration.Type.GetLocation(), type.Type));
+        }
+
+        public override void Initialize(AnalysisContext context)
+        {
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.VariableDeclaration);
         }
     }
 }

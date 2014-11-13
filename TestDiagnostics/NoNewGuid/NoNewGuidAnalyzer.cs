@@ -13,9 +13,8 @@ using System.Threading;
 
 namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
 {
-    [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer(Id, LanguageNames.CSharp)]
-    public class NoNewGuidAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class NoNewGuidAnalyzer : DiagnosticAnalyzer
     {
         public const string Id = "BlackFox.NoNewGuid";
 
@@ -28,19 +27,17 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
                 DiagnosticSeverity.Warning,
                 isEnabledByDefault: true);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(Descriptor);
 
         public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
             = ImmutableArray.Create(SyntaxKind.ObjectCreationExpression);
 
-        public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
-            CancellationToken cancellationToken)
+        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            Parameter.MustNotBeNull(addDiagnostic, "addDiagnostic");
-            var objectCreation = Parameter.MustBeOfType<ObjectCreationExpressionSyntax>(node, "node");
+            var objectCreation = Parameter.MustBeOfType<ObjectCreationExpressionSyntax>(context.Node, "node");
 
-            var symbol = semanticModel.GetSymbolInfo(objectCreation).Symbol as IMethodSymbol;
+            var symbol = context.SemanticModel.GetSymbolInfo(objectCreation).Symbol as IMethodSymbol;
             
             // Non-Static constructor without parameter
             if (symbol == null
@@ -55,8 +52,13 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
             {
                 return;
             }
-            
-            addDiagnostic(Diagnostic.Create(Descriptor, node.GetLocation()));
+
+            context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation()));
+        }
+
+        public override void Initialize(AnalysisContext context)
+        {
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ObjectCreationExpression);
         }
     }
 }

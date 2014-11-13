@@ -12,9 +12,8 @@ using System.Threading;
 
 namespace BlackFox.Roslyn.Diagnostics.NoStringEmpty
 {
-    [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer(Id, LanguageNames.CSharp)]
-    public class NoStringEmptyAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class NoStringEmptyAnalyzer : DiagnosticAnalyzer
     {
         public const string Id = "BlackFox.NoStringEmpty";
 
@@ -27,19 +26,14 @@ namespace BlackFox.Roslyn.Diagnostics.NoStringEmpty
                 DiagnosticSeverity.Warning,
                 isEnabledByDefault: true);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(Descriptor);
 
-        public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
-            = ImmutableArray.Create(SyntaxKind.SimpleMemberAccessExpression);
-
-        public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
-            CancellationToken cancellationToken)
+        public void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            Parameter.MustNotBeNull(addDiagnostic, "addDiagnostic");
-            var memberAccess = Parameter.MustBeOfType<MemberAccessExpressionSyntax>(node, "node");
+            var memberAccess = Parameter.MustBeOfType<MemberAccessExpressionSyntax>(context.Node, "node");
 
-            var symbol = semanticModel.GetSymbolInfo(memberAccess).Symbol;
+            var symbol = context.SemanticModel.GetSymbolInfo(memberAccess).Symbol;
             if (symbol == null
                 || symbol.ContainingType == null
                 || symbol.ContainingType.SpecialType != SpecialType.System_String
@@ -51,7 +45,12 @@ namespace BlackFox.Roslyn.Diagnostics.NoStringEmpty
                 return;
             }
 
-            addDiagnostic(Diagnostic.Create(Descriptor, node.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation()));
+        }
+
+        public override void Initialize(AnalysisContext context)
+        {
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.SimpleMemberAccessExpression);
         }
     }
 }

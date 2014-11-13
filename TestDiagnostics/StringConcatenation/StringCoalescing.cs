@@ -63,7 +63,9 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation
         public static InvocationExpressionSyntax ToStringFormat(ImmutableList<ExpressionSyntax> expressions,
             SemanticModel semanticModel)
         {
-            BuildArguments(semanticModel, expressions, out var formatString, out var otherArguments);
+            string formatString;
+            ImmutableQueue<ExpressionSyntax> otherArguments;
+            BuildArguments(semanticModel, expressions, out formatString, out otherArguments);
 
             var arguments = new[] { StringLiteralExpression(formatString) }
                 .Concat(otherArguments);

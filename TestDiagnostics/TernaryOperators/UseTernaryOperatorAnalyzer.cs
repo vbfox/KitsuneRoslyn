@@ -12,9 +12,8 @@ using System.Threading;
 
 namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {
-    [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer("BlackFox.UseTernaryOperatorAnalyzer", LanguageNames.CSharp)]
-    public class UseTernaryOperatorAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class UseTernaryOperatorAnalyzer : DiagnosticAnalyzer
     {
         public const string IdSimple = "BlackFox.UseTernaryOperator.Simple";
         public const string IdComplex = "BlackFox.UseTernaryOperator.Complex";
@@ -37,16 +36,15 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
                 DiagnosticSeverity.Hidden,
                 isEnabledByDefault: true);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(DescriptorSimple, DescriptorComplex);
 
         public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
             = ImmutableArray.Create(SyntaxKind.IfStatement);
 
-        public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
-            CancellationToken cancellationToken)
+        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var ifStatement = (IfStatementSyntax)node;
+            var ifStatement = (IfStatementSyntax)context.Node;
 
             var potentialTernary = PotentialTernaryOperator.Create(ifStatement);
             if (potentialTernary == PotentialTernaryOperator.NoReplacement)
@@ -58,9 +56,14 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
                 ? DescriptorSimple
                 : DescriptorComplex;
 
-            addDiagnostic(Diagnostic.Create(descriptor, ifStatement.IfKeyword.GetLocation(),
+            context.ReportDiagnostic(Diagnostic.Create(descriptor, ifStatement.IfKeyword.GetLocation(),
                 potentialTernary.TernaryOperatorCount,
                 potentialTernary.TernaryOperatorCount > 1 ? "s" : ""));
+        }
+
+        public override void Initialize(AnalysisContext context)
+        {
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.IfStatement);
         }
     }
 }

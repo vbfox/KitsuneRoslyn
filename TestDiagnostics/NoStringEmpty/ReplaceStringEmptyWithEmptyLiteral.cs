@@ -15,13 +15,17 @@ using System.Threading.Tasks;
 namespace BlackFox.Roslyn.Diagnostics.NoStringEmpty
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class ReplaceStringEmptyWithEmptyLiteral()
-        : ReplacementNodeCodeFixProviderBase(NoStringEmptyAnalyzer.Id, "Use \"\"")
+    public class ReplaceStringEmptyWithEmptyLiteral : ReplacementNodeCodeFixProviderBase
     {
         public const string Id = "BlackFox.ReplaceStringEmptyWithEmptyLiteral";
 
         static readonly LiteralExpressionSyntax emptyStringLiteralExpression
             = StringLiteralExpression("");
+
+        public ReplaceStringEmptyWithEmptyLiteral()
+                    : base(NoStringEmptyAnalyzer.Id, "Use \"\"")
+        {
+        }
 
         protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,

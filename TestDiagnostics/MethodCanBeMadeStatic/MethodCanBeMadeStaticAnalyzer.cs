@@ -10,10 +10,8 @@ using System.Threading;
 
 namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
 {
-    [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer("BlackFox.MethodCanBeMadeStaticAnalyzer", LanguageNames.CSharp)]
-    public class MethodCanBeMadeStaticAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>,
-        ICompilationStartedAnalyzer/*, ICompilationEndedAnalyzer*/
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class MethodCanBeMadeStaticAnalyzer : DiagnosticAnalyzer
     {
         public const string Id = "BlackFox.MethodCanBeMadeStatic";
 
@@ -26,14 +24,13 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
                 DiagnosticSeverity.Info,
                 isEnabledByDefault: true);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(Descriptor);
 
         public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
             = ImmutableArray.Create(SyntaxKind.MethodDeclaration);
 
-        public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
-            CancellationToken cancellationToken)
+        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             /*
             lock (methodDeclarations)
@@ -41,13 +38,13 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
                 methodDeclarations = methodDeclarations.Add((MethodDeclarationSyntax)node);
             }*/
             
-            var method = (MethodDeclarationSyntax)node;
+            var method = (MethodDeclarationSyntax)context.Node;
 
-            var analysis = semanticModel.AnalyzeIfMethodCanBeMadeStatic(method, currentCompilation, cancellationToken);
+            var analysis = context.SemanticModel.AnalyzeIfMethodCanBeMadeStatic(method, currentCompilation, context.CancellationToken);
 
             if (analysis.CanBeMadeStatic)
             {
-                addDiagnostic(Diagnostic.Create(Descriptor, method.Identifier.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, method.Identifier.GetLocation()));
             }
         }
 
@@ -70,16 +67,20 @@ namespace BlackFox.Roslyn.Diagnostics.MethodCanBeMadeStatic
             }
         }
         */
-        public ICompilationEndedAnalyzer OnCompilationStarted(Compilation compilation,
-            Action<Diagnostic> addDiagnostic, CancellationToken cancellationToken)
+        public void CompilationStart(CompilationStartAnalysisContext context)
         {/*
             lock(methodDeclarations)
             {
                 methodDeclarations = ImmutableList<MethodDeclarationSyntax>.Empty;
             }
             return this;*/
-            currentCompilation = compilation;
-            return null;
+            currentCompilation = context.Compilation;
+        }
+
+        public override void Initialize(AnalysisContext context)
+        {
+            context.RegisterCompilationStartAction(CompilationStart);
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.MethodDeclaration);
         }
 
         Compilation currentCompilation;

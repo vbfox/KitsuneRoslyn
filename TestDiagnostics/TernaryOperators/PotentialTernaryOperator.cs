@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Microsoft.CodeAnalysis.Formatting;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -61,8 +62,9 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
                 return NoReplacement;
             }
 
+            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> differences;
             var ternaryReplacable = TernaryReplacable.TryFind(ifStatement.Statement, ifStatement.Else.Statement,
-                out var differences);
+                out differences);
 
             if (!ternaryReplacable)
             {

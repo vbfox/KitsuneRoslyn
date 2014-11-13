@@ -15,12 +15,15 @@ using System.Threading.Tasks;
 namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperator
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class ReplaceConcatenationWithSingleString()
-        : ReplacementNodeCodeFixProviderBase(
-            CanReplaceConcatOperatorAnalyzer.UseStringId,
-            "Replace with a single string")
+    public class ReplaceConcatenationWithSingleString
+        : ReplacementNodeCodeFixProviderBase
     {
         public const string Id = "BlackFox.ReplaceConcatenationWithSingleString";
+
+        public ReplaceConcatenationWithSingleString()
+            : base(CanReplaceConcatOperatorAnalyzer.UseStringId, "Replace with a single string")
+        {
+        }
 
         protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,

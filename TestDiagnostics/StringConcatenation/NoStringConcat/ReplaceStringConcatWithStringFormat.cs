@@ -14,13 +14,17 @@ using System.Threading.Tasks;
 namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
 {
     [ExportCodeFixProvider(Id, LanguageNames.CSharp)]
-    public class ReplaceStringConcatWithStringFormat()
-        : ReplacementNodeCodeFixProviderBase(NoStringConcatAnalyzer.UseFormatId, "Replace with String.Format")
+    public class ReplaceStringConcatWithStringFormat : ReplacementNodeCodeFixProviderBase
     {
         public const string Id = "BlackFox.ReplaceStringConcatWithStringFormat";
 
         protected override AdditionalAction Simplify { get; } = AdditionalAction.AddAnnotationAndRun;
         protected override AdditionalAction Format { get; } = AdditionalAction.AddAnnotationAndRun;
+
+        public ReplaceStringConcatWithStringFormat()
+            : base(NoStringConcatAnalyzer.UseFormatId, "Replace with String.Format")
+        {
+        }
 
         protected override async Task<SyntaxNode> GetReplacementNodeAsync(Document document,
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,

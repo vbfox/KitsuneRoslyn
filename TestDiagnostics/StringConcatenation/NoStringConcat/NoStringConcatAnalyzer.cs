@@ -12,9 +12,8 @@ using System.Threading;
 
 namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
 {
-    [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer("BlackFox.NoStringConcat", LanguageNames.CSharp)]
-    public class NoStringConcatAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class NoStringConcatAnalyzer : DiagnosticAnalyzer
     {
         public const string UseFormatId = "BlackFox.NoStringConcat_UseFormat";
         public const string UseStringId = "BlackFox.NoStringConcat_UseString";
@@ -37,30 +36,33 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
                 DiagnosticSeverity.Warning,
                 isEnabledByDefault: true);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(UseFormatDescriptor, UseStringDescriptor);
 
         public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
             = ImmutableArray.Create(SyntaxKind.InvocationExpression);
 
-        public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
-            CancellationToken cancellationToken)
+        public void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            Parameter.MustNotBeNull(addDiagnostic, "addDiagnostic");
-            var invocation = Parameter.MustBeOfType<InvocationExpressionSyntax>(node, "node");
+            var invocation = Parameter.MustBeOfType<InvocationExpressionSyntax>(context.Node, "node");
 
-            var infos = StringConcatInfo.Create(invocation, semanticModel);
+            var infos = StringConcatInfo.Create(invocation, context.SemanticModel);
 
             switch (infos.Classification)
             {
                 case StringConcatClassification.ReplaceWithSingleString:
-                    addDiagnostic(Diagnostic.Create(UseStringDescriptor, node.GetLocation()));
+                    context.ReportDiagnostic(Diagnostic.Create(UseStringDescriptor, context.Node.GetLocation()));
                     break;
 
                 case StringConcatClassification.ReplaceWithStringFormat:
-                    addDiagnostic(Diagnostic.Create(UseFormatDescriptor, node.GetLocation()));
+                    context.ReportDiagnostic(Diagnostic.Create(UseFormatDescriptor, context.Node.GetLocation()));
                     break;
             }
+        }
+
+        public override void Initialize(AnalysisContext context)
+        {
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.InvocationExpression);
         }
     }
 }

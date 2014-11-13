@@ -14,13 +14,13 @@ using System.Threading.Tasks;
 
 namespace BlackFox.Roslyn.Diagnostics
 {
-    public abstract class CodeFixProviderBase : ICodeFixProvider
+    public abstract class CodeFixProviderBase : CodeFixProvider
     {
         protected virtual bool GetInnermostNodeForTie { get { return true; } }
 
-        ImmutableList<string> diagnosticIds;
+        ImmutableArray<string> diagnosticIds;
 
-        protected CodeFixProviderBase(ImmutableList<string> diagnosticIds)
+        protected CodeFixProviderBase(ImmutableArray<string> diagnosticIds)
         {
             if (diagnosticIds == null)
             {
@@ -37,7 +37,7 @@ namespace BlackFox.Roslyn.Diagnostics
                 throw new ArgumentNullException("diagnosticIds");
             }
 
-            this.diagnosticIds = diagnosticIds.ToImmutableList();
+            this.diagnosticIds = diagnosticIds.ToImmutableArray();
         }
 
         protected CodeFixProviderBase(string diagnosticId)
@@ -47,11 +47,11 @@ namespace BlackFox.Roslyn.Diagnostics
                 throw new ArgumentNullException("diagnosticId");
             }
 
-            diagnosticIds = ImmutableList<string>.Empty
+            diagnosticIds = ImmutableArray<string>.Empty
                 .Add(diagnosticId);
         }
 
-        public IEnumerable<string> GetFixableDiagnosticIds()
+        public override ImmutableArray<string> GetFixableDiagnosticIds()
         {
             return diagnosticIds;
         }
@@ -60,20 +60,22 @@ namespace BlackFox.Roslyn.Diagnostics
             SemanticModel semanticModel, SyntaxNode root, SyntaxNode nodeToFix, string diagnosticId,
             CancellationToken cancellationToken);
 
-        public async Task<IEnumerable<CodeAction>> GetFixesAsync(Document document, TextSpan span,
-            IEnumerable<Diagnostic> diagnostics, CancellationToken cancellationToken)
+        public override FixAllProvider GetFixAllProvider()
+        {
+            return WellKnownFixAllProviders.BatchFixer;
+        }
+
+        public override async Task ComputeFixesAsync(CodeFixContext context)
         {
             var actions = ImmutableList<CodeAction>.Empty.ToBuilder();
-            foreach (var diagnostic in diagnostics)
+            foreach (var diagnostic in context.Diagnostics)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                context.CancellationToken.ThrowIfCancellationRequested();
 
-                var codeAction = await GetCodeAction(document, diagnostic, cancellationToken);
+                var codeAction = await GetCodeAction(context.Document, diagnostic, context.CancellationToken);
 
-                actions.Add(codeAction);
+                context.RegisterFix(codeAction, diagnostic);
             }
-
-            return actions.ToImmutable();
         }
 
         private async Task<CodeAction> GetCodeAction(Document document, Diagnostic diagnostic,

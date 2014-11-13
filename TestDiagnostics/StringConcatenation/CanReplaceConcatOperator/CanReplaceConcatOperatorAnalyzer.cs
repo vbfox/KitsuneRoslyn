@@ -12,9 +12,8 @@ using System.Threading;
 
 namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperator
 {
-    [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer("BlackFox.CanReplaceConcatOperator", LanguageNames.CSharp)]
-    public class CanReplaceConcatOperatorAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class CanReplaceConcatOperatorAnalyzer : DiagnosticAnalyzer
     {
         public const string UseFormatId = "BlackFox.CanReplaceConcatOperator_UseFormat";
         public const string UseStringId = "BlackFox.CanReplaceConcatOperator_UseString";
@@ -39,30 +38,33 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperat
                 DiagnosticSeverity.Hidden,
                 isEnabledByDefault: true);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
             = ImmutableArray.Create(UseFormatDescriptor, UseStringDescriptor);
 
         public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
             = ImmutableArray.Create(SyntaxKind.AddExpression);
 
-        public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
-            CancellationToken cancellationToken)
+        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            Parameter.MustNotBeNull(addDiagnostic, "addDiagnostic");
-            var binaryExpression = Parameter.MustBeOfType<BinaryExpressionSyntax>(node, "node");
+            var binaryExpression = Parameter.MustBeOfType<BinaryExpressionSyntax>(context.Node, "node");
 
-            var infos = StringConcatOperatorInfo.Create(binaryExpression, semanticModel);
+            var infos = StringConcatOperatorInfo.Create(binaryExpression, context.SemanticModel);
 
             switch (infos.Classification)
             {
                 case StringConcatOperatorClassification.ReplaceWithSingleString:
-                    addDiagnostic(Diagnostic.Create(UseStringDescriptor, node.GetLocation()));
+                    context.ReportDiagnostic(Diagnostic.Create(UseStringDescriptor, context.Node.GetLocation()));
                     break;
 
                 case StringConcatOperatorClassification.ReplaceWithStringFormat:
-                    addDiagnostic(Diagnostic.Create(UseFormatDescriptor, node.GetLocation()));
+                    context.ReportDiagnostic(Diagnostic.Create(UseFormatDescriptor, context.Node.GetLocation()));
                     break;
             }
+        }
+
+        public override void Initialize(AnalysisContext context)
+        {
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.AddExpression);
         }
     }
 }

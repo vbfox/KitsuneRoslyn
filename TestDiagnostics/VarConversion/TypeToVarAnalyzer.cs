@@ -6,16 +6,13 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 
 namespace BlackFox.Roslyn.Diagnostics.VarConversion
 {
-    [DiagnosticAnalyzer]
-    [ExportDiagnosticAnalyzer("BlackFox.TypeToVar", LanguageNames.CSharp)]
-    public class TypeToVarAnalyzer : ISyntaxNodeAnalyzer<SyntaxKind>
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class TypeToVarAnalyzer : DiagnosticAnalyzer
     {
         public const string Id = "BlackFox.TypeToVar_Normal";
         public const string IdWithCast = "BlackFox.TypeToVar_WithCast";
@@ -39,17 +36,12 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
                 isEnabledByDefault: true,
                 customTags: WellKnownDiagnosticTags.Unnecessary);
 
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
-            = ImmutableArray.Create(Descriptor);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
+            = ImmutableArray.Create(Descriptor, DescriptorWithCast);
 
-        public ImmutableArray<SyntaxKind> SyntaxKindsOfInterest { get; }
-        = ImmutableArray.Create(SyntaxKind.LocalDeclarationStatement);
-
-        public void AnalyzeNode(SyntaxNode node, SemanticModel semanticModel, Action<Diagnostic> addDiagnostic,
-            CancellationToken cancellationToken)
+        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            Parameter.MustNotBeNull(addDiagnostic, "addDiagnostic");
-            var localDeclaration = Parameter.MustBeOfType<LocalDeclarationStatementSyntax>(node, "node");
+            var localDeclaration = Parameter.MustBeOfType<LocalDeclarationStatementSyntax>(context.Node, "node");
 
             if (localDeclaration.IsConst)
             {
@@ -64,16 +56,16 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
                 return;
             }
 
-            var leftType = semanticModel.GetTypeInfo(variableDeclaration.Type, cancellationToken);
-            cancellationToken.ThrowIfCancellationRequested();
+            var leftType = context.SemanticModel.GetTypeInfo(variableDeclaration.Type, context.CancellationToken);
+            context.CancellationToken.ThrowIfCancellationRequested();
 
             var variableInitializer = variableDeclaration.Variables.Single().Initializer as EqualsValueClauseSyntax;
             if (variableInitializer == null)
             {
                 return;
             }
-            var rightType = semanticModel.GetTypeInfo(variableInitializer.Value, cancellationToken);
-            cancellationToken.ThrowIfCancellationRequested();
+            var rightType = context.SemanticModel.GetTypeInfo(variableInitializer.Value, context.CancellationToken);
+            context.CancellationToken.ThrowIfCancellationRequested();
 
             if (!rightType.Equals(leftType))
             {
@@ -82,7 +74,7 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
 
             var location = variableDeclaration.Type.GetLocation();
             var rightIsCast = IsWithPotentialParentheses<CastExpressionSyntax>(variableInitializer.Value);
-            addDiagnostic(Diagnostic.Create(rightIsCast ? DescriptorWithCast : Descriptor, location));
+            context.ReportDiagnostic(Diagnostic.Create(rightIsCast ? DescriptorWithCast : Descriptor, location));
         }
 
         static bool IsWithPotentialParentheses<T>(ExpressionSyntax expression)
@@ -94,6 +86,11 @@ namespace BlackFox.Roslyn.Diagnostics.VarConversion
             }
 
             return expression is T;
+        }
+
+        public override void Initialize(AnalysisContext context)
+        {
+            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.LocalDeclarationStatement);
         }
     }
 }
