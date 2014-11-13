@@ -106,7 +106,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             }
             if (rightBinaryOkParents.Contains(parentKind))
             {
-                return ((BinaryExpressionSyntax)node.Parent).Right == node;
+                return ((AssignmentExpressionSyntax)node.Parent).Right == node;
             }
             if (parentKind == SyntaxKind.IfStatement)
             {
