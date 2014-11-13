@@ -12,157 +12,157 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.NoStringConcat
     public class NoStringConcatAnalyzerTests
     {
         [TestMethod]
-        public void No_diagnostic_on_other_call()
+        public async void No_diagnostic_on_other_call()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"String.Join(""hello"", ""world"");");
-            Check.That(diagnostics).IsEmpty();
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"String.Join(""hello"", ""world"");");
+            Check.That(diagnostics.Length).IsEqualTo(0);
         }
 
         [TestMethod]
-        public void Diagnostic_simple_one_string_param()
+        public async void Diagnostic_simple_one_string_param()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"");");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"string.Concat(""Hello"");");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_simple_one_string_para_with_namespace()
+        public async void Diagnostic_simple_one_string_para_with_namespace()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"System.String.Concat(""Hello"");");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"System.String.Concat(""Hello"");");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_simple_one_string_param_fully_qualified()
+        public async void Diagnostic_simple_one_string_param_fully_qualified()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"global::System.String.Concat(""Hello"");");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"global::System.String.Concat(""Hello"");");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_simple_two_string_param()
+        public async void Diagnostic_simple_two_string_param()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"", ""World"");");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"string.Concat(""Hello"", ""World"");");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_simple_five_string_param()
+        public async void Diagnostic_simple_five_string_param()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"", ""World"", ""hi"", ""params"", ""version"");");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"string.Concat(""Hello"", ""World"", ""hi"", ""params"", ""version"");");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_simple_with_null()
+        public async void Diagnostic_simple_with_null()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"", null, ""hi"", ""params"", ""version"");");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"string.Concat(""Hello"", null, ""hi"", ""params"", ""version"");");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_simple_with_char()
+        public async void Diagnostic_simple_with_char()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"", 'a', ""hi"", ""params"", ""version"");");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"string.Concat(""Hello"", 'a', ""hi"", ""params"", ""version"");");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_simple_array()
+        public async void Diagnostic_simple_array()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(new[] { ""hello"", ""world"" });");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"string.Concat(new[] { ""hello"", ""world"" });");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_format_string_const()
+        public async void Diagnostic_format_string_const()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"const string TOTO=""toto""; string.Concat(""Hello"", TOTO);");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"const string TOTO=""toto""; string.Concat(""Hello"", TOTO);");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseFormatId);
         }
 
         [TestMethod]
-        public void Diagnostic_format_int_const()
+        public async void Diagnostic_format_int_const()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"const int FORTY_TWO=42; string.Concat(""Hello"", FORTY_TWO);");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"const int FORTY_TWO=42; string.Concat(""Hello"", FORTY_TWO);");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseFormatId);
         }
 
         [TestMethod]
-        public void Diagnostic_format_literal_non_string()
+        public async void Diagnostic_format_literal_non_string()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(""Hello"", 0);");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"string.Concat(""Hello"", 0);");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseFormatId);
         }
 
         [TestMethod]
-        public void Diagnostic_format_var()
+        public async void Diagnostic_format_var()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var d = 666.42; string.Concat(""Hello"", d, 'w', 'o', 'r', 'l', 'd');");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var d = 666.42; string.Concat(""Hello"", d, 'w', 'o', 'r', 'l', 'd');");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseFormatId);
         }
 
         [TestMethod]
-        public void Diagnostic_format_string_array()
+        public async void Diagnostic_format_string_array()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var y = ""z""; string.Concat(new[] { ""hello"", y });");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var y = ""z""; string.Concat(new[] { ""hello"", y });");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(NoStringConcatAnalyzer.UseFormatId);
         }
 
         [TestMethod]
-        public void No_diagnostic_external_array()
+        public async void No_diagnostic_external_array()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var arr = new[] { ""hello"", y };string.Concat(arr);");
-            Check.That(diagnostics).IsEmpty();
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var arr = new[] { ""hello"", y };string.Concat(arr);");
+            Check.That(diagnostics.Length).IsEqualTo(0);
         }
 
         [TestMethod]
-        public void No_diagnostic_string_enumerable()
+        public async void No_diagnostic_string_enumerable()
         {
             var analyzer = new NoStringConcatAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"string.Concat(Enumerable.Empty<string>());");
-            Check.That(diagnostics).IsEmpty();
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"string.Concat(Enumerable.Empty<string>());");
+            Check.That(diagnostics.Length).IsEqualTo(0);
         }
     }
 }

@@ -12,89 +12,89 @@ namespace BlackFox.Roslyn.Diagnostics.StringConcatenation.CanReplaceConcatOperat
     public class CanReplaceConcatOperatorAnalyzerTests
     {
         [TestMethod]
-        public void No_diagnostic_on_single_string()
+        public async void No_diagnostic_on_single_string()
         {
             var analyzer = new CanReplaceConcatOperatorAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var a = ""Hello"";");
-            Check.That(diagnostics).IsEmpty();
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var a = ""Hello"";");
+            Check.That(diagnostics.Length).IsEqualTo(0);
         }
 
         [TestMethod]
-        public void Diagnostic_one_string()
+        public async void Diagnostic_one_string()
         {
             var analyzer = new CanReplaceConcatOperatorAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var a = ""Hello"" + ""World"";");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var a = ""Hello"" + ""World"";");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(CanReplaceConcatOperatorAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_two_string()
+        public async void Diagnostic_two_string()
         {
             var analyzer = new CanReplaceConcatOperatorAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var a = ""Hello"" + "" "" + ""World"";");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var a = ""Hello"" + "" "" + ""World"";");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(CanReplaceConcatOperatorAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_one_char_one_string()
+        public async void Diagnostic_one_char_one_string()
         {
             var analyzer = new CanReplaceConcatOperatorAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var a = 'H' + ""ello"";");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var a = 'H' + ""ello"";");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(CanReplaceConcatOperatorAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_one_string_one_char()
+        public async void Diagnostic_one_string_one_char()
         {
             var analyzer = new CanReplaceConcatOperatorAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var a = ""Hell"" + ' ';");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var a = ""Hell"" + ' ';");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(CanReplaceConcatOperatorAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_one_string_null()
+        public async void Diagnostic_one_string_null()
         {
             var analyzer = new CanReplaceConcatOperatorAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var a = ""Hello"" + null;");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var a = ""Hello"" + null;");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(CanReplaceConcatOperatorAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_null_one_string()
+        public async void Diagnostic_null_one_string()
         {
             var analyzer = new CanReplaceConcatOperatorAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var a = null + ""Hello"";");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var a = null + ""Hello"";");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(CanReplaceConcatOperatorAnalyzer.UseStringId);
         }
 
         [TestMethod]
-        public void Diagnostic_format_with_string()
+        public async void Diagnostic_format_with_string()
         {
             var analyzer = new CanReplaceConcatOperatorAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var a = ""Hello""; var b = a + ""World"";");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var a = ""Hello""; var b = a + ""World"";");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(CanReplaceConcatOperatorAnalyzer.UseFormatId);
         }
 
         [TestMethod]
-        public void Diagnostic_format_with_int()
+        public async void Diagnostic_format_with_int()
         {
             var analyzer = new CanReplaceConcatOperatorAnalyzer();
-            var diagnostics = GetDiagnosticsInSimpleCode(analyzer, @"var a = 42; var b = a + ""World"";");
-            Check.That(diagnostics).HasSize(1);
+            var diagnostics = await GetDiagnosticsInSimpleCodeAsync(analyzer, @"var a = 42; var b = a + ""World"";");
+            Check.That(diagnostics.Length).IsEqualTo(1);
             var diag = diagnostics[0];
             Check.That(diag.Id).IsEqualTo(CanReplaceConcatOperatorAnalyzer.UseFormatId);
         }

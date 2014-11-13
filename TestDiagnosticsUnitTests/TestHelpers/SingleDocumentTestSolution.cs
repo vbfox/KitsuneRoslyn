@@ -31,7 +31,7 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
             result.Solution = new CustomWorkspace().CurrentSolution
               .AddProject(projectInfo)
               .AddMetadataReference(result.ProjectId,
-                new MetadataFileReference(typeof(object).Assembly.Location))
+                AssemblyMetadata.CreateFromFile(typeof(object).Assembly.Location).GetReference(display: "mscorlib"))
               .AddDocument(result.DocumentId, "TestDocument.cs", code);
             result.Document = result.Solution.GetDocument(result.DocumentId);
             result.DocumentSyntaxTree = await result.Document.GetSyntaxTreeAsync();

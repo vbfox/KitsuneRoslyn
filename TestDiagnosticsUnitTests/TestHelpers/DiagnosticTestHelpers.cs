@@ -10,27 +10,28 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace BlackFox.Roslyn.Diagnostics.TestHelpers
 {
     static class DiagnosticTestHelpers
     {
-        public static ImmutableList<Diagnostic> GetDiagnosticsInSimpleCode(
-            this ISyntaxNodeAnalyzer<SyntaxKind> analyzer, string code)
+        public static Task<ImmutableArray<Diagnostic>> GetDiagnosticsInSimpleCodeAsync(
+            this DiagnosticAnalyzer analyzer, string code)
         {
-            var fullCode = string.Format("using System; namespace TestNamespace {{ public class TestClass {{ "
-                + "public static void TestMethod() {{ {0} }} }} }}", code);
+            var fullCode = "using System; namespace TestNamespace { public class TestClass { "
+                + "public static void TestMethod() { \{code} } "
+                + "} }";
 
-            return GetDiagnostics(analyzer, fullCode);
+            return GetDiagnosticsAsync(analyzer, fullCode);
         }
 
-        public static ImmutableList<Diagnostic> GetDiagnosticsInClassLevelCode(
-            this ISyntaxNodeAnalyzer<SyntaxKind> analyzer, string code)
+        public static Task<ImmutableArray<Diagnostic>> GetDiagnosticsInClassLevelCodeAsync(
+            this DiagnosticAnalyzer analyzer, string code)
         {
-            var fullCode = string.Format("using System; namespace TestNamespace {{ public class TestClass {{ "
-                + "{0} }} }}", code);
+            var fullCode = "using System; namespace TestNamespace { public class TestClass { \{code} } }";
 
-            return GetDiagnostics(analyzer, fullCode);
+            return GetDiagnosticsAsync(analyzer, fullCode);
         }
 
         public static CSharpCompilation CreateCompilation(string code)
@@ -42,7 +43,7 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
                 syntaxTrees: ImmutableArray.Create(tree),
                 references: new[]
                 {
-                    new MetadataFileReference(typeof(object).Assembly.Location),
+                    AssemblyMetadata.CreateFromFile(typeof(object).Assembly.Location).GetReference(display: "mscorlib")
                 });
             var errors = tree.GetDiagnostics()
                 .Where(d => d.Severity == DiagnosticSeverity.Error)
@@ -57,74 +58,32 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
             return compilation;
         }
 
-        public static ImmutableList<Diagnostic> GetDiagnostics(
-            this ISyntaxNodeAnalyzer<SyntaxKind> analyzer, string code)
+        public static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsAsync(
+            this DiagnosticAnalyzer analyzer, string code)
         {
             var compilation = CreateCompilation(code);
             var tree = compilation.SyntaxTrees.Single();
             var root = tree.GetRoot();
-            var diagnostics = ImmutableList<Diagnostic>.Empty;
 
-            AnalyzeTree(analyzer, tree, compilation, d => diagnostics = diagnostics.Add(d));
-            return diagnostics;
+            return await AnalyzeTreeAsync(analyzer, tree, compilation);
         }
 
-        public static void AnalyzeTree(this ISyntaxNodeAnalyzer<SyntaxKind> analyzer,
-            SyntaxTree tree, Compilation compilation, Action<Diagnostic> addDiagnostic)
+        public static Task<ImmutableArray<Diagnostic>> AnalyzeTreeAsync(this DiagnosticAnalyzer analyzer,
+            SyntaxTree tree, Compilation compilation)
         {
-            var startAnalysis = analyzer as ICompilationStartedAnalyzer;
-            ICompilationEndedAnalyzer endAnalysis = null;
-
-            if (startAnalysis != null)
-            {
-                endAnalysis = startAnalysis.OnCompilationStarted(compilation, addDiagnostic,
-                    CancellationToken.None);
-            }
-
-            var kinds = analyzer.SyntaxKindsOfInterest;
-
-            var matchingNodes =
-                from node in tree.GetRoot().DescendantNodesAndSelf()
-                where kinds.Any(k => node.CSharpKind() == k)
-                select node;
-
-            foreach (var node in matchingNodes)
-            {
-                analyzer.AnalyzeNode(
-                    node,
-                    compilation.GetSemanticModel(tree),
-                    addDiagnostic,
-                    CancellationToken.None);
-            }
-
-            if (endAnalysis != null)
-            {
-                endAnalysis.OnCompilationEnded(compilation, addDiagnostic,
-                    CancellationToken.None);
-            }
+            return AnalyzeTreeAsync(ImmutableArray.Create(analyzer), tree, compilation);
         }
 
-        private static IEnumerable<SyntaxNode> RecursiveGetChild(SyntaxNode node)
+        public static async Task<ImmutableArray<Diagnostic>> AnalyzeTreeAsync(ImmutableArray<DiagnosticAnalyzer> analyzers,
+            SyntaxTree tree, Compilation compilation)
         {
-            if (node == null)
-            {
-                throw new ArgumentNullException("node");
-            }
+            var analyzerOptions = new AnalyzerOptions(Enumerable.Empty<AdditionalStream>(), new Dictionary<string, string>());
+            Compilation newCompilation;
+            AnalyzerDriver driver = AnalyzerDriver.Create(compilation, analyzers,
+                analyzerOptions, out newCompilation, CancellationToken.None);
 
-            Stack<SyntaxNode> x = new Stack<SyntaxNode>();
-            x.Push(node);
-
-            while (x.Count != 0)
-            {
-                var currentNode = x.Pop();
-
-                yield return currentNode;
-
-                foreach (var childNode in currentNode.ChildNodes())
-                {
-                    x.Push(childNode);
-                }
-            }
+            await driver.WhenCompletedAsync();
+            return await driver.GetDiagnosticsAsync();
         }
     }
 }

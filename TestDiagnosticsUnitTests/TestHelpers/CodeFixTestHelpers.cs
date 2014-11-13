@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using NFluent;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -22,29 +23,29 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
     static class CodeFixTestHelpers
     {
         public static async Task CheckSingleFixAsync(string code, string expectedCode, string expectedDescription,
-            ICodeFixProvider codeFixProvider, params ISyntaxNodeAnalyzer<SyntaxKind>[] analyzers)
+            CodeFixProvider codeFixProvider, params DiagnosticAnalyzer[] analyzers)
         {
             var fixes = await GetFixesAsync(code, codeFixProvider, analyzers);
 
             Check.That(fixes).HasSize(1);
             var fix = fixes.Single();
-            Check.That(fix.Item1.Description).IsEqualTo(expectedDescription);
+            Check.That(fix.Item1.Title).IsEqualTo(expectedDescription);
             Check.That(fix.Item2).IsEqualTo(expectedCode);
         }
 
         public static async Task CheckSingleFixAsync(string code, string spanText, string expectedCode,
-            string expectedDescription, ICodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
+            string expectedDescription, CodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
         {
             var fixes = await GetFixesAsync(code, codeFixProvider, diagnosticDescriptor, spanText);
 
             Check.That(fixes).HasSize(1);
             var fix = fixes.Single();
-            Check.That(fix.Item1.Description).IsEqualTo(expectedDescription);
+            Check.That(fix.Item1.Title).IsEqualTo(expectedDescription);
             Check.That(fix.Item2).IsEqualTo(expectedCode);
         }
 
         public static void CheckSingleFix(string code, string spanText, string expectedCode,
-            string expectedDescription, ICodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
+            string expectedDescription, CodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
         {
             var task = CheckSingleFixAsync(code, spanText, expectedCode, expectedDescription, codeFixProvider,
                 diagnosticDescriptor);
@@ -52,7 +53,7 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
         }
 
         public static async Task CheckSingleFixAsync(string code, string spanText, string expectedCode,
-            ICodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
+            CodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
         {
             var fixes = await GetFixesAsync(code, codeFixProvider, diagnosticDescriptor, spanText);
 
@@ -62,7 +63,7 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
         }
 
         public static void CheckSingleFix(string code, string spanText, string expectedCode,
-            ICodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
+            CodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor)
         {
             var task = CheckSingleFixAsync(code, spanText, expectedCode, codeFixProvider,
                 diagnosticDescriptor);
@@ -70,7 +71,7 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
         }
 
         public static async Task<ImmutableList<Tuple<CodeAction, string>>> GetFixesAsync(string code,
-            ICodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor, string spanText)
+            CodeFixProvider codeFixProvider, DiagnosticDescriptor diagnosticDescriptor, string spanText)
         {
             var solution = await SingleDocumentTestSolution.CreateAsync(code);
 
@@ -113,18 +114,18 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
         }
 
         public static async Task<ImmutableList<Tuple<CodeAction, string>>> GetFixesAsync(string code,
-            ICodeFixProvider codeFixProvider, params ISyntaxNodeAnalyzer<SyntaxKind>[] analyzers)
+            CodeFixProvider codeFixProvider, params DiagnosticAnalyzer[] analyzers)
         {
             var solution = await SingleDocumentTestSolution.CreateAsync(code);
 
-            var diagnostics = GetFixableDiagnostics(codeFixProvider, analyzers, solution.DocumentSyntaxTree,
-                solution.SolutionCompilation);
+            var diagnostics = await GetFixableDiagnostics(codeFixProvider, analyzers.ToImmutableArray(),
+                solution.DocumentSyntaxTree, solution.SolutionCompilation);
 
             return await GetFixesAsync(codeFixProvider, solution.Document, diagnostics);
         }
 
         private static async Task<ImmutableList<Tuple<CodeAction, string>>> GetFixesAsync(
-            ICodeFixProvider codeFixProvider, Document document,
+            CodeFixProvider codeFixProvider, Document document,
             ImmutableList<Diagnostic> diagnostics)
         {
             var codeActions = await GetCodeActionsFromFixesAsync(codeFixProvider, document, diagnostics);
@@ -139,40 +140,30 @@ namespace BlackFox.Roslyn.Diagnostics.TestHelpers
         }
 
         private static async Task<IEnumerable<CodeAction>> GetCodeActionsFromFixesAsync(
-            ICodeFixProvider codeFixProvider, Document document, ImmutableList<Diagnostic> diagnostics)
+            CodeFixProvider codeFixProvider, Document document, ImmutableList<Diagnostic> diagnostics)
         {
-            var getTasks = ImmutableList<Task<IEnumerable<CodeAction>>>.Empty;
+            var codeActions = new ConcurrentBag<CodeAction>();
+            var getTasks = ImmutableList<Task>.Empty;
+
             foreach (var diagnostic in diagnostics)
             {
-                var newFixes = codeFixProvider.GetFixesAsync(
-                    document,
-                    diagnostic.Location.SourceSpan,
-                    new[] { diagnostic },
-                    new CancellationToken(false));
-                getTasks = getTasks.Add(newFixes);
+                var context = new CodeFixContext(document, diagnostic,
+                    (action, matchedDiags) => codeActions.Add(action), CancellationToken.None);
+                var task = codeFixProvider.ComputeFixesAsync(context);
+                getTasks = getTasks.Add(task);
             }
 
-            var codeActions = (await Task.WhenAll(getTasks)).SelectMany(_ => _);
+            await Task.WhenAll(getTasks);
+
             return codeActions;
         }
 
-        private static ImmutableList<Diagnostic> GetFixableDiagnostics(ICodeFixProvider codeFixProvider,
-            ISyntaxNodeAnalyzer<SyntaxKind>[] analyzers, SyntaxTree tree, Compilation compilation)
+        private static async Task<ImmutableList<Diagnostic>> GetFixableDiagnostics(CodeFixProvider codeFixProvider,
+            ImmutableArray<DiagnosticAnalyzer> analyzers, SyntaxTree tree, Compilation compilation)
         {
             var fixableDiagnosticIds = codeFixProvider.GetFixableDiagnosticIds();
-            var diagnostics = ImmutableList<Diagnostic>.Empty;
-            foreach (var analyzer in analyzers)
-            {
-                AnalyzeTree(analyzer, tree, compilation, d =>
-                {
-                    if (fixableDiagnosticIds.Contains(d.Id))
-                    {
-                        diagnostics = diagnostics.Add(d);
-                    }
-                });
-            }
-
-            return diagnostics;
+            var allDiagnostics = await AnalyzeTreeAsync(analyzers, tree, compilation);
+            return allDiagnostics.Where(d => fixableDiagnosticIds.Contains(d.Id)).ToImmutableList();
         }
 
         private static async Task<string> GetChangedText(CodeAction codeAction, DocumentId documentId)

@@ -14,10 +14,10 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
     public class PropertyAnalyzerTests
     {
         [TestMethod]
-        public void Get_return_constant()
+        public async void Get_return_constant()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X { get { return 42; } }");
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer, "public int X { get { return 42; } }");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(
                 PropertyAnalyzer.IdStatementToExpression,
@@ -25,10 +25,10 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         }
 
         [TestMethod]
-        public void Get_return_expression_static_1()
+        public async void Get_return_expression_static_1()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer,
                 "public int X { get { return Math.Sin(42); } }");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(
@@ -37,10 +37,10 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         }
 
         [TestMethod]
-        public void Get_return_expression_static_2()
+        public async void Get_return_expression_static_2()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer,
                 "public static int x = 42; public int X { get { return Math.Sin(x); } }");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(
@@ -49,10 +49,10 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         }
 
         [TestMethod]
-        public void Get_return_expression_instance()
+        public async void Get_return_expression_instance()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer,
                 "public int x = 42; public int X { get { return Math.Sin(x); } }");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(
@@ -60,26 +60,26 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         }
 
         [TestMethod]
-        public void Get_set_auto_implemented()
+        public async void Get_set_auto_implemented()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X { get; set; }");
-            Check.That(diagnostics).IsEmpty();
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer, "public int X { get; set; }");
+            Check.That(diagnostics.Length).IsEqualTo(0);
         }
 
         [TestMethod]
-        public void Get_set()
+        public async void Get_set()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X { get { return 42; } set {} }");
-            Check.That(diagnostics).IsEmpty();
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer, "public int X { get { return 42; } set {} }");
+            Check.That(diagnostics.Length).IsEqualTo(0);
         }
 
         [TestMethod]
-        public void Expression_constant()
+        public async void Expression_constant()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer, "public int X => 42;");
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer, "public int X => 42;");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(
                 PropertyAnalyzer.IdExpressionToStatement, 
@@ -87,10 +87,10 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         }
 
         [TestMethod]
-        public void Expression_expression_static_1()
+        public async void Expression_expression_static_1()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer,
                 "public int X => Math.Sin(42);");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(
@@ -99,10 +99,10 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         }
 
         [TestMethod]
-        public void Expression_expression_static_2()
+        public async void Expression_expression_static_2()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer,
                 "public static int x = 42; public int SinX => Math.Sin(x);");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(
@@ -111,10 +111,10 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         }
 
         [TestMethod]
-        public void Expression_expression_instance()
+        public async void Expression_expression_instance()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer,
                 "public int x = 42; public int SinX => Math.Sin(x);");
             var ids = diagnostics.Select(d => d.Id);
 
@@ -123,10 +123,10 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         }
 
         [TestMethod]
-        public void Initializer_constant()
+        public async void Initializer_constant()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer,
                 "public int X {get;} = 42;");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(
@@ -135,10 +135,10 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         }
 
         [TestMethod]
-        public void Initializer_expression()
+        public async void Initializer_expression()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnosticsInClassLevelCode(analyzer,
+            var diagnostics = await GetDiagnosticsInClassLevelCodeAsync(analyzer,
                 "public int X {get;} = Math.Sin(42);");
             var ids = diagnostics.Select(d => d.Id);
             Check.That(ids).ContainExactlyAnyOrder(
@@ -147,21 +147,21 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
         }
 
         [TestMethod]
-        public void Initializer_primary_constructor_argument()
+        public async void Initializer_primary_constructor_argument()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnostics(analyzer,
+            var diagnostics = await GetDiagnosticsAsync(analyzer,
                 "class Foo(int x) { public int X {get;} = x;}");
-            Check.That(diagnostics).IsEmpty();
+            Check.That(diagnostics.Length).IsEqualTo(0);
         }
 
         [TestMethod]
-        public void Initializer_primary_constructor_argument_deep()
+        public async void Initializer_primary_constructor_argument_deep()
         {
             var analyzer = new PropertyAnalyzer();
-            var diagnostics = GetDiagnostics(analyzer,
+            var diagnostics = await GetDiagnosticsAsync(analyzer,
                 "class Foo(int x) { public int X {get;} = (int)System.Math.Sin(x+1);}");
-            Check.That(diagnostics).IsEmpty();
+            Check.That(diagnostics.Length).IsEqualTo(0);
         }
     }
 }

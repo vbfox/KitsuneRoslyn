@@ -25,7 +25,7 @@ namespace BlackFox.Roslyn.Diagnostics
             var solution = new CustomWorkspace().CurrentSolution
               .AddProject(projectInfo)
               .AddMetadataReference(projectId,
-                new MetadataFileReference(typeof(object).Assembly.Location))
+                AssemblyMetadata.CreateFromFile(typeof(object).Assembly.Location).GetReference(display: "mscorlib"))
               .AddDocument(documentId, "TestDocument.cs", code);
             var document = solution.GetDocument(documentId);
             var syntaxTree = document.GetSyntaxTreeAsync().Result;
