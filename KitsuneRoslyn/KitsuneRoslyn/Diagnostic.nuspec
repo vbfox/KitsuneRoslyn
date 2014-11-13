@@ -1,0 +1,23 @@
+﻿<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>KitsuneRoslyn</id>
+    <version>1.0.0.0</version>
+    <title>Kitsune Roslyn Refactorings</title>
+    <authors>Julien Roncaglia</authors>
+    <owners>Julien Roncaglia</owners>
+    <licenseUrl>https://github.com/vbfox/RoslynDiagnostics/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/vbfox/RoslynDiagnostics</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A package of diagnostics and code fixes for refactoring.</description>
+    <releaseNotes>First version.</releaseNotes>
+    <tags>Roslyn Diagnostics VisualStudio VS Refactoring</tags>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System" targetFramework="" />
+    </frameworkAssemblies>
+  </metadata>
+  <files>
+    <file src="*.dll" target="tools\analyzers\" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*" />
+    <file src="tools\*.ps1" target="tools\" />
+  </files>
+</package>
