@@ -1,45 +1,41 @@
-Test Diagnostics
-================
+Kitsune Roslyn
+==============
 
-This project is my [Roslyn](https://roslyn.codeplex.com/) test project for C# diagnostics and
-code fixes.
+> Kitsune (狐) is the Japanese word for fox. Foxes are a common subject of Japanese folklore; in English, kitsune refers to them in this context. Stories depict them as intelligent beings and as possessing magical abilities that increase with their age and wisdom. Foremost among these is the ability to assume human form.
+>
+> [Wikipedia](https://en.wikipedia.org/wiki/Kitsune)
 
-Avoid `new Guid()`
-------------------
+Kitsune Roslyn is a compilation of Diagnostics for the C# language in Visual Studio 2015 made using [Roslyn](https://roslyn.codeplex.com/). 
 
-This rule matches calls to `new Guid()` and the associated code fix suggest to replace it with
-a call to `Guid.Empty`.
+Visual Studio 2015 support two different ways to allow code fixes in the light bulb:
 
-The rationale is that `Guid.Empty` is more expressive than the default constructor to represent
-a GUID with only zeroes inside.
+* Diagnostics created by inheriting `DiagnosticAnalyzer`.
+  They can appear visually as squiggles in the editor and even when no squiggles are used the lightbulb
+  appear in the margin when the cursor is over a potential fix.  
+* Refactorings created by inheriting `CodeRefactoringProvider`.
+  They never appear visually by themselves without being invoked with `Ctrl+;` but they can use the
+  current selection of the user (*Extract Method* wouldn't be possible without it)
 
-![Avoid new Guid()][NoNewGuid]
+The choice was made for this library to implement the majority of it as Diagnostics for ease of use but
+it might be split latter in 2 versions if Diagnostics are slowing down Visual Studio too much.
 
-**Default level**: Warning
+Currently supported:
 
-Avoid `string.Empty`
---------------------
+* [Conversion between the different type of properties](#conversion-between-the-different-type-of-properties) (Expression, initializer and statements)
+* [Usage of `var` or type specified explicitly](#usage-of-var-or-type-specified-explicitly)
+* [String formatting conversions](#string-formatting-conversions) (Between `+`, `string.Format` and `string.Concat`)
+* [Usage of canonical Empty values](#usage-of-canonical-empty-values) (For `string` and `Guid`)
 
-This rule matches calls to `string.Empty` and the associated code fix suggest to replace it with
-the equivalent literal `""`.
+Conversion between the different type of properties
+---------------------------------------------------
 
-The rationale is that there is no real reason for using `string.Empty`, the potential performance
-hit is insignificant and it is just a more verbose form of writing `""`.
+Usage of `var` or type specified explicitly
+-------------------------------------------
 
-![Avoid String.Empty][NoStringEmpty]
+String formatting conversions
+-----------------------------
 
-*Note (1)*: It conflicts with **UseStringEmptyForEmptyStrings** from
-[StyleCop](https://stylecop.codeplex.com/).
-
-*Note (2)*: The performance consequence is that `""` and `string.Empty` aren't the same string
-(See [Eric Lippert's blog][LippertStringInterning] for details) and it close the door to some optimization.
-But even [`string.IsNullOrEmpty`][IsNullOrEmptyReferenceSource] in the framework don't take advantage
-of the potential optimization.
-
-**Default level**: Warning
-
-Avoid `string.concat`
----------------------
+### Convert from `string.concat`
 
 This rule matches calls to `string.Concat` that provide strings or objects directly as argument.
 
@@ -52,8 +48,7 @@ The associated code fix suggest to replace it with either a single string if pos
 
 **Default level**: Warning
 
-Avoid string concatenation
---------------------------
+### Convert from string concatenation
 
 This rule matches concatenation of strings using the `+` operator.
 
@@ -66,11 +61,33 @@ The associated code fix suggest to replace it with either a single string if pos
 
 **Default level**: Hidden
 
+Usage of canonical Empty values
+-------------------------------
 
+### Replace `new Guid()` with `Guid.Empty`
 
+This rule matches calls to `new Guid()` and the associated code fix suggest to replace it with
+a call to `Guid.Empty`.
 
-[LippertStringInterning]: http://blogs.msdn.com/b/ericlippert/archive/2009/09/28/string-interning-and-string-empty.aspx
-[IsNullOrEmptyReferenceSource]: http://referencesource.microsoft.com/#mscorlib/system/string.cs.html#23a8597f842071f4
+The rationale is that `Guid.Empty` is more expressive than the default constructor to represent
+a GUID with only zeroes inside.
+
+![Avoid new Guid()][NoNewGuid]
+
+**Default level**: Warning
+
+### Replace `string.Empty` with `""`
+
+This rule matches calls to `string.Empty` and the associated code fix suggest to replace it with
+the equivalent literal `""`.
+
+The rationale is that there is no real reason for using `string.Empty`, the potential performance
+hit is insignificant and it is just a more verbose form of writing `""`.
+
+![Avoid String.Empty][NoStringEmpty]
+
+**Default level**: Warning
+
 [NoNewGuid]: https://github.com/vbfox/RoslynDiagnostics/raw/master/ReadmePictures/NoNewGuid.png
 [NoStringEmpty]: https://github.com/vbfox/RoslynDiagnostics/raw/master/ReadmePictures/NoStringEmpty.png
 [NoStringConcatString]: https://github.com/vbfox/RoslynDiagnostics/raw/master/ReadmePictures/NoStringConcatString.png
