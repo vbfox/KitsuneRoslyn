@@ -16,6 +16,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KitsuneRoslyn.Vsix", "Kitsu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KitsuneRoslyn.Refactorings", "KitsuneRoslyn.Refactorings\KitsuneRoslyn.Refactorings.csproj", "{8EA67E23-9169-496E-BEBA-A4601DFC304A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0CB09634-E13B-41DB-AFDC-DFC4F6D8D295}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		readme.md = readme.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
