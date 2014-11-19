@@ -93,8 +93,6 @@
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticAnalyzerTests.cs" />
-    <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticCodeFixTests.cs" />
     <Compile Include="NoNewGuid\NoNewGuidAnalyzerTests.cs" />
     <Compile Include="NoNewGuid\NoNewGuidCodeFixTests.cs" />
     <Compile Include="NoStringEmpty\NoStringEmptyAnalyzerTests.cs" />

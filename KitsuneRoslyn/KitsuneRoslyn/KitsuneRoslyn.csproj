@@ -41,8 +41,6 @@
     <Compile Include="FromRoslynOfficialSource\CSharpExtensions\SyntaxListExtensions.cs" />
     <Compile Include="FromRoslynOfficialSource\CSharpExtensions\SyntaxNodeExtensions.cs" />
     <Compile Include="FromRoslynOfficialSource\SharedExtensions\ISymbolExtensions.cs" />
-    <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticAnalyzer.cs" />
-    <Compile Include="MethodCanBeMadeStatic\MethodCanBeMadeStaticCodeFix.cs" />
     <Compile Include="NoNewGuid\NoNewGuidAnalyzer.cs" />
     <Compile Include="NoNewGuid\ReplaceNewGuidWithGuidEmpty.cs" />
     <Compile Include="NoStringEmpty\NoStringEmptyAnalyzer.cs" />
