@@ -13,8 +13,6 @@ using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using System.Linq;
 using Microsoft.CodeAnalysis.CodeActions;
 
-#pragma warning disable 1998 // This async method lacks 'await' operators and will run synchronously
-
 namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {
     [ExportCodeFixProvider("BlackFox.UseTernaryOperatorCodeFix", LanguageNames.CSharp)]
