@@ -18,18 +18,23 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
         public static PotentialTernaryOperator NoReplacement { get; }
             = new PotentialTernaryOperator(
                     PotentialTernaryOperatorClassification.NoReplacement,
-                    null, 0);
+                    ImmutableList<StatementSyntax>.Empty,
+                    0,
+                    ImmutableList<SyntaxNode>.Empty);
 
         public PotentialTernaryOperatorClassification Classification { get; private set; }
-        public Optional<SyntaxNode> NodeToRemove { get; private set; }
+        public ImmutableList<SyntaxNode> NodesToRemove { get; private set; }
         public ImmutableList<StatementSyntax> Replacements { get; private set; }
         public int TernaryOperatorCount { get; private set; }
 
         PotentialTernaryOperator(PotentialTernaryOperatorClassification classification,
-            ImmutableList<StatementSyntax> replacements, int ternaryOperatorCount)
+            ImmutableList<StatementSyntax> replacements, int ternaryOperatorCount, ImmutableList<SyntaxNode> toRemove)
         {
+            Parameter.MustNotBeNull(replacements, nameof(replacements));
+            Parameter.MustNotBeNull(toRemove, nameof(toRemove));
+
             Classification = classification;
-            NodeToRemove = new Optional<SyntaxNode>();
+            NodesToRemove = toRemove;
             Replacements = replacements;
             TernaryOperatorCount = ternaryOperatorCount;
         }
@@ -57,12 +62,14 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 
         public static PotentialTernaryOperator Create(IfStatementSyntax ifStatement)
         {
-            if (ifStatement.Else == null)
+            ImmutableList<SyntaxNode> virtualElseStatements;
+            var elseStatement = GetRealOrVirtualElse(ifStatement, out virtualElseStatements);
+            if (!elseStatement.HasValue)
             {
                 return NoReplacement;
             }
 
-            var replaceable = TernaryReplaceable.Find(ifStatement.Statement, ifStatement.Else.Statement);
+            var replaceable = TernaryReplaceable.Find(ifStatement.Statement, elseStatement.Value);
 
             if (!replaceable.IsReplaceable)
             {
@@ -79,7 +86,31 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             }
 
             return new PotentialTernaryOperator(PotentialTernaryOperatorClassification.ReplacementPossible,
-                BlockContent(replacement), replaceable.Differences.Count);
+                BlockContent(replacement), replaceable.Differences.Count, virtualElseStatements);
+        }
+
+        private static Optional<StatementSyntax> GetRealOrVirtualElse(IfStatementSyntax ifStatement,
+            out ImmutableList<SyntaxNode> virtualElseStatements)
+        {
+            if (ifStatement.Else != null)
+            {
+                virtualElseStatements = ImmutableList<SyntaxNode>.Empty;
+                return ifStatement.Else.Statement;
+            }
+
+            var ifBlock = ifStatement.Statement as BlockSyntax;
+            var statementCount = ifBlock != null ? ifBlock.Statements.Count : 1;
+            var sibilings = ifStatement.Parent.ChildNodes();
+            var potential = sibilings.SkipWhile(n => n != ifStatement).Skip(1).Take(statementCount).ToImmutableList();
+
+            if (potential.Count != statementCount)
+            {
+                virtualElseStatements = ImmutableList<SyntaxNode>.Empty;
+                return null;
+            }
+
+            virtualElseStatements = potential;
+            return Block(List(potential));
         }
 
         static ImmutableList<StatementSyntax> BlockContent(StatementSyntax node)

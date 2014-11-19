@@ -52,11 +52,9 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             IfStatementSyntax ifStatement, Document document, SyntaxNode root, CancellationToken cancellationToken)
         {
             // As we will apply multiple operations we need to enable tracking for the nodes we will replace/remove.
-            var nodesToTrack = ImmutableList<SyntaxNode>.Empty.Add(ifStatement);
-            if (potentialTernary.NodeToRemove.HasValue)
-            {
-                nodesToTrack = nodesToTrack.Add(potentialTernary.NodeToRemove.Value);
-            }
+            var nodesToTrack = ImmutableList<SyntaxNode>.Empty
+                .Add(ifStatement)
+                .AddRange(potentialTernary.NodesToRemove);
 
             var wipRoot = root.TrackNodes(nodesToTrack);
 
@@ -67,12 +65,11 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             // Replace the if with the ternary operator
             wipRoot = wipRoot.ReplaceNode(wipRoot.GetCurrentNode(ifStatement), replacements);
 
-            // Remove the potential next node (For when there is no 'else')
-            if (potentialTernary.NodeToRemove.HasValue)
+            // Remove the next nodes (For when there is no 'else')
+            foreach(var nodeToRemove in potentialTernary.NodesToRemove)
             {
-                var nodeToRemove = wipRoot.GetCurrentNode(potentialTernary.NodeToRemove.Value);
-                wipRoot = wipRoot.RemoveNode(nodeToRemove,
-                    SyntaxRemoveOptions.KeepNoTrivia);
+                var current = wipRoot.GetCurrentNode(nodeToRemove);
+                wipRoot = wipRoot.RemoveNode(current, SyntaxRemoveOptions.KeepNoTrivia);
             }
 
             // Format to replace ElasticAnnotation
