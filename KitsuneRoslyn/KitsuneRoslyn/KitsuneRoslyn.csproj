@@ -84,7 +84,8 @@
     <Compile Include="SyntaxEquivalence.cs" />
     <Compile Include="TernaryOperators\PotentialTernaryOperator.cs" />
     <Compile Include="TernaryOperators\PotentialTernaryOperatorClassification.cs" />
-    <Compile Include="TernaryOperators\TernaryReplacable.cs" />
+    <Compile Include="TernaryOperators\TernaryReplaceable.cs" />
+    <Compile Include="TernaryOperators\TernaryReplaceableResult.cs" />
     <Compile Include="TernaryOperators\UseTernaryOperatorAnalyzer.cs" />
     <Compile Include="TernaryOperators\UseTernaryOperatorCodeFix.cs" />
     <Compile Include="VarConversion\TypeToVarAnalyzer.cs" />

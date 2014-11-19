@@ -13,24 +13,18 @@ using System.Linq;
 
 namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {
-    public static class TernaryReplacable
+    public static class TernaryReplaceable
     {
-        public static bool TryFind(SyntaxNodeOrToken before,
-            SyntaxNodeOrToken after, out ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> differences)
+        public static TernaryReplaceableResult Find(SyntaxNodeOrToken before, SyntaxNodeOrToken after)
         {
             var rawDifferences = SyntaxDifferences.Find(before, after);
             var manageableDifferences = rawDifferences
                 .Select(d => NearestReplacableByTernary(d.Item1, d.Item2, before, after))
                 .ToImmutableList();
 
-            if (manageableDifferences.Any(d => d == null))
-            {
-                differences = null;
-                return false;
-            }
-
-            differences = manageableDifferences;
-            return true;
+            return manageableDifferences.Any(d => d == null)
+                ? new TernaryReplaceableResult(false, ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>>.Empty)
+                : new TernaryReplaceableResult(true, manageableDifferences);
         }
 
         private static Tuple<ExpressionSyntax, ExpressionSyntax> NearestReplacableByTernary(
@@ -56,7 +50,6 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             SyntaxKind.EqualsValueClause,
             SyntaxKind.ReturnStatement,
             SyntaxKind.YieldReturnStatement,
-
             SyntaxKind.AddExpression,
             SyntaxKind.SubtractExpression,
             SyntaxKind.MultiplyExpression,

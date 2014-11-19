@@ -62,26 +62,24 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
                 return NoReplacement;
             }
 
-            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> differences;
-            var ternaryReplacable = TernaryReplacable.TryFind(ifStatement.Statement, ifStatement.Else.Statement,
-                out differences);
+            var replaceable = TernaryReplaceable.Find(ifStatement.Statement, ifStatement.Else.Statement);
 
-            if (!ternaryReplacable)
+            if (!replaceable.IsReplaceable)
             {
                 return NoReplacement;
             }
 
-            var toTrack = differences.Select(t => t.Item1);
+            var toTrack = replaceable.Differences.Select(t => t.Item1);
             var replacement = ifStatement.Statement.TrackNodes(toTrack);
 
-            foreach (var diff in differences)
+            foreach (var difference in replaceable.Differences)
             {
-                var conditionalReplacement = BuildReplacement(ifStatement.Condition, diff.Item1, diff.Item2);
-                replacement = replacement.ReplaceNode(replacement.GetCurrentNode(diff.Item1), conditionalReplacement);
+                var conditionalReplacement = BuildReplacement(ifStatement.Condition, difference.Item1, difference.Item2);
+                replacement = replacement.ReplaceNode(replacement.GetCurrentNode(difference.Item1), conditionalReplacement);
             }
 
             return new PotentialTernaryOperator(PotentialTernaryOperatorClassification.ReplacementPossible,
-                BlockContent(replacement), differences.Count);
+                BlockContent(replacement), replaceable.Differences.Count);
         }
 
         static ImmutableList<StatementSyntax> BlockContent(StatementSyntax node)

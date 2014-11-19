@@ -11,7 +11,7 @@ using System.Linq;
 namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {
     [TestClass]
-    public class TernaryReplacableTests
+    public class TernaryReplaceableTests
     {
         [TestMethod]
         public void Variable_declarations_different_values()
@@ -19,8 +19,9 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             var a = CompileStatement(@"var a = ""Foo"";");
             var b = CompileStatement(@"var a = ""Bar"";");
 
-            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> diff;
-            var result = TernaryReplacable.TryFind(a, b, out diff);
+            var replaceable = TernaryReplaceable.Find(a, b);
+            var result = replaceable.IsReplaceable;
+            var diff = replaceable.Differences;
 
             Check.That(result).IsTrue();
             var d = diff.Single();
@@ -36,8 +37,8 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             var a = CompileStatement(@"var a = ""Foo"";");
             var b = CompileStatement(@"var b = ""Foo"";");
 
-            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> diff;
-            var result = TernaryReplacable.TryFind(a, b, out diff);
+            var replaceable = TernaryReplaceable.Find(a, b);
+            var result = replaceable.IsReplaceable;
 
             Check.That(result).IsFalse();
         }
@@ -48,8 +49,9 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             var a = CompileStatement(@"Console.BufferHeight = Console.CursorLeft;");
             var b = CompileStatement(@"Console.BufferHeight = Console.CursorSize;");
 
-            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> diff;
-            var result = TernaryReplacable.TryFind(a, b, out diff);
+            var replaceable = TernaryReplaceable.Find(a, b);
+            var result = replaceable.IsReplaceable;
+            var diff = replaceable.Differences;
 
             Check.That(result).IsTrue();
             var d = diff.Single();
@@ -65,8 +67,10 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             var a = CompileStatement(@"var x = ""Foo"" + ""Bar"";");
             var b = CompileStatement(@"var x = ""Foo"" + ""Baz"";");
 
-            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> diff;
-            var result = TernaryReplacable.TryFind(a, b, out diff);
+
+            var replaceable = TernaryReplaceable.Find(a, b);
+            var result = replaceable.IsReplaceable;
+            var diff = replaceable.Differences;
 
             Check.That(result).IsTrue();
             var d = diff.Single();
@@ -84,8 +88,10 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             var b = CompileStatements(@"var i = 0;var k = 1;var x = i + k;")
                 .ChildNodes().OfType<LocalDeclarationStatementSyntax>().Last();
 
-            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> diff;
-            var result = TernaryReplacable.TryFind(a, b, out diff);
+
+            var replaceable = TernaryReplaceable.Find(a, b);
+            var result = replaceable.IsReplaceable;
+            var diff = replaceable.Differences;
 
             Check.That(result).IsTrue();
             var d = diff.Single();
@@ -101,8 +107,10 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             var a = CompileStatement(@"Console.BufferHeight = Console.CursorLeft;");
             var b = CompileStatement(@"Console.BufferWidth = Console.CursorLeft;");
 
-            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> diff;
-            var result = TernaryReplacable.TryFind(a, b, out diff);
+
+            var replaceable = TernaryReplaceable.Find(a, b);
+            var result = replaceable.IsReplaceable;
+            var diff = replaceable.Differences;
 
             Check.That(result).IsFalse();
         }
@@ -113,8 +121,10 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             var a = CompileStatement(@"Console.WriteLine(""Foo"");");
             var b = CompileStatement(@"Console.WriteLine(""Bar"");");
 
-            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> diff;
-            var result = TernaryReplacable.TryFind(a, b, out diff);
+
+            var replaceable = TernaryReplaceable.Find(a, b);
+            var result = replaceable.IsReplaceable;
+            var diff = replaceable.Differences;
 
             Check.That(result).IsTrue();
             var d = diff.Single();
@@ -132,8 +142,10 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             var b = CompileStatement<ExpressionStatementSyntax>(
                 @"var b = ""Bar"";Console.WriteLine(b);");
 
-            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> diff;
-            var result = TernaryReplacable.TryFind(a, b, out diff);
+
+            var replaceable = TernaryReplaceable.Find(a, b);
+            var result = replaceable.IsReplaceable;
+            var diff = replaceable.Differences;
 
             Check.That(result).IsTrue();
             var d = diff.Single();
@@ -151,8 +163,9 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             var b = CompileStatement<ExpressionStatementSyntax>(
                 @"var b = ""Bar"";Console.WriteLine(""YY"", b);");
 
-            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> diff;
-            var result = TernaryReplacable.TryFind(a, b, out diff);
+            var replaceable = TernaryReplaceable.Find(a, b);
+            var result = replaceable.IsReplaceable;
+            var diff = replaceable.Differences;
 
             Check.That(result).IsTrue();
             Check.That(diff).HasSize(2);
@@ -176,8 +189,10 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
             var a = CompileStatement(@"Console.Write(""Foo"");");
             var b = CompileStatement(@"Console.WriteLine(""Foo"");");
 
-            ImmutableList<Tuple<ExpressionSyntax, ExpressionSyntax>> diff;
-            var result = TernaryReplacable.TryFind(a, b, out diff);
+
+            var replaceable = TernaryReplaceable.Find(a, b);
+            var result = replaceable.IsReplaceable;
+            var diff = replaceable.Differences;
 
             Check.That(result).IsFalse();
         }
@@ -187,7 +202,7 @@ namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
         static BlockSyntax CompileStatements(string code)
         {
             var fullCode = string.Format("using System; namespace TestNamespace {{ public class TestClass {{ "
-                + "public static void TestMethod() {{ {0} }} }} }}", code);
+                +"public static void TestMethod() {{ {0} }} }} }}", code);
 
             var compilation = DiagnosticTestHelpers.CreateCompilation(fullCode);
             var tree = compilation.SyntaxTrees.Single();
