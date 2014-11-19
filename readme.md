@@ -5,7 +5,8 @@ Kitsune Roslyn
 >
 > [Wikipedia](https://en.wikipedia.org/wiki/Kitsune)
 
-Kitsune Roslyn is a compilation of Diagnostics for the C# language in Visual Studio 2015 made using [Roslyn](https://roslyn.codeplex.com/). 
+Kitsune Roslyn is a compilation of Diagnostics for the C♯ language in Visual Studio 2015 made using [Roslyn](https://roslyn.codeplex.com/).    
+The extension is [on the Gallery](https://visualstudiogallery.msdn.microsoft.com/59375d68-e57e-4deb-831d-eb49cf083c51) and can be installed directly in Visual Studio from the `Tools | Extensions and Updates…` menu.
 
 Visual Studio 2015 support two different ways to allow code fixes in the light bulb:
 
@@ -29,8 +30,12 @@ Currently supported:
 Conversion between the different type of properties
 ---------------------------------------------------
 
+_Documentation in progress…_
+
 Usage of `var` or type specified explicitly
 -------------------------------------------
+
+_Documentation in progress…_
 
 String formatting conversions
 -----------------------------
