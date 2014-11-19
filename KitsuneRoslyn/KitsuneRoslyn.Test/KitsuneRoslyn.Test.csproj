@@ -99,7 +99,6 @@
     <Compile Include="NoStringEmpty\NoStringEmptyCodeFixTests.cs" />
     <Compile Include="PropertyConversions\PropertyAnalyzerTests.cs" />
     <Compile Include="PropertyConversions\PropertyCodeFixTests.cs" />
-    <Compile Include="RoslynBugs.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\CanReplaceConcatOperatorAnalyzerTests.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithSingleStringTests.cs" />
     <Compile Include="StringConcatenation\CanReplaceConcatOperator\ReplaceConcatenationWithStringFormatTests.cs" />

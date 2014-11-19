@@ -57,11 +57,7 @@ namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
             var annotatedReplacement = replacement.WithAdditionalAnnotations(Formatter.Annotation);
             var newDocument = await document.ReplaceNodeAsync(Property, annotatedReplacement, cancellationToken);
 
-            // Avoid a roslyn bug
-            // See RoslynBugs.Property_with_expression_formating in test project for a repro
-            bool format = to != PropertyConversionClassification.Expression;
-
-            return format ? await newDocument.FormatAsync(cancellationToken) : newDocument;
+            return await newDocument.FormatAsync(cancellationToken);
         }
 
         public PropertyDeclarationSyntax GetReplacement(PropertyConversionClassification to)
