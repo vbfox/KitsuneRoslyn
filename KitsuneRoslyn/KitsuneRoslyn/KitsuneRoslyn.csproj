@@ -52,7 +52,6 @@
     <Compile Include="PropertyConversions\PropertyCodeFix.cs" />
     <Compile Include="PropertyConversions\PropertyConversionAnalysis.cs" />
     <Compile Include="PropertyConversions\PropertyConversionClassification.cs" />
-    <Compile Include="PropertyConversions\PropertyRefactoring.cs" />
     <Compile Include="Replacement.cs" />
     <Compile Include="ReplacementCodeFixProviderBase.cs" />
     <Compile Include="ReplacementNodeCodeFixProviderBase.cs" />

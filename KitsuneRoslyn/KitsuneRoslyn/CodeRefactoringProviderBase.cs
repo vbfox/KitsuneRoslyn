@@ -1,13 +1,8 @@
 ﻿using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
-using Microsoft.CodeAnalysis.Text;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System;
 
 namespace BlackFox.Roslyn.Diagnostics
 {
@@ -63,5 +58,4 @@ namespace BlackFox.Roslyn.Diagnostics
 
         protected abstract Task GetRefactoringsAsync(CodeRefactoringContext context, TNode node);
     }
-
 }

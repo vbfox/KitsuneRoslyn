@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
 {
-    class PropertyConversionAnalysis
+    public class PropertyConversionAnalysis
     {
         public PropertyConversionClassification Classification { get; private set; }
         public PropertyDeclarationSyntax Property { get; private set; }

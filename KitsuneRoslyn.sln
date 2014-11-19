@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KitsuneRoslyn.Test", "Kitsu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KitsuneRoslyn.Vsix", "KitsuneRoslyn\KitsuneRoslyn.Vsix\KitsuneRoslyn.Vsix.csproj", "{E6E3B8CA-6F48-4C49-B042-1D5C947CD3C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KitsuneRoslyn.Refactorings", "KitsuneRoslyn.Refactorings\KitsuneRoslyn.Refactorings.csproj", "{8EA67E23-9169-496E-BEBA-A4601DFC304A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{E6E3B8CA-6F48-4C49-B042-1D5C947CD3C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6E3B8CA-6F48-4C49-B042-1D5C947CD3C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6E3B8CA-6F48-4C49-B042-1D5C947CD3C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EA67E23-9169-496E-BEBA-A4601DFC304A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EA67E23-9169-496E-BEBA-A4601DFC304A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EA67E23-9169-496E-BEBA-A4601DFC304A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EA67E23-9169-496E-BEBA-A4601DFC304A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

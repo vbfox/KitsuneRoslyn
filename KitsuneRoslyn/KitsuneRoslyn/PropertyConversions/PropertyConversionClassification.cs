@@ -1,6 +1,6 @@
 ﻿namespace BlackFox.Roslyn.Diagnostics.PropertyConversions
 {
-    enum PropertyConversionClassification
+    public enum PropertyConversionClassification
     {
         Expression,
         Initializer,
