@@ -93,6 +93,7 @@
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RoslynBugs.cs" />
     <Compile Include="NoNewGuid\NoNewGuidAnalyzerTests.cs" />
     <Compile Include="NoNewGuid\NoNewGuidCodeFixTests.cs" />
     <Compile Include="NoStringEmpty\NoStringEmptyAnalyzerTests.cs" />
