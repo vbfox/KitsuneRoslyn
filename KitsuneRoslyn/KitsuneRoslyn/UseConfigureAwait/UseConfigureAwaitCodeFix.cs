@@ -57,7 +57,7 @@ namespace BlackFox.KitsuneRoslyn.UseConfigureAwait
             }
 
             var accessToConfigureAwait = MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, node,
-                IdentifierName("ConfigureAwait"));
+                IdentifierName(UseConfigureAwaitAnalyzer.ConfigureAwaitMethodName));
 
             var invocation = InvocationExpression(accessToConfigureAwait,
                 ArgumentList(new[] { BooleanLiteralExpression(continueOnCapturedContext) }));

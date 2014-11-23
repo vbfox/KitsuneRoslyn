@@ -2,6 +2,7 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
+using BlackFox.KitsuneRoslyn;
 using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -48,7 +49,7 @@ namespace BlackFox.Roslyn.Diagnostics.NoNewGuid
                 return;
             }
 
-            if (!symbol.ContainingType.FullyQualifiedNameIs("System", "Guid"))
+            if (!symbol.ContainingType.Equals(WellKnownTypes.Guid(context.SemanticModel.Compilation)))
             {
                 return;
             }

@@ -95,6 +95,7 @@
     <Compile Include="VarConversion\TypeToVarCodeFix.cs" />
     <Compile Include="VarConversion\VarToTypeAnalyzer.cs" />
     <Compile Include="VarConversion\VarToTypeCodeFix.cs" />
+    <Compile Include="WellKnownTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Diagnostic.nuspec">

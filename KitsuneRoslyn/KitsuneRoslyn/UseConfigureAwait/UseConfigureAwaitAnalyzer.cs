@@ -15,6 +15,7 @@ namespace BlackFox.KitsuneRoslyn.UseConfigureAwait
     public class UseConfigureAwaitAnalyzer : DiagnosticAnalyzer
     {
         public const string Id = "KR.UseConfigureAwait";
+        public const string ConfigureAwaitMethodName = "ConfigureAwait";
 
         public static DiagnosticDescriptor Descriptor { get; }
             = new DiagnosticDescriptor(
@@ -42,8 +43,6 @@ namespace BlackFox.KitsuneRoslyn.UseConfigureAwait
             }
         }
 
-        static string[] taskTypeName = new [] { "System", "Threading", "Tasks", "Task" };
-
         private bool IsConfigureAwaitNeeded(AwaitExpressionSyntax awaitExpression, SemanticModel semanticModel)
         {
             var expressionTarget = semanticModel.GetTypeInfo(awaitExpression.Expression).Type;
@@ -53,7 +52,9 @@ namespace BlackFox.KitsuneRoslyn.UseConfigureAwait
                 return false;
             }
 
-            if (!expressionTarget.FullyQualifiedNameIs(taskTypeName))
+            var taskType = WellKnownTypes.Task(semanticModel.Compilation);
+
+            if (!expressionTarget.Equals(taskType))
             {
                 // Other awaitable types don't have ConfigureAwait
                 return false;
@@ -74,9 +75,9 @@ namespace BlackFox.KitsuneRoslyn.UseConfigureAwait
             }
 
             // It's a method call but is it ConfigureAwait ?
-            return symbol.Name != "ConfigureAwait"
+            return symbol.Name != ConfigureAwaitMethodName
                 || symbol.IsStatic
-                || !symbol.ContainingType.FullyQualifiedNameIs(taskTypeName);
+                || !symbol.ContainingType.Equals(taskType);
         }
     }
 }
