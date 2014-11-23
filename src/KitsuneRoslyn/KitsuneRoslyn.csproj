@@ -89,6 +89,8 @@
     <Compile Include="TernaryOperators\TernaryReplaceableResult.cs" />
     <Compile Include="TernaryOperators\UseTernaryOperatorAnalyzer.cs" />
     <Compile Include="TernaryOperators\UseTernaryOperatorCodeFix.cs" />
+    <Compile Include="UnusedLocalVariable\PotentialSideEffectAnalysis.cs" />
+    <Compile Include="UnusedLocalVariable\RemoveUnusedLocalVariableCodeFix.cs" />
     <Compile Include="UseConfigureAwait\UseConfigureAwaitAnalyzer.cs" />
     <Compile Include="UseConfigureAwait\UseConfigureAwaitCodeFix.cs" />
     <Compile Include="VarConversion\TypeToVarAnalyzer.cs" />
