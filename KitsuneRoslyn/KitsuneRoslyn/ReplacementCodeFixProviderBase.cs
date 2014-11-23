@@ -2,10 +2,8 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
-using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
+using BlackFox.KitsuneRoslyn.RoslynExtensions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Simplification;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,58 +32,10 @@ namespace BlackFox.Roslyn.Diagnostics
             var replacement = await GetReplacementAsync(document, semanticModel, root, nodeToFix,
                 diagnosticId, cancellationToken).ConfigureAwait(false);
 
-            if (replacement.From == replacement.To)
-            {
-                return document;
-            }
+            var replacementAction = new NodeReplacement(document, replacement.From,
+                replacement.To, cancellationToken, Simplify, Format);
 
-            var annotatedTo = replacement.To.WithAdditionalAnnotations(GetAnnotations());
-
-            var replacedDocument = await document.ReplaceNodeAsync(replacement.From, annotatedTo);
-            var finalDocument = await ApplyAdditionalActions(replacedDocument, cancellationToken);
-
-            return finalDocument;
-        }
-
-        private async Task<Document> ApplyAdditionalActions(Document document, CancellationToken cancellationToken)
-        {
-            if (Simplify != AdditionalAction.DoNotRun)
-            {
-                var simplificationTask = Simplifier.ReduceAsync(
-                    document,
-                    Simplifier.Annotation,
-                    cancellationToken: cancellationToken);
-
-                document = await simplificationTask.ConfigureAwait(false);
-            }
-
-            if (Format != AdditionalAction.DoNotRun)
-            {
-                var formattingTask = Formatter.FormatAsync(
-                    document,
-                    Formatter.Annotation,
-                    cancellationToken: cancellationToken);
-
-                document = await formattingTask.ConfigureAwait(false);
-            }
-
-            return document;
-        }
-
-        private ImmutableList<SyntaxAnnotation> GetAnnotations()
-        {
-            var annotations = ImmutableList<SyntaxAnnotation>.Empty;
-
-            if (Simplify == AdditionalAction.AddAnnotationAndRun)
-            {
-                annotations = annotations.Add(Simplifier.Annotation);
-            }
-            if (Format == AdditionalAction.AddAnnotationAndRun)
-            {
-                annotations = annotations.Add(Formatter.Annotation);
-            }
-
-            return annotations;
+            return await replacementAction.ReplaceAsync().ConfigureAwait(false);
         }
 
         protected abstract Task<Replacement> GetReplacementAsync(Document document, SemanticModel semanticModel,

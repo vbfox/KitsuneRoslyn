@@ -47,6 +47,11 @@ namespace BlackFox.Roslyn.Diagnostics.RoslynExtensions
             return LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(value));
         }
 
+        public static LiteralExpressionSyntax BooleanLiteralExpression(bool value)
+        {
+            return LiteralExpression(value ? SyntaxKind.TrueLiteralExpression : SyntaxKind.FalseLiteralExpression);
+        }
+
         public static ArgumentListSyntax ArgumentList(IEnumerable<ExpressionSyntax> expressions)
         {
             Parameter.MustNotBeNull(expressions, "expressions");

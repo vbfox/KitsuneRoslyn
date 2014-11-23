@@ -5,7 +5,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -67,34 +66,20 @@ namespace BlackFox.Roslyn.Diagnostics
 
         public override async Task ComputeFixesAsync(CodeFixContext context)
         {
-            var actions = ImmutableList<CodeAction>.Empty.ToBuilder();
+            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+            var model = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+
             foreach (var diagnostic in context.Diagnostics)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 
-                var codeAction = await GetCodeAction(context.Document, diagnostic, context.CancellationToken);
-
-                context.RegisterFix(codeAction, diagnostic);
-            }
-        }
-
-        private async Task<CodeAction> GetCodeAction(Document document, Diagnostic diagnostic,
-            CancellationToken cancellationToken)
-        {
-            try
-            {
-                var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-                var model = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-
                 var nodeToFix = root.FindNode(diagnostic.Location.SourceSpan,
                     getInnermostNodeForTie: GetInnermostNodeForTie);
 
-                return await GetCodeAction(document, model, root,
-                    nodeToFix, diagnostic.Id, cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception)
-            {
-                throw;
+                var codeAction = await GetCodeAction(context.Document, model, root,
+                    nodeToFix, diagnostic.Id, context.CancellationToken).ConfigureAwait(false);
+
+                context.RegisterFix(codeAction, diagnostic);
             }
         }
     }
