@@ -60,7 +60,7 @@
     <Compile Include="RoslynExtensions\ExpressionSyntaxExtensions.cs" />
     <Compile Include="RoslynExtensions\MethodCanBeMadeStaticAnalysis.cs" />
     <Compile Include="RoslynExtensions\MethodCanBeMadeStaticAnalysisExtensions.cs" />
-    <Compile Include="RoslynExtensions\NodeReplaceContext.cs" />
+    <Compile Include="RoslynExtensions\NodeReplacement.cs" />
     <Compile Include="RoslynExtensions\PropertyDeclarationSyntaxExtensions.cs" />
     <Compile Include="RoslynExtensions\SemanticModelExtensions.cs" />
     <Compile Include="RoslynExtensions\SyntaxFactoryAdditions.cs" />
