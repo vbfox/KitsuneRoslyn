@@ -117,7 +117,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KitsuneRoslyn\KitsuneRoslyn.csproj">
+    <ProjectReference Include="..\..\src\KitsuneRoslyn\KitsuneRoslyn.csproj">
       <Project>{DACE07DD-0168-4656-A844-5779FA7F10EA}</Project>
       <Name>KitsuneRoslyn</Name>
     </ProjectReference>
