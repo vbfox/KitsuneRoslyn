@@ -2,16 +2,16 @@
 // Licensed under the BSD 2-Clause License.
 // See LICENSE.txt in the project root for license information.
 
+using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Formatting;
-using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
-using System.Linq;
-using Microsoft.CodeAnalysis.CodeActions;
 
 namespace BlackFox.Roslyn.Diagnostics.TernaryOperators
 {

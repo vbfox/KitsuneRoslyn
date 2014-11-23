@@ -1,4 +1,8 @@
-﻿using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
+﻿// Copyright (c) Julien Roncaglia.  All Rights Reserved.
+// Licensed under the BSD 2-Clause License.
+// See LICENSE.txt in the project root for license information.
+
+using BlackFox.Roslyn.Diagnostics.RoslynExtensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using System.Linq;
